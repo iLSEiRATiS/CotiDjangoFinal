@@ -1,0 +1,18 @@
+/* --- Visibilidad de precios --- */
+.product-card .text-muted.small {
+  color: #6c757d;
+}
+
+.product-card .text-success {
+  color: #28a745 !important;
+}
+
+.product-card a.text-muted:hover {
+  text-decoration: underline;
+  color: #007bff;
+}
+
+.product-card button[disabled] {
+  opacity: 0.8;
+  cursor: not-allowed;
+}

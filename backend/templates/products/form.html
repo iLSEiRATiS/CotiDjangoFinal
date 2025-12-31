@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Nuevo producto{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-6">
+    <h1 class="h3 mb-3">Publicar producto</h1>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger small">{{ field.errors|join:", " }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button class="btn btn-success w-100" type="submit">Guardar</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

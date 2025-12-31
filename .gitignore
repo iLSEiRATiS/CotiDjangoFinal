@@ -1,0 +1,19 @@
+# Python artifacts
+**/__pycache__/
+**/*.py[cod]
+backend/.venv/
+backend/venv/
+.env
+
+# Node/Vite artifacts
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Editor
+.DS_Store
+.idea/
+.vscode/
+
+# Snyk Security Extension - AI Rules (auto-generated)
+.github/instructions/snyk_rules.instructions.md

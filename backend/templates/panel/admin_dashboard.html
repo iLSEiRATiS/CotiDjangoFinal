@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Panel admin{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">Panel de administrador</h1>
+<div class="row g-3">
+  <div class="col-sm-4">
+    <div class="p-3 bg-white border rounded-3 shadow-sm h-100">
+      <p class="text-muted small mb-1">Productos</p>
+      <h3 class="mb-0">{{ counts.productos }}</h3>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="p-3 bg-white border rounded-3 shadow-sm h-100">
+      <p class="text-muted small mb-1">CategorÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­as</p>
+      <h3 class="mb-0">{{ counts.categorias }}</h3>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="p-3 bg-white border rounded-3 shadow-sm h-100">
+      <p class="text-muted small mb-1">Accesos</p>
+      <div class="d-grid gap-2">
+        <a class="btn btn-primary" href="{% url 'product-new' %}">Nuevo producto</a>
+        <a class="btn btn-outline-primary" href="{% url 'admin:index' %}">Ir a Django Admin</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

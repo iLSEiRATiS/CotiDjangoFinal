@@ -1,0 +1,41 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  <div id="content-main">
+    <h1>Importar productos via XLSX</h1>
+    <p>
+      Usa una hoja con estos encabezados (fila 1):<br>
+      <code>{{ headers|join:", " }}</code>
+    </p>
+    <p>
+      <a class="button" href="{{ template_url }}">Descargar plantilla vacía</a>
+      <a class="button" href="{{ example_url }}">Descargar ejemplo</a>
+    </p>
+    <p class="help">
+      Se consumen los campos: nombre, slug/sku (para buscar o crear), descripcion, categoria, precio, stock, activo.
+      Las dem&aacute;s columnas se ignoran por ahora pero quedan en la plantilla para mantener compatibilidad.
+      Las categor&iacute;as se crean si no existen.
+    </p>
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <fieldset class="module aligned">
+        <div class="form-row">
+          <label for="id_file">Archivo XLSX</label>
+          <input type="file" name="file" accept=".xlsx" required id="id_file">
+        </div>
+      </fieldset>
+      <div class="submit-row">
+        <input type="submit" value="Subir e importar">
+        <a class="button cancel-link" href="{% url 'admin:products_product_changelist' %}">Volver</a>
+      </div>
+    </form>
+    {% if created or updated %}
+      <p class="success">Importados: {{ created }} nuevos, {{ updated }} actualizados.</p>
+    {% endif %}
+    {% if errors %}
+      <div class="errornote">
+        {% for e in errors %}<div>{{ e }}</div>{% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

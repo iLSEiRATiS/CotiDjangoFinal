@@ -1,0 +1,4626 @@
+[
+  {
+    "id": 1,
+    "nombre": "VELAS CON PALITO 1",
+    "precio": 9790,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON PALITO",
+    "subcategoria_slug": "velas-con-palito",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20PALITO%201"
+  },
+  {
+    "id": 2,
+    "nombre": "VELAS CON PALITO 2",
+    "precio": 13803,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON PALITO",
+    "subcategoria_slug": "velas-con-palito",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20PALITO%202"
+  },
+  {
+    "id": 3,
+    "nombre": "VELAS CON PALITO 3",
+    "precio": 8884,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON PALITO",
+    "subcategoria_slug": "velas-con-palito",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20PALITO%203"
+  },
+  {
+    "id": 4,
+    "nombre": "VELAS CON PALITO 4",
+    "precio": 11831,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON PALITO",
+    "subcategoria_slug": "velas-con-palito",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20PALITO%204"
+  },
+  {
+    "id": 5,
+    "nombre": "VELAS CON PALITO 5",
+    "precio": 5515,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON PALITO",
+    "subcategoria_slug": "velas-con-palito",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20PALITO%205"
+  },
+  {
+    "id": 6,
+    "nombre": "VELAS CON PALITO 6",
+    "precio": 12068,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON PALITO",
+    "subcategoria_slug": "velas-con-palito",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20PALITO%206"
+  },
+  {
+    "id": 7,
+    "nombre": "VELAS CON PALITO 7",
+    "precio": 12544,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON PALITO",
+    "subcategoria_slug": "velas-con-palito",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20PALITO%207"
+  },
+  {
+    "id": 8,
+    "nombre": "VELAS CON PALITO 8",
+    "precio": 6439,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON PALITO",
+    "subcategoria_slug": "velas-con-palito",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20PALITO%208"
+  },
+  {
+    "id": 9,
+    "nombre": "VELAS IMPORTADAS 1",
+    "precio": 13211,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS IMPORTADAS",
+    "subcategoria_slug": "velas-importadas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20IMPORTADAS%201"
+  },
+  {
+    "id": 10,
+    "nombre": "VELAS IMPORTADAS 2",
+    "precio": 12926,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS IMPORTADAS",
+    "subcategoria_slug": "velas-importadas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20IMPORTADAS%202"
+  },
+  {
+    "id": 11,
+    "nombre": "VELAS IMPORTADAS 3",
+    "precio": 12314,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS IMPORTADAS",
+    "subcategoria_slug": "velas-importadas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20IMPORTADAS%203"
+  },
+  {
+    "id": 12,
+    "nombre": "VELAS IMPORTADAS 4",
+    "precio": 5936,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS IMPORTADAS",
+    "subcategoria_slug": "velas-importadas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20IMPORTADAS%204"
+  },
+  {
+    "id": 13,
+    "nombre": "VELAS IMPORTADAS 5",
+    "precio": 2245,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS IMPORTADAS",
+    "subcategoria_slug": "velas-importadas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20IMPORTADAS%205"
+  },
+  {
+    "id": 14,
+    "nombre": "VELAS IMPORTADAS 6",
+    "precio": 1901,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS IMPORTADAS",
+    "subcategoria_slug": "velas-importadas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20IMPORTADAS%206"
+  },
+  {
+    "id": 15,
+    "nombre": "VELAS IMPORTADAS 7",
+    "precio": 10068,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS IMPORTADAS",
+    "subcategoria_slug": "velas-importadas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20IMPORTADAS%207"
+  },
+  {
+    "id": 16,
+    "nombre": "VELAS IMPORTADAS 8",
+    "precio": 11944,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS IMPORTADAS",
+    "subcategoria_slug": "velas-importadas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20IMPORTADAS%208"
+  },
+  {
+    "id": 17,
+    "nombre": "BENGALAS 1",
+    "precio": 9197,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "BENGALAS",
+    "subcategoria_slug": "bengalas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20BENGALAS%201"
+  },
+  {
+    "id": 18,
+    "nombre": "BENGALAS 2",
+    "precio": 10361,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "BENGALAS",
+    "subcategoria_slug": "bengalas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20BENGALAS%202"
+  },
+  {
+    "id": 19,
+    "nombre": "BENGALAS 3",
+    "precio": 3085,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "BENGALAS",
+    "subcategoria_slug": "bengalas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20BENGALAS%203"
+  },
+  {
+    "id": 20,
+    "nombre": "BENGALAS 4",
+    "precio": 3160,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "BENGALAS",
+    "subcategoria_slug": "bengalas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20BENGALAS%204"
+  },
+  {
+    "id": 21,
+    "nombre": "BENGALAS 5",
+    "precio": 7373,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "BENGALAS",
+    "subcategoria_slug": "bengalas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20BENGALAS%205"
+  },
+  {
+    "id": 22,
+    "nombre": "BENGALAS 6",
+    "precio": 2122,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "BENGALAS",
+    "subcategoria_slug": "bengalas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20BENGALAS%206"
+  },
+  {
+    "id": 23,
+    "nombre": "BENGALAS 7",
+    "precio": 11627,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "BENGALAS",
+    "subcategoria_slug": "bengalas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20BENGALAS%207"
+  },
+  {
+    "id": 24,
+    "nombre": "BENGALAS 8",
+    "precio": 14542,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "BENGALAS",
+    "subcategoria_slug": "bengalas",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20BENGALAS%208"
+  },
+  {
+    "id": 25,
+    "nombre": "VELAS CON LUZ 1",
+    "precio": 6855,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON LUZ",
+    "subcategoria_slug": "velas-con-luz",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20LUZ%201"
+  },
+  {
+    "id": 26,
+    "nombre": "VELAS CON LUZ 2",
+    "precio": 9890,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON LUZ",
+    "subcategoria_slug": "velas-con-luz",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20LUZ%202"
+  },
+  {
+    "id": 27,
+    "nombre": "VELAS CON LUZ 3",
+    "precio": 1661,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON LUZ",
+    "subcategoria_slug": "velas-con-luz",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20LUZ%203"
+  },
+  {
+    "id": 28,
+    "nombre": "VELAS CON LUZ 4",
+    "precio": 5418,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON LUZ",
+    "subcategoria_slug": "velas-con-luz",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20LUZ%204"
+  },
+  {
+    "id": 29,
+    "nombre": "VELAS CON LUZ 5",
+    "precio": 8328,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON LUZ",
+    "subcategoria_slug": "velas-con-luz",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20LUZ%205"
+  },
+  {
+    "id": 30,
+    "nombre": "VELAS CON LUZ 6",
+    "precio": 10829,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON LUZ",
+    "subcategoria_slug": "velas-con-luz",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20LUZ%206"
+  },
+  {
+    "id": 31,
+    "nombre": "VELAS CON LUZ 7",
+    "precio": 12131,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON LUZ",
+    "subcategoria_slug": "velas-con-luz",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20LUZ%207"
+  },
+  {
+    "id": 32,
+    "nombre": "VELAS CON LUZ 8",
+    "precio": 14088,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS CON LUZ",
+    "subcategoria_slug": "velas-con-luz",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20CON%20LUZ%208"
+  },
+  {
+    "id": 33,
+    "nombre": "VELAS ESTRELLITA 1",
+    "precio": 2388,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS ESTRELLITA",
+    "subcategoria_slug": "velas-estrellita",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20ESTRELLITA%201"
+  },
+  {
+    "id": 34,
+    "nombre": "VELAS ESTRELLITA 2",
+    "precio": 7458,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS ESTRELLITA",
+    "subcategoria_slug": "velas-estrellita",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20ESTRELLITA%202"
+  },
+  {
+    "id": 35,
+    "nombre": "VELAS ESTRELLITA 3",
+    "precio": 7949,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS ESTRELLITA",
+    "subcategoria_slug": "velas-estrellita",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20ESTRELLITA%203"
+  },
+  {
+    "id": 36,
+    "nombre": "VELAS ESTRELLITA 4",
+    "precio": 3969,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS ESTRELLITA",
+    "subcategoria_slug": "velas-estrellita",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20ESTRELLITA%204"
+  },
+  {
+    "id": 37,
+    "nombre": "VELAS ESTRELLITA 5",
+    "precio": 9402,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS ESTRELLITA",
+    "subcategoria_slug": "velas-estrellita",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20ESTRELLITA%205"
+  },
+  {
+    "id": 38,
+    "nombre": "VELAS ESTRELLITA 6",
+    "precio": 12371,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS ESTRELLITA",
+    "subcategoria_slug": "velas-estrellita",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20ESTRELLITA%206"
+  },
+  {
+    "id": 39,
+    "nombre": "VELAS ESTRELLITA 7",
+    "precio": 3924,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS ESTRELLITA",
+    "subcategoria_slug": "velas-estrellita",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20ESTRELLITA%207"
+  },
+  {
+    "id": 40,
+    "nombre": "VELAS ESTRELLITA 8",
+    "precio": 10526,
+    "categoria": "VELAS",
+    "categoria_slug": "velas",
+    "subcategoria": "VELAS ESTRELLITA",
+    "subcategoria_slug": "velas-estrellita",
+    "imagen": "https://placehold.co/600x400?text=VELAS%20-%20VELAS%20ESTRELLITA%208"
+  },
+  {
+    "id": 41,
+    "nombre": "VINCHAS Y CORONAS 1",
+    "precio": 12904,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "VINCHAS Y CORONAS",
+    "subcategoria_slug": "vinchas-y-coronas",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20VINCHAS%20Y%20CORONAS%201"
+  },
+  {
+    "id": 42,
+    "nombre": "VINCHAS Y CORONAS 2",
+    "precio": 11655,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "VINCHAS Y CORONAS",
+    "subcategoria_slug": "vinchas-y-coronas",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20VINCHAS%20Y%20CORONAS%202"
+  },
+  {
+    "id": 43,
+    "nombre": "VINCHAS Y CORONAS 3",
+    "precio": 2423,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "VINCHAS Y CORONAS",
+    "subcategoria_slug": "vinchas-y-coronas",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20VINCHAS%20Y%20CORONAS%203"
+  },
+  {
+    "id": 44,
+    "nombre": "VINCHAS Y CORONAS 4",
+    "precio": 4504,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "VINCHAS Y CORONAS",
+    "subcategoria_slug": "vinchas-y-coronas",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20VINCHAS%20Y%20CORONAS%204"
+  },
+  {
+    "id": 45,
+    "nombre": "VINCHAS Y CORONAS 5",
+    "precio": 10948,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "VINCHAS Y CORONAS",
+    "subcategoria_slug": "vinchas-y-coronas",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20VINCHAS%20Y%20CORONAS%205"
+  },
+  {
+    "id": 46,
+    "nombre": "VINCHAS Y CORONAS 6",
+    "precio": 4163,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "VINCHAS Y CORONAS",
+    "subcategoria_slug": "vinchas-y-coronas",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20VINCHAS%20Y%20CORONAS%206"
+  },
+  {
+    "id": 47,
+    "nombre": "VINCHAS Y CORONAS 7",
+    "precio": 867,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "VINCHAS Y CORONAS",
+    "subcategoria_slug": "vinchas-y-coronas",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20VINCHAS%20Y%20CORONAS%207"
+  },
+  {
+    "id": 48,
+    "nombre": "VINCHAS Y CORONAS 8",
+    "precio": 2222,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "VINCHAS Y CORONAS",
+    "subcategoria_slug": "vinchas-y-coronas",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20VINCHAS%20Y%20CORONAS%208"
+  },
+  {
+    "id": 49,
+    "nombre": "GORROS Y SOMBREROS 1",
+    "precio": 852,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "GORROS Y SOMBREROS",
+    "subcategoria_slug": "gorros-y-sombreros",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20GORROS%20Y%20SOMBREROS%201"
+  },
+  {
+    "id": 50,
+    "nombre": "GORROS Y SOMBREROS 2",
+    "precio": 12932,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "GORROS Y SOMBREROS",
+    "subcategoria_slug": "gorros-y-sombreros",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20GORROS%20Y%20SOMBREROS%202"
+  },
+  {
+    "id": 51,
+    "nombre": "GORROS Y SOMBREROS 3",
+    "precio": 5182,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "GORROS Y SOMBREROS",
+    "subcategoria_slug": "gorros-y-sombreros",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20GORROS%20Y%20SOMBREROS%203"
+  },
+  {
+    "id": 52,
+    "nombre": "GORROS Y SOMBREROS 4",
+    "precio": 8591,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "GORROS Y SOMBREROS",
+    "subcategoria_slug": "gorros-y-sombreros",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20GORROS%20Y%20SOMBREROS%204"
+  },
+  {
+    "id": 53,
+    "nombre": "GORROS Y SOMBREROS 5",
+    "precio": 9200,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "GORROS Y SOMBREROS",
+    "subcategoria_slug": "gorros-y-sombreros",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20GORROS%20Y%20SOMBREROS%205"
+  },
+  {
+    "id": 54,
+    "nombre": "GORROS Y SOMBREROS 6",
+    "precio": 9522,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "GORROS Y SOMBREROS",
+    "subcategoria_slug": "gorros-y-sombreros",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20GORROS%20Y%20SOMBREROS%206"
+  },
+  {
+    "id": 55,
+    "nombre": "GORROS Y SOMBREROS 7",
+    "precio": 442,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "GORROS Y SOMBREROS",
+    "subcategoria_slug": "gorros-y-sombreros",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20GORROS%20Y%20SOMBREROS%207"
+  },
+  {
+    "id": 56,
+    "nombre": "GORROS Y SOMBREROS 8",
+    "precio": 9714,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "GORROS Y SOMBREROS",
+    "subcategoria_slug": "gorros-y-sombreros",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20GORROS%20Y%20SOMBREROS%208"
+  },
+  {
+    "id": 57,
+    "nombre": "ANTIFACES 1",
+    "precio": 544,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "ANTIFACES",
+    "subcategoria_slug": "antifaces",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20ANTIFACES%201"
+  },
+  {
+    "id": 58,
+    "nombre": "ANTIFACES 2",
+    "precio": 4531,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "ANTIFACES",
+    "subcategoria_slug": "antifaces",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20ANTIFACES%202"
+  },
+  {
+    "id": 59,
+    "nombre": "ANTIFACES 3",
+    "precio": 7797,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "ANTIFACES",
+    "subcategoria_slug": "antifaces",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20ANTIFACES%203"
+  },
+  {
+    "id": 60,
+    "nombre": "ANTIFACES 4",
+    "precio": 12714,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "ANTIFACES",
+    "subcategoria_slug": "antifaces",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20ANTIFACES%204"
+  },
+  {
+    "id": 61,
+    "nombre": "ANTIFACES 5",
+    "precio": 684,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "ANTIFACES",
+    "subcategoria_slug": "antifaces",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20ANTIFACES%205"
+  },
+  {
+    "id": 62,
+    "nombre": "ANTIFACES 6",
+    "precio": 13922,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "ANTIFACES",
+    "subcategoria_slug": "antifaces",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20ANTIFACES%206"
+  },
+  {
+    "id": 63,
+    "nombre": "ANTIFACES 7",
+    "precio": 12551,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "ANTIFACES",
+    "subcategoria_slug": "antifaces",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20ANTIFACES%207"
+  },
+  {
+    "id": 64,
+    "nombre": "ANTIFACES 8",
+    "precio": 10557,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "ANTIFACES",
+    "subcategoria_slug": "antifaces",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20ANTIFACES%208"
+  },
+  {
+    "id": 65,
+    "nombre": "CARIOCA 1",
+    "precio": 12066,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "CARIOCA",
+    "subcategoria_slug": "carioca",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20CARIOCA%201"
+  },
+  {
+    "id": 66,
+    "nombre": "CARIOCA 2",
+    "precio": 8812,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "CARIOCA",
+    "subcategoria_slug": "carioca",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20CARIOCA%202"
+  },
+  {
+    "id": 67,
+    "nombre": "CARIOCA 3",
+    "precio": 4131,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "CARIOCA",
+    "subcategoria_slug": "carioca",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20CARIOCA%203"
+  },
+  {
+    "id": 68,
+    "nombre": "CARIOCA 4",
+    "precio": 11354,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "CARIOCA",
+    "subcategoria_slug": "carioca",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20CARIOCA%204"
+  },
+  {
+    "id": 69,
+    "nombre": "CARIOCA 5",
+    "precio": 13984,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "CARIOCA",
+    "subcategoria_slug": "carioca",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20CARIOCA%205"
+  },
+  {
+    "id": 70,
+    "nombre": "CARIOCA 6",
+    "precio": 1934,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "CARIOCA",
+    "subcategoria_slug": "carioca",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20CARIOCA%206"
+  },
+  {
+    "id": 71,
+    "nombre": "CARIOCA 7",
+    "precio": 4065,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "CARIOCA",
+    "subcategoria_slug": "carioca",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20CARIOCA%207"
+  },
+  {
+    "id": 72,
+    "nombre": "CARIOCA 8",
+    "precio": 13345,
+    "categoria": "COTILLON",
+    "categoria_slug": "cotillon",
+    "subcategoria": "CARIOCA",
+    "subcategoria_slug": "carioca",
+    "imagen": "https://placehold.co/600x400?text=COTILLON%20-%20CARIOCA%208"
+  },
+  {
+    "id": 73,
+    "nombre": "NÚMERO METALIZADOS 1",
+    "precio": 10977,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "NÚMERO METALIZADOS",
+    "subcategoria_slug": "numero-metalizados",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20N%C3%9AMERO%20METALIZADOS%201"
+  },
+  {
+    "id": 74,
+    "nombre": "NÚMERO METALIZADOS 2",
+    "precio": 10050,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "NÚMERO METALIZADOS",
+    "subcategoria_slug": "numero-metalizados",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20N%C3%9AMERO%20METALIZADOS%202"
+  },
+  {
+    "id": 75,
+    "nombre": "NÚMERO METALIZADOS 3",
+    "precio": 10039,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "NÚMERO METALIZADOS",
+    "subcategoria_slug": "numero-metalizados",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20N%C3%9AMERO%20METALIZADOS%203"
+  },
+  {
+    "id": 76,
+    "nombre": "NÚMERO METALIZADOS 4",
+    "precio": 14404,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "NÚMERO METALIZADOS",
+    "subcategoria_slug": "numero-metalizados",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20N%C3%9AMERO%20METALIZADOS%204"
+  },
+  {
+    "id": 77,
+    "nombre": "NÚMERO METALIZADOS 5",
+    "precio": 14655,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "NÚMERO METALIZADOS",
+    "subcategoria_slug": "numero-metalizados",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20N%C3%9AMERO%20METALIZADOS%205"
+  },
+  {
+    "id": 78,
+    "nombre": "NÚMERO METALIZADOS 6",
+    "precio": 9190,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "NÚMERO METALIZADOS",
+    "subcategoria_slug": "numero-metalizados",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20N%C3%9AMERO%20METALIZADOS%206"
+  },
+  {
+    "id": 79,
+    "nombre": "NÚMERO METALIZADOS 7",
+    "precio": 9217,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "NÚMERO METALIZADOS",
+    "subcategoria_slug": "numero-metalizados",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20N%C3%9AMERO%20METALIZADOS%207"
+  },
+  {
+    "id": 80,
+    "nombre": "NÚMERO METALIZADOS 8",
+    "precio": 6239,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "NÚMERO METALIZADOS",
+    "subcategoria_slug": "numero-metalizados",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20N%C3%9AMERO%20METALIZADOS%208"
+  },
+  {
+    "id": 81,
+    "nombre": "GLOBOS CON FORMA 1",
+    "precio": 8516,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOS CON FORMA",
+    "subcategoria_slug": "globos-con-forma",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOS%20CON%20FORMA%201"
+  },
+  {
+    "id": 82,
+    "nombre": "GLOBOS CON FORMA 2",
+    "precio": 1577,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOS CON FORMA",
+    "subcategoria_slug": "globos-con-forma",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOS%20CON%20FORMA%202"
+  },
+  {
+    "id": 83,
+    "nombre": "GLOBOS CON FORMA 3",
+    "precio": 1829,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOS CON FORMA",
+    "subcategoria_slug": "globos-con-forma",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOS%20CON%20FORMA%203"
+  },
+  {
+    "id": 84,
+    "nombre": "GLOBOS CON FORMA 4",
+    "precio": 5283,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOS CON FORMA",
+    "subcategoria_slug": "globos-con-forma",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOS%20CON%20FORMA%204"
+  },
+  {
+    "id": 85,
+    "nombre": "GLOBOS CON FORMA 5",
+    "precio": 2749,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOS CON FORMA",
+    "subcategoria_slug": "globos-con-forma",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOS%20CON%20FORMA%205"
+  },
+  {
+    "id": 86,
+    "nombre": "GLOBOS CON FORMA 6",
+    "precio": 8193,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOS CON FORMA",
+    "subcategoria_slug": "globos-con-forma",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOS%20CON%20FORMA%206"
+  },
+  {
+    "id": 87,
+    "nombre": "GLOBOS CON FORMA 7",
+    "precio": 14257,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOS CON FORMA",
+    "subcategoria_slug": "globos-con-forma",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOS%20CON%20FORMA%207"
+  },
+  {
+    "id": 88,
+    "nombre": "GLOBOS CON FORMA 8",
+    "precio": 5010,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOS CON FORMA",
+    "subcategoria_slug": "globos-con-forma",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOS%20CON%20FORMA%208"
+  },
+  {
+    "id": 89,
+    "nombre": "SET DE GLOBOS 1",
+    "precio": 734,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "SET DE GLOBOS",
+    "subcategoria_slug": "set-de-globos",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20SET%20DE%20GLOBOS%201"
+  },
+  {
+    "id": 90,
+    "nombre": "SET DE GLOBOS 2",
+    "precio": 6495,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "SET DE GLOBOS",
+    "subcategoria_slug": "set-de-globos",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20SET%20DE%20GLOBOS%202"
+  },
+  {
+    "id": 91,
+    "nombre": "SET DE GLOBOS 3",
+    "precio": 9388,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "SET DE GLOBOS",
+    "subcategoria_slug": "set-de-globos",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20SET%20DE%20GLOBOS%203"
+  },
+  {
+    "id": 92,
+    "nombre": "SET DE GLOBOS 4",
+    "precio": 6267,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "SET DE GLOBOS",
+    "subcategoria_slug": "set-de-globos",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20SET%20DE%20GLOBOS%204"
+  },
+  {
+    "id": 93,
+    "nombre": "SET DE GLOBOS 5",
+    "precio": 10706,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "SET DE GLOBOS",
+    "subcategoria_slug": "set-de-globos",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20SET%20DE%20GLOBOS%205"
+  },
+  {
+    "id": 94,
+    "nombre": "SET DE GLOBOS 6",
+    "precio": 6335,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "SET DE GLOBOS",
+    "subcategoria_slug": "set-de-globos",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20SET%20DE%20GLOBOS%206"
+  },
+  {
+    "id": 95,
+    "nombre": "SET DE GLOBOS 7",
+    "precio": 7483,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "SET DE GLOBOS",
+    "subcategoria_slug": "set-de-globos",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20SET%20DE%20GLOBOS%207"
+  },
+  {
+    "id": 96,
+    "nombre": "SET DE GLOBOS 8",
+    "precio": 4881,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "SET DE GLOBOS",
+    "subcategoria_slug": "set-de-globos",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20SET%20DE%20GLOBOS%208"
+  },
+  {
+    "id": 97,
+    "nombre": "PERLADO 1",
+    "precio": 13329,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20PERLADO%201"
+  },
+  {
+    "id": 98,
+    "nombre": "PERLADO 2",
+    "precio": 13180,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20PERLADO%202"
+  },
+  {
+    "id": 99,
+    "nombre": "PERLADO 3",
+    "precio": 5748,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20PERLADO%203"
+  },
+  {
+    "id": 100,
+    "nombre": "PERLADO 4",
+    "precio": 14373,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20PERLADO%204"
+  },
+  {
+    "id": 101,
+    "nombre": "PERLADO 5",
+    "precio": 8000,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20PERLADO%205"
+  },
+  {
+    "id": 102,
+    "nombre": "PERLADO 6",
+    "precio": 10969,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20PERLADO%206"
+  },
+  {
+    "id": 103,
+    "nombre": "PERLADO 7",
+    "precio": 7707,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20PERLADO%207"
+  },
+  {
+    "id": 104,
+    "nombre": "PERLADO 8",
+    "precio": 14506,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20PERLADO%208"
+  },
+  {
+    "id": 105,
+    "nombre": "LISO 1",
+    "precio": 5148,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20LISO%201"
+  },
+  {
+    "id": 106,
+    "nombre": "LISO 2",
+    "precio": 7404,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20LISO%202"
+  },
+  {
+    "id": 107,
+    "nombre": "LISO 3",
+    "precio": 12124,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20LISO%203"
+  },
+  {
+    "id": 108,
+    "nombre": "LISO 4",
+    "precio": 9078,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20LISO%204"
+  },
+  {
+    "id": 109,
+    "nombre": "LISO 5",
+    "precio": 5503,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20LISO%205"
+  },
+  {
+    "id": 110,
+    "nombre": "LISO 6",
+    "precio": 8655,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20LISO%206"
+  },
+  {
+    "id": 111,
+    "nombre": "LISO 7",
+    "precio": 9053,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20LISO%207"
+  },
+  {
+    "id": 112,
+    "nombre": "LISO 8",
+    "precio": 11492,
+    "categoria": "9 PULGADAS",
+    "categoria_slug": "9-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=9%20PULGADAS%20-%20LISO%208"
+  },
+  {
+    "id": 113,
+    "nombre": "PERLADO 1",
+    "precio": 2718,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20PERLADO%201"
+  },
+  {
+    "id": 114,
+    "nombre": "PERLADO 2",
+    "precio": 10199,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20PERLADO%202"
+  },
+  {
+    "id": 115,
+    "nombre": "PERLADO 3",
+    "precio": 9177,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20PERLADO%203"
+  },
+  {
+    "id": 116,
+    "nombre": "PERLADO 4",
+    "precio": 11801,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20PERLADO%204"
+  },
+  {
+    "id": 117,
+    "nombre": "PERLADO 5",
+    "precio": 6158,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20PERLADO%205"
+  },
+  {
+    "id": 118,
+    "nombre": "PERLADO 6",
+    "precio": 12346,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20PERLADO%206"
+  },
+  {
+    "id": 119,
+    "nombre": "PERLADO 7",
+    "precio": 1907,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20PERLADO%207"
+  },
+  {
+    "id": 120,
+    "nombre": "PERLADO 8",
+    "precio": 8808,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20PERLADO%208"
+  },
+  {
+    "id": 121,
+    "nombre": "LISO 1",
+    "precio": 11921,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20LISO%201"
+  },
+  {
+    "id": 122,
+    "nombre": "LISO 2",
+    "precio": 9261,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20LISO%202"
+  },
+  {
+    "id": 123,
+    "nombre": "LISO 3",
+    "precio": 1880,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20LISO%203"
+  },
+  {
+    "id": 124,
+    "nombre": "LISO 4",
+    "precio": 9242,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20LISO%204"
+  },
+  {
+    "id": 125,
+    "nombre": "LISO 5",
+    "precio": 3246,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20LISO%205"
+  },
+  {
+    "id": 126,
+    "nombre": "LISO 6",
+    "precio": 13643,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20LISO%206"
+  },
+  {
+    "id": 127,
+    "nombre": "LISO 7",
+    "precio": 14806,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20LISO%207"
+  },
+  {
+    "id": 128,
+    "nombre": "LISO 8",
+    "precio": 3126,
+    "categoria": "10 PULGADAS",
+    "categoria_slug": "10-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=10%20PULGADAS%20-%20LISO%208"
+  },
+  {
+    "id": 129,
+    "nombre": "PERLADO 1",
+    "precio": 3676,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20PERLADO%201"
+  },
+  {
+    "id": 130,
+    "nombre": "PERLADO 2",
+    "precio": 6533,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20PERLADO%202"
+  },
+  {
+    "id": 131,
+    "nombre": "PERLADO 3",
+    "precio": 3262,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20PERLADO%203"
+  },
+  {
+    "id": 132,
+    "nombre": "PERLADO 4",
+    "precio": 571,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20PERLADO%204"
+  },
+  {
+    "id": 133,
+    "nombre": "PERLADO 5",
+    "precio": 10895,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20PERLADO%205"
+  },
+  {
+    "id": 134,
+    "nombre": "PERLADO 6",
+    "precio": 4989,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20PERLADO%206"
+  },
+  {
+    "id": 135,
+    "nombre": "PERLADO 7",
+    "precio": 5142,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20PERLADO%207"
+  },
+  {
+    "id": 136,
+    "nombre": "PERLADO 8",
+    "precio": 3374,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "PERLADO",
+    "subcategoria_slug": "perlado",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20PERLADO%208"
+  },
+  {
+    "id": 137,
+    "nombre": "LISO 1",
+    "precio": 13531,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20LISO%201"
+  },
+  {
+    "id": 138,
+    "nombre": "LISO 2",
+    "precio": 2468,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20LISO%202"
+  },
+  {
+    "id": 139,
+    "nombre": "LISO 3",
+    "precio": 6103,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20LISO%203"
+  },
+  {
+    "id": 140,
+    "nombre": "LISO 4",
+    "precio": 14813,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20LISO%204"
+  },
+  {
+    "id": 141,
+    "nombre": "LISO 5",
+    "precio": 4631,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20LISO%205"
+  },
+  {
+    "id": 142,
+    "nombre": "LISO 6",
+    "precio": 10708,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20LISO%206"
+  },
+  {
+    "id": 143,
+    "nombre": "LISO 7",
+    "precio": 13145,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20LISO%207"
+  },
+  {
+    "id": 144,
+    "nombre": "LISO 8",
+    "precio": 9511,
+    "categoria": "12 PULGADAS",
+    "categoria_slug": "12-pulgadas",
+    "subcategoria": "LISO",
+    "subcategoria_slug": "liso",
+    "imagen": "https://placehold.co/600x400?text=12%20PULGADAS%20-%20LISO%208"
+  },
+  {
+    "id": 145,
+    "nombre": "GLOBOLOGIA 1",
+    "precio": 3172,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOLOGIA",
+    "subcategoria_slug": "globologia",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOLOGIA%201"
+  },
+  {
+    "id": 146,
+    "nombre": "GLOBOLOGIA 2",
+    "precio": 6467,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOLOGIA",
+    "subcategoria_slug": "globologia",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOLOGIA%202"
+  },
+  {
+    "id": 147,
+    "nombre": "GLOBOLOGIA 3",
+    "precio": 12818,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOLOGIA",
+    "subcategoria_slug": "globologia",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOLOGIA%203"
+  },
+  {
+    "id": 148,
+    "nombre": "GLOBOLOGIA 4",
+    "precio": 4229,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOLOGIA",
+    "subcategoria_slug": "globologia",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOLOGIA%204"
+  },
+  {
+    "id": 149,
+    "nombre": "GLOBOLOGIA 5",
+    "precio": 4817,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOLOGIA",
+    "subcategoria_slug": "globologia",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOLOGIA%205"
+  },
+  {
+    "id": 150,
+    "nombre": "GLOBOLOGIA 6",
+    "precio": 483,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOLOGIA",
+    "subcategoria_slug": "globologia",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOLOGIA%206"
+  },
+  {
+    "id": 151,
+    "nombre": "GLOBOLOGIA 7",
+    "precio": 14881,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOLOGIA",
+    "subcategoria_slug": "globologia",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOLOGIA%207"
+  },
+  {
+    "id": 152,
+    "nombre": "GLOBOLOGIA 8",
+    "precio": 8606,
+    "categoria": "GLOBOS Y PIÑATAS",
+    "categoria_slug": "globos-y-pinatas",
+    "subcategoria": "GLOBOLOGIA",
+    "subcategoria_slug": "globologia",
+    "imagen": "https://placehold.co/600x400?text=GLOBOS%20Y%20PI%C3%91ATAS%20-%20GLOBOLOGIA%208"
+  },
+  {
+    "id": 153,
+    "nombre": "GUIRNALDAS Y DECORACIÓN 1",
+    "precio": 1045,
+    "categoria": "GUIRNALDAS Y DECORACIÓN",
+    "categoria_slug": "guirnaldas-y-decoracion",
+    "imagen": "https://placehold.co/600x400?text=GUIRNALDAS%20Y%20DECORACI%C3%93N%201"
+  },
+  {
+    "id": 154,
+    "nombre": "GUIRNALDAS Y DECORACIÓN 2",
+    "precio": 6375,
+    "categoria": "GUIRNALDAS Y DECORACIÓN",
+    "categoria_slug": "guirnaldas-y-decoracion",
+    "imagen": "https://placehold.co/600x400?text=GUIRNALDAS%20Y%20DECORACI%C3%93N%202"
+  },
+  {
+    "id": 155,
+    "nombre": "GUIRNALDAS Y DECORACIÓN 3",
+    "precio": 14634,
+    "categoria": "GUIRNALDAS Y DECORACIÓN",
+    "categoria_slug": "guirnaldas-y-decoracion",
+    "imagen": "https://placehold.co/600x400?text=GUIRNALDAS%20Y%20DECORACI%C3%93N%203"
+  },
+  {
+    "id": 156,
+    "nombre": "GUIRNALDAS Y DECORACIÓN 4",
+    "precio": 13489,
+    "categoria": "GUIRNALDAS Y DECORACIÓN",
+    "categoria_slug": "guirnaldas-y-decoracion",
+    "imagen": "https://placehold.co/600x400?text=GUIRNALDAS%20Y%20DECORACI%C3%93N%204"
+  },
+  {
+    "id": 157,
+    "nombre": "GUIRNALDAS Y DECORACIÓN 5",
+    "precio": 11938,
+    "categoria": "GUIRNALDAS Y DECORACIÓN",
+    "categoria_slug": "guirnaldas-y-decoracion",
+    "imagen": "https://placehold.co/600x400?text=GUIRNALDAS%20Y%20DECORACI%C3%93N%205"
+  },
+  {
+    "id": 158,
+    "nombre": "GUIRNALDAS Y DECORACIÓN 6",
+    "precio": 12710,
+    "categoria": "GUIRNALDAS Y DECORACIÓN",
+    "categoria_slug": "guirnaldas-y-decoracion",
+    "imagen": "https://placehold.co/600x400?text=GUIRNALDAS%20Y%20DECORACI%C3%93N%206"
+  },
+  {
+    "id": 159,
+    "nombre": "GUIRNALDAS Y DECORACIÓN 7",
+    "precio": 14135,
+    "categoria": "GUIRNALDAS Y DECORACIÓN",
+    "categoria_slug": "guirnaldas-y-decoracion",
+    "imagen": "https://placehold.co/600x400?text=GUIRNALDAS%20Y%20DECORACI%C3%93N%207"
+  },
+  {
+    "id": 160,
+    "nombre": "GUIRNALDAS Y DECORACIÓN 8",
+    "precio": 6930,
+    "categoria": "GUIRNALDAS Y DECORACIÓN",
+    "categoria_slug": "guirnaldas-y-decoracion",
+    "imagen": "https://placehold.co/600x400?text=GUIRNALDAS%20Y%20DECORACI%C3%93N%208"
+  },
+  {
+    "id": 161,
+    "nombre": "DECORACION PARA TORTAS 1",
+    "precio": 9120,
+    "categoria": "DECORACION PARA TORTAS",
+    "categoria_slug": "decoracion-para-tortas",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20PARA%20TORTAS%201"
+  },
+  {
+    "id": 162,
+    "nombre": "DECORACION PARA TORTAS 2",
+    "precio": 622,
+    "categoria": "DECORACION PARA TORTAS",
+    "categoria_slug": "decoracion-para-tortas",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20PARA%20TORTAS%202"
+  },
+  {
+    "id": 163,
+    "nombre": "DECORACION PARA TORTAS 3",
+    "precio": 2034,
+    "categoria": "DECORACION PARA TORTAS",
+    "categoria_slug": "decoracion-para-tortas",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20PARA%20TORTAS%203"
+  },
+  {
+    "id": 164,
+    "nombre": "DECORACION PARA TORTAS 4",
+    "precio": 8928,
+    "categoria": "DECORACION PARA TORTAS",
+    "categoria_slug": "decoracion-para-tortas",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20PARA%20TORTAS%204"
+  },
+  {
+    "id": 165,
+    "nombre": "DECORACION PARA TORTAS 5",
+    "precio": 1725,
+    "categoria": "DECORACION PARA TORTAS",
+    "categoria_slug": "decoracion-para-tortas",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20PARA%20TORTAS%205"
+  },
+  {
+    "id": 166,
+    "nombre": "DECORACION PARA TORTAS 6",
+    "precio": 8960,
+    "categoria": "DECORACION PARA TORTAS",
+    "categoria_slug": "decoracion-para-tortas",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20PARA%20TORTAS%206"
+  },
+  {
+    "id": 167,
+    "nombre": "DECORACION PARA TORTAS 7",
+    "precio": 14748,
+    "categoria": "DECORACION PARA TORTAS",
+    "categoria_slug": "decoracion-para-tortas",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20PARA%20TORTAS%207"
+  },
+  {
+    "id": 168,
+    "nombre": "DECORACION PARA TORTAS 8",
+    "precio": 8143,
+    "categoria": "DECORACION PARA TORTAS",
+    "categoria_slug": "decoracion-para-tortas",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20PARA%20TORTAS%208"
+  },
+  {
+    "id": 169,
+    "nombre": "DECORACIÓN LED 1",
+    "precio": 12375,
+    "categoria": "DECORACIÓN LED",
+    "categoria_slug": "decoracion-led",
+    "imagen": "https://placehold.co/600x400?text=DECORACI%C3%93N%20LED%201"
+  },
+  {
+    "id": 170,
+    "nombre": "DECORACIÓN LED 2",
+    "precio": 5634,
+    "categoria": "DECORACIÓN LED",
+    "categoria_slug": "decoracion-led",
+    "imagen": "https://placehold.co/600x400?text=DECORACI%C3%93N%20LED%202"
+  },
+  {
+    "id": 171,
+    "nombre": "DECORACIÓN LED 3",
+    "precio": 2252,
+    "categoria": "DECORACIÓN LED",
+    "categoria_slug": "decoracion-led",
+    "imagen": "https://placehold.co/600x400?text=DECORACI%C3%93N%20LED%203"
+  },
+  {
+    "id": 172,
+    "nombre": "DECORACIÓN LED 4",
+    "precio": 8627,
+    "categoria": "DECORACIÓN LED",
+    "categoria_slug": "decoracion-led",
+    "imagen": "https://placehold.co/600x400?text=DECORACI%C3%93N%20LED%204"
+  },
+  {
+    "id": 173,
+    "nombre": "DECORACIÓN LED 5",
+    "precio": 11550,
+    "categoria": "DECORACIÓN LED",
+    "categoria_slug": "decoracion-led",
+    "imagen": "https://placehold.co/600x400?text=DECORACI%C3%93N%20LED%205"
+  },
+  {
+    "id": 174,
+    "nombre": "DECORACIÓN LED 6",
+    "precio": 12522,
+    "categoria": "DECORACIÓN LED",
+    "categoria_slug": "decoracion-led",
+    "imagen": "https://placehold.co/600x400?text=DECORACI%C3%93N%20LED%206"
+  },
+  {
+    "id": 175,
+    "nombre": "DECORACIÓN LED 7",
+    "precio": 7389,
+    "categoria": "DECORACIÓN LED",
+    "categoria_slug": "decoracion-led",
+    "imagen": "https://placehold.co/600x400?text=DECORACI%C3%93N%20LED%207"
+  },
+  {
+    "id": 176,
+    "nombre": "DECORACIÓN LED 8",
+    "precio": 10181,
+    "categoria": "DECORACIÓN LED",
+    "categoria_slug": "decoracion-led",
+    "imagen": "https://placehold.co/600x400?text=DECORACI%C3%93N%20LED%208"
+  },
+  {
+    "id": 177,
+    "nombre": "LUMINOSO 1",
+    "precio": 8103,
+    "categoria": "LUMINOSO",
+    "categoria_slug": "luminoso",
+    "imagen": "https://placehold.co/600x400?text=LUMINOSO%201"
+  },
+  {
+    "id": 178,
+    "nombre": "LUMINOSO 2",
+    "precio": 3680,
+    "categoria": "LUMINOSO",
+    "categoria_slug": "luminoso",
+    "imagen": "https://placehold.co/600x400?text=LUMINOSO%202"
+  },
+  {
+    "id": 179,
+    "nombre": "LUMINOSO 3",
+    "precio": 9334,
+    "categoria": "LUMINOSO",
+    "categoria_slug": "luminoso",
+    "imagen": "https://placehold.co/600x400?text=LUMINOSO%203"
+  },
+  {
+    "id": 180,
+    "nombre": "LUMINOSO 4",
+    "precio": 11546,
+    "categoria": "LUMINOSO",
+    "categoria_slug": "luminoso",
+    "imagen": "https://placehold.co/600x400?text=LUMINOSO%204"
+  },
+  {
+    "id": 181,
+    "nombre": "LUMINOSO 5",
+    "precio": 8486,
+    "categoria": "LUMINOSO",
+    "categoria_slug": "luminoso",
+    "imagen": "https://placehold.co/600x400?text=LUMINOSO%205"
+  },
+  {
+    "id": 182,
+    "nombre": "LUMINOSO 6",
+    "precio": 6530,
+    "categoria": "LUMINOSO",
+    "categoria_slug": "luminoso",
+    "imagen": "https://placehold.co/600x400?text=LUMINOSO%206"
+  },
+  {
+    "id": 183,
+    "nombre": "LUMINOSO 7",
+    "precio": 4136,
+    "categoria": "LUMINOSO",
+    "categoria_slug": "luminoso",
+    "imagen": "https://placehold.co/600x400?text=LUMINOSO%207"
+  },
+  {
+    "id": 184,
+    "nombre": "LUMINOSO 8",
+    "precio": 6436,
+    "categoria": "LUMINOSO",
+    "categoria_slug": "luminoso",
+    "imagen": "https://placehold.co/600x400?text=LUMINOSO%208"
+  },
+  {
+    "id": 185,
+    "nombre": "LIBRERÍA 1",
+    "precio": 862,
+    "categoria": "LIBRERÍA",
+    "categoria_slug": "libreria",
+    "imagen": "https://placehold.co/600x400?text=LIBRER%C3%8DA%201"
+  },
+  {
+    "id": 186,
+    "nombre": "LIBRERÍA 2",
+    "precio": 8729,
+    "categoria": "LIBRERÍA",
+    "categoria_slug": "libreria",
+    "imagen": "https://placehold.co/600x400?text=LIBRER%C3%8DA%202"
+  },
+  {
+    "id": 187,
+    "nombre": "LIBRERÍA 3",
+    "precio": 14997,
+    "categoria": "LIBRERÍA",
+    "categoria_slug": "libreria",
+    "imagen": "https://placehold.co/600x400?text=LIBRER%C3%8DA%203"
+  },
+  {
+    "id": 188,
+    "nombre": "LIBRERÍA 4",
+    "precio": 862,
+    "categoria": "LIBRERÍA",
+    "categoria_slug": "libreria",
+    "imagen": "https://placehold.co/600x400?text=LIBRER%C3%8DA%204"
+  },
+  {
+    "id": 189,
+    "nombre": "LIBRERÍA 5",
+    "precio": 11474,
+    "categoria": "LIBRERÍA",
+    "categoria_slug": "libreria",
+    "imagen": "https://placehold.co/600x400?text=LIBRER%C3%8DA%205"
+  },
+  {
+    "id": 190,
+    "nombre": "LIBRERÍA 6",
+    "precio": 8637,
+    "categoria": "LIBRERÍA",
+    "categoria_slug": "libreria",
+    "imagen": "https://placehold.co/600x400?text=LIBRER%C3%8DA%206"
+  },
+  {
+    "id": 191,
+    "nombre": "LIBRERÍA 7",
+    "precio": 1586,
+    "categoria": "LIBRERÍA",
+    "categoria_slug": "libreria",
+    "imagen": "https://placehold.co/600x400?text=LIBRER%C3%8DA%207"
+  },
+  {
+    "id": 192,
+    "nombre": "LIBRERÍA 8",
+    "precio": 12736,
+    "categoria": "LIBRERÍA",
+    "categoria_slug": "libreria",
+    "imagen": "https://placehold.co/600x400?text=LIBRER%C3%8DA%208"
+  },
+  {
+    "id": 193,
+    "nombre": "EXTENSIONES PELUCAS Y PINTURA 1",
+    "precio": 4956,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "EXTENSIONES PELUCAS Y PINTURA",
+    "subcategoria_slug": "extensiones-pelucas-y-pintura",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20EXTENSIONES%20PELUCAS%20Y%20PINTURA%201"
+  },
+  {
+    "id": 194,
+    "nombre": "EXTENSIONES PELUCAS Y PINTURA 2",
+    "precio": 1823,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "EXTENSIONES PELUCAS Y PINTURA",
+    "subcategoria_slug": "extensiones-pelucas-y-pintura",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20EXTENSIONES%20PELUCAS%20Y%20PINTURA%202"
+  },
+  {
+    "id": 195,
+    "nombre": "EXTENSIONES PELUCAS Y PINTURA 3",
+    "precio": 11617,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "EXTENSIONES PELUCAS Y PINTURA",
+    "subcategoria_slug": "extensiones-pelucas-y-pintura",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20EXTENSIONES%20PELUCAS%20Y%20PINTURA%203"
+  },
+  {
+    "id": 196,
+    "nombre": "EXTENSIONES PELUCAS Y PINTURA 4",
+    "precio": 10846,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "EXTENSIONES PELUCAS Y PINTURA",
+    "subcategoria_slug": "extensiones-pelucas-y-pintura",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20EXTENSIONES%20PELUCAS%20Y%20PINTURA%204"
+  },
+  {
+    "id": 197,
+    "nombre": "EXTENSIONES PELUCAS Y PINTURA 5",
+    "precio": 10251,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "EXTENSIONES PELUCAS Y PINTURA",
+    "subcategoria_slug": "extensiones-pelucas-y-pintura",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20EXTENSIONES%20PELUCAS%20Y%20PINTURA%205"
+  },
+  {
+    "id": 198,
+    "nombre": "EXTENSIONES PELUCAS Y PINTURA 6",
+    "precio": 13925,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "EXTENSIONES PELUCAS Y PINTURA",
+    "subcategoria_slug": "extensiones-pelucas-y-pintura",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20EXTENSIONES%20PELUCAS%20Y%20PINTURA%206"
+  },
+  {
+    "id": 199,
+    "nombre": "EXTENSIONES PELUCAS Y PINTURA 7",
+    "precio": 8386,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "EXTENSIONES PELUCAS Y PINTURA",
+    "subcategoria_slug": "extensiones-pelucas-y-pintura",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20EXTENSIONES%20PELUCAS%20Y%20PINTURA%207"
+  },
+  {
+    "id": 200,
+    "nombre": "EXTENSIONES PELUCAS Y PINTURA 8",
+    "precio": 14229,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "EXTENSIONES PELUCAS Y PINTURA",
+    "subcategoria_slug": "extensiones-pelucas-y-pintura",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20EXTENSIONES%20PELUCAS%20Y%20PINTURA%208"
+  },
+  {
+    "id": 201,
+    "nombre": "MAQUILLAJE 1",
+    "precio": 2653,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "MAQUILLAJE",
+    "subcategoria_slug": "maquillaje",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20MAQUILLAJE%201"
+  },
+  {
+    "id": 202,
+    "nombre": "MAQUILLAJE 2",
+    "precio": 11414,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "MAQUILLAJE",
+    "subcategoria_slug": "maquillaje",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20MAQUILLAJE%202"
+  },
+  {
+    "id": 203,
+    "nombre": "MAQUILLAJE 3",
+    "precio": 12978,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "MAQUILLAJE",
+    "subcategoria_slug": "maquillaje",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20MAQUILLAJE%203"
+  },
+  {
+    "id": 204,
+    "nombre": "MAQUILLAJE 4",
+    "precio": 2273,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "MAQUILLAJE",
+    "subcategoria_slug": "maquillaje",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20MAQUILLAJE%204"
+  },
+  {
+    "id": 205,
+    "nombre": "MAQUILLAJE 5",
+    "precio": 2370,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "MAQUILLAJE",
+    "subcategoria_slug": "maquillaje",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20MAQUILLAJE%205"
+  },
+  {
+    "id": 206,
+    "nombre": "MAQUILLAJE 6",
+    "precio": 8298,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "MAQUILLAJE",
+    "subcategoria_slug": "maquillaje",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20MAQUILLAJE%206"
+  },
+  {
+    "id": 207,
+    "nombre": "MAQUILLAJE 7",
+    "precio": 971,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "MAQUILLAJE",
+    "subcategoria_slug": "maquillaje",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20MAQUILLAJE%207"
+  },
+  {
+    "id": 208,
+    "nombre": "MAQUILLAJE 8",
+    "precio": 3743,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "MAQUILLAJE",
+    "subcategoria_slug": "maquillaje",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20MAQUILLAJE%208"
+  },
+  {
+    "id": 209,
+    "nombre": "CARETAS 1",
+    "precio": 6153,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "CARETAS",
+    "subcategoria_slug": "caretas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20CARETAS%201"
+  },
+  {
+    "id": 210,
+    "nombre": "CARETAS 2",
+    "precio": 10140,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "CARETAS",
+    "subcategoria_slug": "caretas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20CARETAS%202"
+  },
+  {
+    "id": 211,
+    "nombre": "CARETAS 3",
+    "precio": 10358,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "CARETAS",
+    "subcategoria_slug": "caretas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20CARETAS%203"
+  },
+  {
+    "id": 212,
+    "nombre": "CARETAS 4",
+    "precio": 12072,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "CARETAS",
+    "subcategoria_slug": "caretas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20CARETAS%204"
+  },
+  {
+    "id": 213,
+    "nombre": "CARETAS 5",
+    "precio": 7796,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "CARETAS",
+    "subcategoria_slug": "caretas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20CARETAS%205"
+  },
+  {
+    "id": 214,
+    "nombre": "CARETAS 6",
+    "precio": 2942,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "CARETAS",
+    "subcategoria_slug": "caretas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20CARETAS%206"
+  },
+  {
+    "id": 215,
+    "nombre": "CARETAS 7",
+    "precio": 12550,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "CARETAS",
+    "subcategoria_slug": "caretas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20CARETAS%207"
+  },
+  {
+    "id": 216,
+    "nombre": "CARETAS 8",
+    "precio": 1916,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "CARETAS",
+    "subcategoria_slug": "caretas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20CARETAS%208"
+  },
+  {
+    "id": 217,
+    "nombre": "TUTÚS 1",
+    "precio": 10530,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "TUTÚS",
+    "subcategoria_slug": "tutus",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20TUT%C3%9AS%201"
+  },
+  {
+    "id": 218,
+    "nombre": "TUTÚS 2",
+    "precio": 14418,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "TUTÚS",
+    "subcategoria_slug": "tutus",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20TUT%C3%9AS%202"
+  },
+  {
+    "id": 219,
+    "nombre": "TUTÚS 3",
+    "precio": 662,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "TUTÚS",
+    "subcategoria_slug": "tutus",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20TUT%C3%9AS%203"
+  },
+  {
+    "id": 220,
+    "nombre": "TUTÚS 4",
+    "precio": 11958,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "TUTÚS",
+    "subcategoria_slug": "tutus",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20TUT%C3%9AS%204"
+  },
+  {
+    "id": 221,
+    "nombre": "TUTÚS 5",
+    "precio": 2195,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "TUTÚS",
+    "subcategoria_slug": "tutus",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20TUT%C3%9AS%205"
+  },
+  {
+    "id": 222,
+    "nombre": "TUTÚS 6",
+    "precio": 459,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "TUTÚS",
+    "subcategoria_slug": "tutus",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20TUT%C3%9AS%206"
+  },
+  {
+    "id": 223,
+    "nombre": "TUTÚS 7",
+    "precio": 6311,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "TUTÚS",
+    "subcategoria_slug": "tutus",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20TUT%C3%9AS%207"
+  },
+  {
+    "id": 224,
+    "nombre": "TUTÚS 8",
+    "precio": 4924,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "TUTÚS",
+    "subcategoria_slug": "tutus",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20TUT%C3%9AS%208"
+  },
+  {
+    "id": 225,
+    "nombre": "ALAS 1",
+    "precio": 14849,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "ALAS",
+    "subcategoria_slug": "alas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20ALAS%201"
+  },
+  {
+    "id": 226,
+    "nombre": "ALAS 2",
+    "precio": 2843,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "ALAS",
+    "subcategoria_slug": "alas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20ALAS%202"
+  },
+  {
+    "id": 227,
+    "nombre": "ALAS 3",
+    "precio": 7957,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "ALAS",
+    "subcategoria_slug": "alas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20ALAS%203"
+  },
+  {
+    "id": 228,
+    "nombre": "ALAS 4",
+    "precio": 9485,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "ALAS",
+    "subcategoria_slug": "alas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20ALAS%204"
+  },
+  {
+    "id": 229,
+    "nombre": "ALAS 5",
+    "precio": 12774,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "ALAS",
+    "subcategoria_slug": "alas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20ALAS%205"
+  },
+  {
+    "id": 230,
+    "nombre": "ALAS 6",
+    "precio": 7340,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "ALAS",
+    "subcategoria_slug": "alas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20ALAS%206"
+  },
+  {
+    "id": 231,
+    "nombre": "ALAS 7",
+    "precio": 13764,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "ALAS",
+    "subcategoria_slug": "alas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20ALAS%207"
+  },
+  {
+    "id": 232,
+    "nombre": "ALAS 8",
+    "precio": 8583,
+    "categoria": "DISFRACES",
+    "categoria_slug": "disfraces",
+    "subcategoria": "ALAS",
+    "subcategoria_slug": "alas",
+    "imagen": "https://placehold.co/600x400?text=DISFRACES%20-%20ALAS%208"
+  },
+  {
+    "id": 233,
+    "nombre": "BANDEJAS CARTÓN 1",
+    "precio": 1112,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS CARTÓN",
+    "subcategoria_slug": "bandejas-carton",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20CART%C3%93N%201"
+  },
+  {
+    "id": 234,
+    "nombre": "BANDEJAS CARTÓN 2",
+    "precio": 13904,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS CARTÓN",
+    "subcategoria_slug": "bandejas-carton",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20CART%C3%93N%202"
+  },
+  {
+    "id": 235,
+    "nombre": "BANDEJAS CARTÓN 3",
+    "precio": 14323,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS CARTÓN",
+    "subcategoria_slug": "bandejas-carton",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20CART%C3%93N%203"
+  },
+  {
+    "id": 236,
+    "nombre": "BANDEJAS CARTÓN 4",
+    "precio": 9357,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS CARTÓN",
+    "subcategoria_slug": "bandejas-carton",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20CART%C3%93N%204"
+  },
+  {
+    "id": 237,
+    "nombre": "BANDEJAS CARTÓN 5",
+    "precio": 3493,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS CARTÓN",
+    "subcategoria_slug": "bandejas-carton",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20CART%C3%93N%205"
+  },
+  {
+    "id": 238,
+    "nombre": "BANDEJAS CARTÓN 6",
+    "precio": 10489,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS CARTÓN",
+    "subcategoria_slug": "bandejas-carton",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20CART%C3%93N%206"
+  },
+  {
+    "id": 239,
+    "nombre": "BANDEJAS CARTÓN 7",
+    "precio": 9575,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS CARTÓN",
+    "subcategoria_slug": "bandejas-carton",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20CART%C3%93N%207"
+  },
+  {
+    "id": 240,
+    "nombre": "BANDEJAS CARTÓN 8",
+    "precio": 11342,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS CARTÓN",
+    "subcategoria_slug": "bandejas-carton",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20CART%C3%93N%208"
+  },
+  {
+    "id": 241,
+    "nombre": "BANDEJAS PLASTICAS 1",
+    "precio": 12466,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS PLASTICAS",
+    "subcategoria_slug": "bandejas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20PLASTICAS%201"
+  },
+  {
+    "id": 242,
+    "nombre": "BANDEJAS PLASTICAS 2",
+    "precio": 6411,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS PLASTICAS",
+    "subcategoria_slug": "bandejas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20PLASTICAS%202"
+  },
+  {
+    "id": 243,
+    "nombre": "BANDEJAS PLASTICAS 3",
+    "precio": 3365,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS PLASTICAS",
+    "subcategoria_slug": "bandejas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20PLASTICAS%203"
+  },
+  {
+    "id": 244,
+    "nombre": "BANDEJAS PLASTICAS 4",
+    "precio": 6338,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS PLASTICAS",
+    "subcategoria_slug": "bandejas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20PLASTICAS%204"
+  },
+  {
+    "id": 245,
+    "nombre": "BANDEJAS PLASTICAS 5",
+    "precio": 1216,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS PLASTICAS",
+    "subcategoria_slug": "bandejas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20PLASTICAS%205"
+  },
+  {
+    "id": 246,
+    "nombre": "BANDEJAS PLASTICAS 6",
+    "precio": 12048,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS PLASTICAS",
+    "subcategoria_slug": "bandejas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20PLASTICAS%206"
+  },
+  {
+    "id": 247,
+    "nombre": "BANDEJAS PLASTICAS 7",
+    "precio": 11171,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS PLASTICAS",
+    "subcategoria_slug": "bandejas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20PLASTICAS%207"
+  },
+  {
+    "id": 248,
+    "nombre": "BANDEJAS PLASTICAS 8",
+    "precio": 367,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BANDEJAS PLASTICAS",
+    "subcategoria_slug": "bandejas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BANDEJAS%20PLASTICAS%208"
+  },
+  {
+    "id": 249,
+    "nombre": "MANTELES 1",
+    "precio": 6154,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "MANTELES",
+    "subcategoria_slug": "manteles",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20MANTELES%201"
+  },
+  {
+    "id": 250,
+    "nombre": "MANTELES 2",
+    "precio": 6196,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "MANTELES",
+    "subcategoria_slug": "manteles",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20MANTELES%202"
+  },
+  {
+    "id": 251,
+    "nombre": "MANTELES 3",
+    "precio": 13681,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "MANTELES",
+    "subcategoria_slug": "manteles",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20MANTELES%203"
+  },
+  {
+    "id": 252,
+    "nombre": "MANTELES 4",
+    "precio": 564,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "MANTELES",
+    "subcategoria_slug": "manteles",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20MANTELES%204"
+  },
+  {
+    "id": 253,
+    "nombre": "MANTELES 5",
+    "precio": 12589,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "MANTELES",
+    "subcategoria_slug": "manteles",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20MANTELES%205"
+  },
+  {
+    "id": 254,
+    "nombre": "MANTELES 6",
+    "precio": 13910,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "MANTELES",
+    "subcategoria_slug": "manteles",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20MANTELES%206"
+  },
+  {
+    "id": 255,
+    "nombre": "MANTELES 7",
+    "precio": 10558,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "MANTELES",
+    "subcategoria_slug": "manteles",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20MANTELES%207"
+  },
+  {
+    "id": 256,
+    "nombre": "MANTELES 8",
+    "precio": 14568,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "MANTELES",
+    "subcategoria_slug": "manteles",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20MANTELES%208"
+  },
+  {
+    "id": 257,
+    "nombre": "CUBIERTOS 1",
+    "precio": 13136,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "CUBIERTOS",
+    "subcategoria_slug": "cubiertos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20CUBIERTOS%201"
+  },
+  {
+    "id": 258,
+    "nombre": "CUBIERTOS 2",
+    "precio": 9392,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "CUBIERTOS",
+    "subcategoria_slug": "cubiertos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20CUBIERTOS%202"
+  },
+  {
+    "id": 259,
+    "nombre": "CUBIERTOS 3",
+    "precio": 13005,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "CUBIERTOS",
+    "subcategoria_slug": "cubiertos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20CUBIERTOS%203"
+  },
+  {
+    "id": 260,
+    "nombre": "CUBIERTOS 4",
+    "precio": 12520,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "CUBIERTOS",
+    "subcategoria_slug": "cubiertos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20CUBIERTOS%204"
+  },
+  {
+    "id": 261,
+    "nombre": "CUBIERTOS 5",
+    "precio": 7013,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "CUBIERTOS",
+    "subcategoria_slug": "cubiertos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20CUBIERTOS%205"
+  },
+  {
+    "id": 262,
+    "nombre": "CUBIERTOS 6",
+    "precio": 11987,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "CUBIERTOS",
+    "subcategoria_slug": "cubiertos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20CUBIERTOS%206"
+  },
+  {
+    "id": 263,
+    "nombre": "CUBIERTOS 7",
+    "precio": 13881,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "CUBIERTOS",
+    "subcategoria_slug": "cubiertos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20CUBIERTOS%207"
+  },
+  {
+    "id": 264,
+    "nombre": "CUBIERTOS 8",
+    "precio": 1364,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "CUBIERTOS",
+    "subcategoria_slug": "cubiertos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20CUBIERTOS%208"
+  },
+  {
+    "id": 265,
+    "nombre": "PLATOS 1",
+    "precio": 12270,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "PLATOS",
+    "subcategoria_slug": "platos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20PLATOS%201"
+  },
+  {
+    "id": 266,
+    "nombre": "PLATOS 2",
+    "precio": 8867,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "PLATOS",
+    "subcategoria_slug": "platos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20PLATOS%202"
+  },
+  {
+    "id": 267,
+    "nombre": "PLATOS 3",
+    "precio": 709,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "PLATOS",
+    "subcategoria_slug": "platos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20PLATOS%203"
+  },
+  {
+    "id": 268,
+    "nombre": "PLATOS 4",
+    "precio": 350,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "PLATOS",
+    "subcategoria_slug": "platos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20PLATOS%204"
+  },
+  {
+    "id": 269,
+    "nombre": "PLATOS 5",
+    "precio": 7196,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "PLATOS",
+    "subcategoria_slug": "platos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20PLATOS%205"
+  },
+  {
+    "id": 270,
+    "nombre": "PLATOS 6",
+    "precio": 10094,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "PLATOS",
+    "subcategoria_slug": "platos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20PLATOS%206"
+  },
+  {
+    "id": 271,
+    "nombre": "PLATOS 7",
+    "precio": 10974,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "PLATOS",
+    "subcategoria_slug": "platos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20PLATOS%207"
+  },
+  {
+    "id": 272,
+    "nombre": "PLATOS 8",
+    "precio": 13485,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "PLATOS",
+    "subcategoria_slug": "platos",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20PLATOS%208"
+  },
+  {
+    "id": 273,
+    "nombre": "POTES 1",
+    "precio": 4834,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "POTES",
+    "subcategoria_slug": "potes",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20POTES%201"
+  },
+  {
+    "id": 274,
+    "nombre": "POTES 2",
+    "precio": 6034,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "POTES",
+    "subcategoria_slug": "potes",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20POTES%202"
+  },
+  {
+    "id": 275,
+    "nombre": "POTES 3",
+    "precio": 9836,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "POTES",
+    "subcategoria_slug": "potes",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20POTES%203"
+  },
+  {
+    "id": 276,
+    "nombre": "POTES 4",
+    "precio": 4611,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "POTES",
+    "subcategoria_slug": "potes",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20POTES%204"
+  },
+  {
+    "id": 277,
+    "nombre": "POTES 5",
+    "precio": 14759,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "POTES",
+    "subcategoria_slug": "potes",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20POTES%205"
+  },
+  {
+    "id": 278,
+    "nombre": "POTES 6",
+    "precio": 11493,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "POTES",
+    "subcategoria_slug": "potes",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20POTES%206"
+  },
+  {
+    "id": 279,
+    "nombre": "POTES 7",
+    "precio": 8651,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "POTES",
+    "subcategoria_slug": "potes",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20POTES%207"
+  },
+  {
+    "id": 280,
+    "nombre": "POTES 8",
+    "precio": 4240,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "POTES",
+    "subcategoria_slug": "potes",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20POTES%208"
+  },
+  {
+    "id": 281,
+    "nombre": "SERVILLETAS 1",
+    "precio": 10859,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "SERVILLETAS",
+    "subcategoria_slug": "servilletas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20SERVILLETAS%201"
+  },
+  {
+    "id": 282,
+    "nombre": "SERVILLETAS 2",
+    "precio": 7227,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "SERVILLETAS",
+    "subcategoria_slug": "servilletas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20SERVILLETAS%202"
+  },
+  {
+    "id": 283,
+    "nombre": "SERVILLETAS 3",
+    "precio": 11133,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "SERVILLETAS",
+    "subcategoria_slug": "servilletas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20SERVILLETAS%203"
+  },
+  {
+    "id": 284,
+    "nombre": "SERVILLETAS 4",
+    "precio": 779,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "SERVILLETAS",
+    "subcategoria_slug": "servilletas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20SERVILLETAS%204"
+  },
+  {
+    "id": 285,
+    "nombre": "SERVILLETAS 5",
+    "precio": 13069,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "SERVILLETAS",
+    "subcategoria_slug": "servilletas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20SERVILLETAS%205"
+  },
+  {
+    "id": 286,
+    "nombre": "SERVILLETAS 6",
+    "precio": 11726,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "SERVILLETAS",
+    "subcategoria_slug": "servilletas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20SERVILLETAS%206"
+  },
+  {
+    "id": 287,
+    "nombre": "SERVILLETAS 7",
+    "precio": 2674,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "SERVILLETAS",
+    "subcategoria_slug": "servilletas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20SERVILLETAS%207"
+  },
+  {
+    "id": 288,
+    "nombre": "SERVILLETAS 8",
+    "precio": 12751,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "SERVILLETAS",
+    "subcategoria_slug": "servilletas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20SERVILLETAS%208"
+  },
+  {
+    "id": 289,
+    "nombre": "VASOS Y COPAS 1",
+    "precio": 8928,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "VASOS Y COPAS",
+    "subcategoria_slug": "vasos-y-copas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20VASOS%20Y%20COPAS%201"
+  },
+  {
+    "id": 290,
+    "nombre": "VASOS Y COPAS 2",
+    "precio": 6231,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "VASOS Y COPAS",
+    "subcategoria_slug": "vasos-y-copas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20VASOS%20Y%20COPAS%202"
+  },
+  {
+    "id": 291,
+    "nombre": "VASOS Y COPAS 3",
+    "precio": 4278,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "VASOS Y COPAS",
+    "subcategoria_slug": "vasos-y-copas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20VASOS%20Y%20COPAS%203"
+  },
+  {
+    "id": 292,
+    "nombre": "VASOS Y COPAS 4",
+    "precio": 9923,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "VASOS Y COPAS",
+    "subcategoria_slug": "vasos-y-copas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20VASOS%20Y%20COPAS%204"
+  },
+  {
+    "id": 293,
+    "nombre": "VASOS Y COPAS 5",
+    "precio": 6775,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "VASOS Y COPAS",
+    "subcategoria_slug": "vasos-y-copas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20VASOS%20Y%20COPAS%205"
+  },
+  {
+    "id": 294,
+    "nombre": "VASOS Y COPAS 6",
+    "precio": 9241,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "VASOS Y COPAS",
+    "subcategoria_slug": "vasos-y-copas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20VASOS%20Y%20COPAS%206"
+  },
+  {
+    "id": 295,
+    "nombre": "VASOS Y COPAS 7",
+    "precio": 7055,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "VASOS Y COPAS",
+    "subcategoria_slug": "vasos-y-copas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20VASOS%20Y%20COPAS%207"
+  },
+  {
+    "id": 296,
+    "nombre": "VASOS Y COPAS 8",
+    "precio": 2481,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "VASOS Y COPAS",
+    "subcategoria_slug": "vasos-y-copas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20VASOS%20Y%20COPAS%208"
+  },
+  {
+    "id": 297,
+    "nombre": "BLONDAS 1",
+    "precio": 1134,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BLONDAS",
+    "subcategoria_slug": "blondas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BLONDAS%201"
+  },
+  {
+    "id": 298,
+    "nombre": "BLONDAS 2",
+    "precio": 5283,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BLONDAS",
+    "subcategoria_slug": "blondas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BLONDAS%202"
+  },
+  {
+    "id": 299,
+    "nombre": "BLONDAS 3",
+    "precio": 13291,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BLONDAS",
+    "subcategoria_slug": "blondas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BLONDAS%203"
+  },
+  {
+    "id": 300,
+    "nombre": "BLONDAS 4",
+    "precio": 14440,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BLONDAS",
+    "subcategoria_slug": "blondas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BLONDAS%204"
+  },
+  {
+    "id": 301,
+    "nombre": "BLONDAS 5",
+    "precio": 641,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BLONDAS",
+    "subcategoria_slug": "blondas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BLONDAS%205"
+  },
+  {
+    "id": 302,
+    "nombre": "BLONDAS 6",
+    "precio": 2072,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BLONDAS",
+    "subcategoria_slug": "blondas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BLONDAS%206"
+  },
+  {
+    "id": 303,
+    "nombre": "BLONDAS 7",
+    "precio": 7427,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BLONDAS",
+    "subcategoria_slug": "blondas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BLONDAS%207"
+  },
+  {
+    "id": 304,
+    "nombre": "BLONDAS 8",
+    "precio": 11259,
+    "categoria": "DESCARTABLES",
+    "categoria_slug": "descartables",
+    "subcategoria": "BLONDAS",
+    "subcategoria_slug": "blondas",
+    "imagen": "https://placehold.co/600x400?text=DESCARTABLES%20-%20BLONDAS%208"
+  },
+  {
+    "id": 305,
+    "nombre": "PARPEN 1",
+    "precio": 14301,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PARPEN",
+    "subcategoria_slug": "parpen",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PARPEN%201"
+  },
+  {
+    "id": 306,
+    "nombre": "PARPEN 2",
+    "precio": 13430,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PARPEN",
+    "subcategoria_slug": "parpen",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PARPEN%202"
+  },
+  {
+    "id": 307,
+    "nombre": "PARPEN 3",
+    "precio": 6394,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PARPEN",
+    "subcategoria_slug": "parpen",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PARPEN%203"
+  },
+  {
+    "id": 308,
+    "nombre": "PARPEN 4",
+    "precio": 11729,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PARPEN",
+    "subcategoria_slug": "parpen",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PARPEN%204"
+  },
+  {
+    "id": 309,
+    "nombre": "PARPEN 5",
+    "precio": 504,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PARPEN",
+    "subcategoria_slug": "parpen",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PARPEN%205"
+  },
+  {
+    "id": 310,
+    "nombre": "PARPEN 6",
+    "precio": 1218,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PARPEN",
+    "subcategoria_slug": "parpen",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PARPEN%206"
+  },
+  {
+    "id": 311,
+    "nombre": "PARPEN 7",
+    "precio": 14136,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PARPEN",
+    "subcategoria_slug": "parpen",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PARPEN%207"
+  },
+  {
+    "id": 312,
+    "nombre": "PARPEN 8",
+    "precio": 14211,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PARPEN",
+    "subcategoria_slug": "parpen",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PARPEN%208"
+  },
+  {
+    "id": 313,
+    "nombre": "LODISER 1",
+    "precio": 6142,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "LODISER",
+    "subcategoria_slug": "lodiser",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20LODISER%201"
+  },
+  {
+    "id": 314,
+    "nombre": "LODISER 2",
+    "precio": 11849,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "LODISER",
+    "subcategoria_slug": "lodiser",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20LODISER%202"
+  },
+  {
+    "id": 315,
+    "nombre": "LODISER 3",
+    "precio": 11023,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "LODISER",
+    "subcategoria_slug": "lodiser",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20LODISER%203"
+  },
+  {
+    "id": 316,
+    "nombre": "LODISER 4",
+    "precio": 12858,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "LODISER",
+    "subcategoria_slug": "lodiser",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20LODISER%204"
+  },
+  {
+    "id": 317,
+    "nombre": "LODISER 5",
+    "precio": 11569,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "LODISER",
+    "subcategoria_slug": "lodiser",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20LODISER%205"
+  },
+  {
+    "id": 318,
+    "nombre": "LODISER 6",
+    "precio": 10759,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "LODISER",
+    "subcategoria_slug": "lodiser",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20LODISER%206"
+  },
+  {
+    "id": 319,
+    "nombre": "LODISER 7",
+    "precio": 5534,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "LODISER",
+    "subcategoria_slug": "lodiser",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20LODISER%207"
+  },
+  {
+    "id": 320,
+    "nombre": "LODISER 8",
+    "precio": 551,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "LODISER",
+    "subcategoria_slug": "lodiser",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20LODISER%208"
+  },
+  {
+    "id": 321,
+    "nombre": "BALLINA 1",
+    "precio": 3282,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "BALLINA",
+    "subcategoria_slug": "ballina",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20BALLINA%201"
+  },
+  {
+    "id": 322,
+    "nombre": "BALLINA 2",
+    "precio": 1604,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "BALLINA",
+    "subcategoria_slug": "ballina",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20BALLINA%202"
+  },
+  {
+    "id": 323,
+    "nombre": "BALLINA 3",
+    "precio": 1488,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "BALLINA",
+    "subcategoria_slug": "ballina",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20BALLINA%203"
+  },
+  {
+    "id": 324,
+    "nombre": "BALLINA 4",
+    "precio": 14883,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "BALLINA",
+    "subcategoria_slug": "ballina",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20BALLINA%204"
+  },
+  {
+    "id": 325,
+    "nombre": "BALLINA 5",
+    "precio": 6450,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "BALLINA",
+    "subcategoria_slug": "ballina",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20BALLINA%205"
+  },
+  {
+    "id": 326,
+    "nombre": "BALLINA 6",
+    "precio": 9158,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "BALLINA",
+    "subcategoria_slug": "ballina",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20BALLINA%206"
+  },
+  {
+    "id": 327,
+    "nombre": "BALLINA 7",
+    "precio": 5567,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "BALLINA",
+    "subcategoria_slug": "ballina",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20BALLINA%207"
+  },
+  {
+    "id": 328,
+    "nombre": "BALLINA 8",
+    "precio": 14010,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "BALLINA",
+    "subcategoria_slug": "ballina",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20BALLINA%208"
+  },
+  {
+    "id": 329,
+    "nombre": "DEWEY 1",
+    "precio": 13420,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "DEWEY",
+    "subcategoria_slug": "dewey",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20DEWEY%201"
+  },
+  {
+    "id": 330,
+    "nombre": "DEWEY 2",
+    "precio": 13802,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "DEWEY",
+    "subcategoria_slug": "dewey",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20DEWEY%202"
+  },
+  {
+    "id": 331,
+    "nombre": "DEWEY 3",
+    "precio": 1491,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "DEWEY",
+    "subcategoria_slug": "dewey",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20DEWEY%203"
+  },
+  {
+    "id": 332,
+    "nombre": "DEWEY 4",
+    "precio": 8905,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "DEWEY",
+    "subcategoria_slug": "dewey",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20DEWEY%204"
+  },
+  {
+    "id": 333,
+    "nombre": "DEWEY 5",
+    "precio": 6944,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "DEWEY",
+    "subcategoria_slug": "dewey",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20DEWEY%205"
+  },
+  {
+    "id": 334,
+    "nombre": "DEWEY 6",
+    "precio": 3256,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "DEWEY",
+    "subcategoria_slug": "dewey",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20DEWEY%206"
+  },
+  {
+    "id": 335,
+    "nombre": "DEWEY 7",
+    "precio": 3621,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "DEWEY",
+    "subcategoria_slug": "dewey",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20DEWEY%207"
+  },
+  {
+    "id": 336,
+    "nombre": "DEWEY 8",
+    "precio": 11416,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "DEWEY",
+    "subcategoria_slug": "dewey",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20DEWEY%208"
+  },
+  {
+    "id": 337,
+    "nombre": "COMESTIBLES 1",
+    "precio": 12728,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "COMESTIBLES",
+    "subcategoria_slug": "comestibles",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20COMESTIBLES%201"
+  },
+  {
+    "id": 338,
+    "nombre": "COMESTIBLES 2",
+    "precio": 6716,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "COMESTIBLES",
+    "subcategoria_slug": "comestibles",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20COMESTIBLES%202"
+  },
+  {
+    "id": 339,
+    "nombre": "COMESTIBLES 3",
+    "precio": 7754,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "COMESTIBLES",
+    "subcategoria_slug": "comestibles",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20COMESTIBLES%203"
+  },
+  {
+    "id": 340,
+    "nombre": "COMESTIBLES 4",
+    "precio": 7743,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "COMESTIBLES",
+    "subcategoria_slug": "comestibles",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20COMESTIBLES%204"
+  },
+  {
+    "id": 341,
+    "nombre": "COMESTIBLES 5",
+    "precio": 9353,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "COMESTIBLES",
+    "subcategoria_slug": "comestibles",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20COMESTIBLES%205"
+  },
+  {
+    "id": 342,
+    "nombre": "COMESTIBLES 6",
+    "precio": 327,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "COMESTIBLES",
+    "subcategoria_slug": "comestibles",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20COMESTIBLES%206"
+  },
+  {
+    "id": 343,
+    "nombre": "COMESTIBLES 7",
+    "precio": 1941,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "COMESTIBLES",
+    "subcategoria_slug": "comestibles",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20COMESTIBLES%207"
+  },
+  {
+    "id": 344,
+    "nombre": "COMESTIBLES 8",
+    "precio": 6191,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "COMESTIBLES",
+    "subcategoria_slug": "comestibles",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20COMESTIBLES%208"
+  },
+  {
+    "id": 345,
+    "nombre": "PLACAS PLÁSTICAS 1",
+    "precio": 3328,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PLACAS PLÁSTICAS",
+    "subcategoria_slug": "placas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PLACAS%20PL%C3%81STICAS%201"
+  },
+  {
+    "id": 346,
+    "nombre": "PLACAS PLÁSTICAS 2",
+    "precio": 8106,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PLACAS PLÁSTICAS",
+    "subcategoria_slug": "placas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PLACAS%20PL%C3%81STICAS%202"
+  },
+  {
+    "id": 347,
+    "nombre": "PLACAS PLÁSTICAS 3",
+    "precio": 11103,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PLACAS PLÁSTICAS",
+    "subcategoria_slug": "placas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PLACAS%20PL%C3%81STICAS%203"
+  },
+  {
+    "id": 348,
+    "nombre": "PLACAS PLÁSTICAS 4",
+    "precio": 6767,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PLACAS PLÁSTICAS",
+    "subcategoria_slug": "placas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PLACAS%20PL%C3%81STICAS%204"
+  },
+  {
+    "id": 349,
+    "nombre": "PLACAS PLÁSTICAS 5",
+    "precio": 10258,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PLACAS PLÁSTICAS",
+    "subcategoria_slug": "placas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PLACAS%20PL%C3%81STICAS%205"
+  },
+  {
+    "id": 350,
+    "nombre": "PLACAS PLÁSTICAS 6",
+    "precio": 12249,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PLACAS PLÁSTICAS",
+    "subcategoria_slug": "placas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PLACAS%20PL%C3%81STICAS%206"
+  },
+  {
+    "id": 351,
+    "nombre": "PLACAS PLÁSTICAS 7",
+    "precio": 7995,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PLACAS PLÁSTICAS",
+    "subcategoria_slug": "placas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PLACAS%20PL%C3%81STICAS%207"
+  },
+  {
+    "id": 352,
+    "nombre": "PLACAS PLÁSTICAS 8",
+    "precio": 7607,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "PLACAS PLÁSTICAS",
+    "subcategoria_slug": "placas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20PLACAS%20PL%C3%81STICAS%208"
+  },
+  {
+    "id": 353,
+    "nombre": "MOLDES 1",
+    "precio": 12191,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "MOLDES",
+    "subcategoria_slug": "moldes",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20MOLDES%201"
+  },
+  {
+    "id": 354,
+    "nombre": "MOLDES 2",
+    "precio": 5877,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "MOLDES",
+    "subcategoria_slug": "moldes",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20MOLDES%202"
+  },
+  {
+    "id": 355,
+    "nombre": "MOLDES 3",
+    "precio": 1507,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "MOLDES",
+    "subcategoria_slug": "moldes",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20MOLDES%203"
+  },
+  {
+    "id": 356,
+    "nombre": "MOLDES 4",
+    "precio": 4534,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "MOLDES",
+    "subcategoria_slug": "moldes",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20MOLDES%204"
+  },
+  {
+    "id": 357,
+    "nombre": "MOLDES 5",
+    "precio": 2008,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "MOLDES",
+    "subcategoria_slug": "moldes",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20MOLDES%205"
+  },
+  {
+    "id": 358,
+    "nombre": "MOLDES 6",
+    "precio": 14306,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "MOLDES",
+    "subcategoria_slug": "moldes",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20MOLDES%206"
+  },
+  {
+    "id": 359,
+    "nombre": "MOLDES 7",
+    "precio": 6848,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "MOLDES",
+    "subcategoria_slug": "moldes",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20MOLDES%207"
+  },
+  {
+    "id": 360,
+    "nombre": "MOLDES 8",
+    "precio": 4324,
+    "categoria": "REPOSTERIA",
+    "categoria_slug": "reposteria",
+    "subcategoria": "MOLDES",
+    "subcategoria_slug": "moldes",
+    "imagen": "https://placehold.co/600x400?text=REPOSTERIA%20-%20MOLDES%208"
+  },
+  {
+    "id": 361,
+    "nombre": "ADORNOS TELGOPOR 1",
+    "precio": 2631,
+    "categoria": "DECORACION TORTAS-TOPPER",
+    "categoria_slug": "decoracion-tortas-topper",
+    "subcategoria": "ADORNOS TELGOPOR",
+    "subcategoria_slug": "adornos-telgopor",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20TORTAS-TOPPER%20-%20ADORNOS%20TELGOPOR%201"
+  },
+  {
+    "id": 362,
+    "nombre": "ADORNOS TELGOPOR 2",
+    "precio": 7114,
+    "categoria": "DECORACION TORTAS-TOPPER",
+    "categoria_slug": "decoracion-tortas-topper",
+    "subcategoria": "ADORNOS TELGOPOR",
+    "subcategoria_slug": "adornos-telgopor",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20TORTAS-TOPPER%20-%20ADORNOS%20TELGOPOR%202"
+  },
+  {
+    "id": 363,
+    "nombre": "ADORNOS TELGOPOR 3",
+    "precio": 13223,
+    "categoria": "DECORACION TORTAS-TOPPER",
+    "categoria_slug": "decoracion-tortas-topper",
+    "subcategoria": "ADORNOS TELGOPOR",
+    "subcategoria_slug": "adornos-telgopor",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20TORTAS-TOPPER%20-%20ADORNOS%20TELGOPOR%203"
+  },
+  {
+    "id": 364,
+    "nombre": "ADORNOS TELGOPOR 4",
+    "precio": 10568,
+    "categoria": "DECORACION TORTAS-TOPPER",
+    "categoria_slug": "decoracion-tortas-topper",
+    "subcategoria": "ADORNOS TELGOPOR",
+    "subcategoria_slug": "adornos-telgopor",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20TORTAS-TOPPER%20-%20ADORNOS%20TELGOPOR%204"
+  },
+  {
+    "id": 365,
+    "nombre": "ADORNOS TELGOPOR 5",
+    "precio": 14413,
+    "categoria": "DECORACION TORTAS-TOPPER",
+    "categoria_slug": "decoracion-tortas-topper",
+    "subcategoria": "ADORNOS TELGOPOR",
+    "subcategoria_slug": "adornos-telgopor",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20TORTAS-TOPPER%20-%20ADORNOS%20TELGOPOR%205"
+  },
+  {
+    "id": 366,
+    "nombre": "ADORNOS TELGOPOR 6",
+    "precio": 7731,
+    "categoria": "DECORACION TORTAS-TOPPER",
+    "categoria_slug": "decoracion-tortas-topper",
+    "subcategoria": "ADORNOS TELGOPOR",
+    "subcategoria_slug": "adornos-telgopor",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20TORTAS-TOPPER%20-%20ADORNOS%20TELGOPOR%206"
+  },
+  {
+    "id": 367,
+    "nombre": "ADORNOS TELGOPOR 7",
+    "precio": 3741,
+    "categoria": "DECORACION TORTAS-TOPPER",
+    "categoria_slug": "decoracion-tortas-topper",
+    "subcategoria": "ADORNOS TELGOPOR",
+    "subcategoria_slug": "adornos-telgopor",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20TORTAS-TOPPER%20-%20ADORNOS%20TELGOPOR%207"
+  },
+  {
+    "id": 368,
+    "nombre": "ADORNOS TELGOPOR 8",
+    "precio": 13772,
+    "categoria": "DECORACION TORTAS-TOPPER",
+    "categoria_slug": "decoracion-tortas-topper",
+    "subcategoria": "ADORNOS TELGOPOR",
+    "subcategoria_slug": "adornos-telgopor",
+    "imagen": "https://placehold.co/600x400?text=DECORACION%20TORTAS-TOPPER%20-%20ADORNOS%20TELGOPOR%208"
+  },
+  {
+    "id": 369,
+    "nombre": "MINIATURAS-JUGUETITOS 1",
+    "precio": 10447,
+    "categoria": "MINIATURAS-JUGUETITOS",
+    "categoria_slug": "miniaturas-juguetitos",
+    "imagen": "https://placehold.co/600x400?text=MINIATURAS-JUGUETITOS%201"
+  },
+  {
+    "id": 370,
+    "nombre": "MINIATURAS-JUGUETITOS 2",
+    "precio": 8449,
+    "categoria": "MINIATURAS-JUGUETITOS",
+    "categoria_slug": "miniaturas-juguetitos",
+    "imagen": "https://placehold.co/600x400?text=MINIATURAS-JUGUETITOS%202"
+  },
+  {
+    "id": 371,
+    "nombre": "MINIATURAS-JUGUETITOS 3",
+    "precio": 8754,
+    "categoria": "MINIATURAS-JUGUETITOS",
+    "categoria_slug": "miniaturas-juguetitos",
+    "imagen": "https://placehold.co/600x400?text=MINIATURAS-JUGUETITOS%203"
+  },
+  {
+    "id": 372,
+    "nombre": "MINIATURAS-JUGUETITOS 4",
+    "precio": 3537,
+    "categoria": "MINIATURAS-JUGUETITOS",
+    "categoria_slug": "miniaturas-juguetitos",
+    "imagen": "https://placehold.co/600x400?text=MINIATURAS-JUGUETITOS%204"
+  },
+  {
+    "id": 373,
+    "nombre": "MINIATURAS-JUGUETITOS 5",
+    "precio": 8686,
+    "categoria": "MINIATURAS-JUGUETITOS",
+    "categoria_slug": "miniaturas-juguetitos",
+    "imagen": "https://placehold.co/600x400?text=MINIATURAS-JUGUETITOS%205"
+  },
+  {
+    "id": 374,
+    "nombre": "MINIATURAS-JUGUETITOS 6",
+    "precio": 11617,
+    "categoria": "MINIATURAS-JUGUETITOS",
+    "categoria_slug": "miniaturas-juguetitos",
+    "imagen": "https://placehold.co/600x400?text=MINIATURAS-JUGUETITOS%206"
+  },
+  {
+    "id": 375,
+    "nombre": "MINIATURAS-JUGUETITOS 7",
+    "precio": 8070,
+    "categoria": "MINIATURAS-JUGUETITOS",
+    "categoria_slug": "miniaturas-juguetitos",
+    "imagen": "https://placehold.co/600x400?text=MINIATURAS-JUGUETITOS%207"
+  },
+  {
+    "id": 376,
+    "nombre": "MINIATURAS-JUGUETITOS 8",
+    "precio": 6482,
+    "categoria": "MINIATURAS-JUGUETITOS",
+    "categoria_slug": "miniaturas-juguetitos",
+    "imagen": "https://placehold.co/600x400?text=MINIATURAS-JUGUETITOS%208"
+  },
+  {
+    "id": 377,
+    "nombre": "PATRIOS 1",
+    "precio": 10633,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PATRIOS",
+    "subcategoria_slug": "patrios",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PATRIOS%201"
+  },
+  {
+    "id": 378,
+    "nombre": "PATRIOS 2",
+    "precio": 7469,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PATRIOS",
+    "subcategoria_slug": "patrios",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PATRIOS%202"
+  },
+  {
+    "id": 379,
+    "nombre": "PATRIOS 3",
+    "precio": 5780,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PATRIOS",
+    "subcategoria_slug": "patrios",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PATRIOS%203"
+  },
+  {
+    "id": 380,
+    "nombre": "PATRIOS 4",
+    "precio": 4121,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PATRIOS",
+    "subcategoria_slug": "patrios",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PATRIOS%204"
+  },
+  {
+    "id": 381,
+    "nombre": "PATRIOS 5",
+    "precio": 13295,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PATRIOS",
+    "subcategoria_slug": "patrios",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PATRIOS%205"
+  },
+  {
+    "id": 382,
+    "nombre": "PATRIOS 6",
+    "precio": 2345,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PATRIOS",
+    "subcategoria_slug": "patrios",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PATRIOS%206"
+  },
+  {
+    "id": 383,
+    "nombre": "PATRIOS 7",
+    "precio": 1807,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PATRIOS",
+    "subcategoria_slug": "patrios",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PATRIOS%207"
+  },
+  {
+    "id": 384,
+    "nombre": "PATRIOS 8",
+    "precio": 9481,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PATRIOS",
+    "subcategoria_slug": "patrios",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PATRIOS%208"
+  },
+  {
+    "id": 385,
+    "nombre": "PASCUAS 1",
+    "precio": 10315,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PASCUAS",
+    "subcategoria_slug": "pascuas",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PASCUAS%201"
+  },
+  {
+    "id": 386,
+    "nombre": "PASCUAS 2",
+    "precio": 4597,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PASCUAS",
+    "subcategoria_slug": "pascuas",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PASCUAS%202"
+  },
+  {
+    "id": 387,
+    "nombre": "PASCUAS 3",
+    "precio": 9901,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PASCUAS",
+    "subcategoria_slug": "pascuas",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PASCUAS%203"
+  },
+  {
+    "id": 388,
+    "nombre": "PASCUAS 4",
+    "precio": 3171,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PASCUAS",
+    "subcategoria_slug": "pascuas",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PASCUAS%204"
+  },
+  {
+    "id": 389,
+    "nombre": "PASCUAS 5",
+    "precio": 582,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PASCUAS",
+    "subcategoria_slug": "pascuas",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PASCUAS%205"
+  },
+  {
+    "id": 390,
+    "nombre": "PASCUAS 6",
+    "precio": 7569,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PASCUAS",
+    "subcategoria_slug": "pascuas",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PASCUAS%206"
+  },
+  {
+    "id": 391,
+    "nombre": "PASCUAS 7",
+    "precio": 4534,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PASCUAS",
+    "subcategoria_slug": "pascuas",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PASCUAS%207"
+  },
+  {
+    "id": 392,
+    "nombre": "PASCUAS 8",
+    "precio": 13213,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "PASCUAS",
+    "subcategoria_slug": "pascuas",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20PASCUAS%208"
+  },
+  {
+    "id": 393,
+    "nombre": "HALLOWEN 1",
+    "precio": 8332,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "HALLOWEN",
+    "subcategoria_slug": "hallowen",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20HALLOWEN%201"
+  },
+  {
+    "id": 394,
+    "nombre": "HALLOWEN 2",
+    "precio": 1510,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "HALLOWEN",
+    "subcategoria_slug": "hallowen",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20HALLOWEN%202"
+  },
+  {
+    "id": 395,
+    "nombre": "HALLOWEN 3",
+    "precio": 12508,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "HALLOWEN",
+    "subcategoria_slug": "hallowen",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20HALLOWEN%203"
+  },
+  {
+    "id": 396,
+    "nombre": "HALLOWEN 4",
+    "precio": 3663,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "HALLOWEN",
+    "subcategoria_slug": "hallowen",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20HALLOWEN%204"
+  },
+  {
+    "id": 397,
+    "nombre": "HALLOWEN 5",
+    "precio": 5849,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "HALLOWEN",
+    "subcategoria_slug": "hallowen",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20HALLOWEN%205"
+  },
+  {
+    "id": 398,
+    "nombre": "HALLOWEN 6",
+    "precio": 6973,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "HALLOWEN",
+    "subcategoria_slug": "hallowen",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20HALLOWEN%206"
+  },
+  {
+    "id": 399,
+    "nombre": "HALLOWEN 7",
+    "precio": 10988,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "HALLOWEN",
+    "subcategoria_slug": "hallowen",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20HALLOWEN%207"
+  },
+  {
+    "id": 400,
+    "nombre": "HALLOWEN 8",
+    "precio": 9773,
+    "categoria": "FECHAS ESPECIALES",
+    "categoria_slug": "fechas-especiales",
+    "subcategoria": "HALLOWEN",
+    "subcategoria_slug": "hallowen",
+    "imagen": "https://placehold.co/600x400?text=FECHAS%20ESPECIALES%20-%20HALLOWEN%208"
+  },
+  {
+    "id": 401,
+    "nombre": "LANZAPAPELITOS 1",
+    "precio": 11090,
+    "categoria": "LANZAPAPELITOS",
+    "categoria_slug": "lanzapapelitos",
+    "imagen": "https://placehold.co/600x400?text=LANZAPAPELITOS%201"
+  },
+  {
+    "id": 402,
+    "nombre": "LANZAPAPELITOS 2",
+    "precio": 14412,
+    "categoria": "LANZAPAPELITOS",
+    "categoria_slug": "lanzapapelitos",
+    "imagen": "https://placehold.co/600x400?text=LANZAPAPELITOS%202"
+  },
+  {
+    "id": 403,
+    "nombre": "LANZAPAPELITOS 3",
+    "precio": 3433,
+    "categoria": "LANZAPAPELITOS",
+    "categoria_slug": "lanzapapelitos",
+    "imagen": "https://placehold.co/600x400?text=LANZAPAPELITOS%203"
+  },
+  {
+    "id": 404,
+    "nombre": "LANZAPAPELITOS 4",
+    "precio": 1773,
+    "categoria": "LANZAPAPELITOS",
+    "categoria_slug": "lanzapapelitos",
+    "imagen": "https://placehold.co/600x400?text=LANZAPAPELITOS%204"
+  },
+  {
+    "id": 405,
+    "nombre": "LANZAPAPELITOS 5",
+    "precio": 10376,
+    "categoria": "LANZAPAPELITOS",
+    "categoria_slug": "lanzapapelitos",
+    "imagen": "https://placehold.co/600x400?text=LANZAPAPELITOS%205"
+  },
+  {
+    "id": 406,
+    "nombre": "LANZAPAPELITOS 6",
+    "precio": 12188,
+    "categoria": "LANZAPAPELITOS",
+    "categoria_slug": "lanzapapelitos",
+    "imagen": "https://placehold.co/600x400?text=LANZAPAPELITOS%206"
+  },
+  {
+    "id": 407,
+    "nombre": "LANZAPAPELITOS 7",
+    "precio": 4860,
+    "categoria": "LANZAPAPELITOS",
+    "categoria_slug": "lanzapapelitos",
+    "imagen": "https://placehold.co/600x400?text=LANZAPAPELITOS%207"
+  },
+  {
+    "id": 408,
+    "nombre": "LANZAPAPELITOS 8",
+    "precio": 953,
+    "categoria": "LANZAPAPELITOS",
+    "categoria_slug": "lanzapapelitos",
+    "imagen": "https://placehold.co/600x400?text=LANZAPAPELITOS%208"
+  },
+  {
+    "id": 409,
+    "nombre": "CAJITAS 1",
+    "precio": 8195,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "CAJITAS",
+    "subcategoria_slug": "cajitas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20CAJITAS%201"
+  },
+  {
+    "id": 410,
+    "nombre": "CAJITAS 2",
+    "precio": 2141,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "CAJITAS",
+    "subcategoria_slug": "cajitas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20CAJITAS%202"
+  },
+  {
+    "id": 411,
+    "nombre": "CAJITAS 3",
+    "precio": 11218,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "CAJITAS",
+    "subcategoria_slug": "cajitas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20CAJITAS%203"
+  },
+  {
+    "id": 412,
+    "nombre": "CAJITAS 4",
+    "precio": 5960,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "CAJITAS",
+    "subcategoria_slug": "cajitas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20CAJITAS%204"
+  },
+  {
+    "id": 413,
+    "nombre": "CAJITAS 5",
+    "precio": 11391,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "CAJITAS",
+    "subcategoria_slug": "cajitas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20CAJITAS%205"
+  },
+  {
+    "id": 414,
+    "nombre": "CAJITAS 6",
+    "precio": 1976,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "CAJITAS",
+    "subcategoria_slug": "cajitas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20CAJITAS%206"
+  },
+  {
+    "id": 415,
+    "nombre": "CAJITAS 7",
+    "precio": 12685,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "CAJITAS",
+    "subcategoria_slug": "cajitas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20CAJITAS%207"
+  },
+  {
+    "id": 416,
+    "nombre": "CAJITAS 8",
+    "precio": 2694,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "CAJITAS",
+    "subcategoria_slug": "cajitas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20CAJITAS%208"
+  },
+  {
+    "id": 417,
+    "nombre": "HILO DE ALGODÓN 1",
+    "precio": 13336,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "HILO DE ALGODÓN",
+    "subcategoria_slug": "hilo-de-algodon",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20HILO%20DE%20ALGOD%C3%93N%201"
+  },
+  {
+    "id": 418,
+    "nombre": "HILO DE ALGODÓN 2",
+    "precio": 10788,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "HILO DE ALGODÓN",
+    "subcategoria_slug": "hilo-de-algodon",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20HILO%20DE%20ALGOD%C3%93N%202"
+  },
+  {
+    "id": 419,
+    "nombre": "HILO DE ALGODÓN 3",
+    "precio": 12564,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "HILO DE ALGODÓN",
+    "subcategoria_slug": "hilo-de-algodon",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20HILO%20DE%20ALGOD%C3%93N%203"
+  },
+  {
+    "id": 420,
+    "nombre": "HILO DE ALGODÓN 4",
+    "precio": 9499,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "HILO DE ALGODÓN",
+    "subcategoria_slug": "hilo-de-algodon",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20HILO%20DE%20ALGOD%C3%93N%204"
+  },
+  {
+    "id": 421,
+    "nombre": "HILO DE ALGODÓN 5",
+    "precio": 4546,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "HILO DE ALGODÓN",
+    "subcategoria_slug": "hilo-de-algodon",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20HILO%20DE%20ALGOD%C3%93N%205"
+  },
+  {
+    "id": 422,
+    "nombre": "HILO DE ALGODÓN 6",
+    "precio": 9458,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "HILO DE ALGODÓN",
+    "subcategoria_slug": "hilo-de-algodon",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20HILO%20DE%20ALGOD%C3%93N%206"
+  },
+  {
+    "id": 423,
+    "nombre": "HILO DE ALGODÓN 7",
+    "precio": 9361,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "HILO DE ALGODÓN",
+    "subcategoria_slug": "hilo-de-algodon",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20HILO%20DE%20ALGOD%C3%93N%207"
+  },
+  {
+    "id": 424,
+    "nombre": "HILO DE ALGODÓN 8",
+    "precio": 5621,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "HILO DE ALGODÓN",
+    "subcategoria_slug": "hilo-de-algodon",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20HILO%20DE%20ALGOD%C3%93N%208"
+  },
+  {
+    "id": 425,
+    "nombre": "BOLSITAS DE REGALO 1",
+    "precio": 12521,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE REGALO",
+    "subcategoria_slug": "bolsitas-de-regalo",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20REGALO%201"
+  },
+  {
+    "id": 426,
+    "nombre": "BOLSITAS DE REGALO 2",
+    "precio": 14885,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE REGALO",
+    "subcategoria_slug": "bolsitas-de-regalo",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20REGALO%202"
+  },
+  {
+    "id": 427,
+    "nombre": "BOLSITAS DE REGALO 3",
+    "precio": 13146,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE REGALO",
+    "subcategoria_slug": "bolsitas-de-regalo",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20REGALO%203"
+  },
+  {
+    "id": 428,
+    "nombre": "BOLSITAS DE REGALO 4",
+    "precio": 9099,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE REGALO",
+    "subcategoria_slug": "bolsitas-de-regalo",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20REGALO%204"
+  },
+  {
+    "id": 429,
+    "nombre": "BOLSITAS DE REGALO 5",
+    "precio": 3862,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE REGALO",
+    "subcategoria_slug": "bolsitas-de-regalo",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20REGALO%205"
+  },
+  {
+    "id": 430,
+    "nombre": "BOLSITAS DE REGALO 6",
+    "precio": 8146,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE REGALO",
+    "subcategoria_slug": "bolsitas-de-regalo",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20REGALO%206"
+  },
+  {
+    "id": 431,
+    "nombre": "BOLSITAS DE REGALO 7",
+    "precio": 3502,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE REGALO",
+    "subcategoria_slug": "bolsitas-de-regalo",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20REGALO%207"
+  },
+  {
+    "id": 432,
+    "nombre": "BOLSITAS DE REGALO 8",
+    "precio": 7995,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE REGALO",
+    "subcategoria_slug": "bolsitas-de-regalo",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20REGALO%208"
+  },
+  {
+    "id": 433,
+    "nombre": "BOLSITAS DE GASA 1",
+    "precio": 3044,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE GASA",
+    "subcategoria_slug": "bolsitas-de-gasa",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20GASA%201"
+  },
+  {
+    "id": 434,
+    "nombre": "BOLSITAS DE GASA 2",
+    "precio": 14640,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE GASA",
+    "subcategoria_slug": "bolsitas-de-gasa",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20GASA%202"
+  },
+  {
+    "id": 435,
+    "nombre": "BOLSITAS DE GASA 3",
+    "precio": 2416,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE GASA",
+    "subcategoria_slug": "bolsitas-de-gasa",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20GASA%203"
+  },
+  {
+    "id": 436,
+    "nombre": "BOLSITAS DE GASA 4",
+    "precio": 815,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE GASA",
+    "subcategoria_slug": "bolsitas-de-gasa",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20GASA%204"
+  },
+  {
+    "id": 437,
+    "nombre": "BOLSITAS DE GASA 5",
+    "precio": 2804,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE GASA",
+    "subcategoria_slug": "bolsitas-de-gasa",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20GASA%205"
+  },
+  {
+    "id": 438,
+    "nombre": "BOLSITAS DE GASA 6",
+    "precio": 13016,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE GASA",
+    "subcategoria_slug": "bolsitas-de-gasa",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20GASA%206"
+  },
+  {
+    "id": 439,
+    "nombre": "BOLSITAS DE GASA 7",
+    "precio": 1602,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE GASA",
+    "subcategoria_slug": "bolsitas-de-gasa",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20GASA%207"
+  },
+  {
+    "id": 440,
+    "nombre": "BOLSITAS DE GASA 8",
+    "precio": 10471,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSITAS DE GASA",
+    "subcategoria_slug": "bolsitas-de-gasa",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSITAS%20DE%20GASA%208"
+  },
+  {
+    "id": 441,
+    "nombre": "BOLSAS PLÁSTICAS 1",
+    "precio": 2044,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSAS PLÁSTICAS",
+    "subcategoria_slug": "bolsas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSAS%20PL%C3%81STICAS%201"
+  },
+  {
+    "id": 442,
+    "nombre": "BOLSAS PLÁSTICAS 2",
+    "precio": 11784,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSAS PLÁSTICAS",
+    "subcategoria_slug": "bolsas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSAS%20PL%C3%81STICAS%202"
+  },
+  {
+    "id": 443,
+    "nombre": "BOLSAS PLÁSTICAS 3",
+    "precio": 6971,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSAS PLÁSTICAS",
+    "subcategoria_slug": "bolsas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSAS%20PL%C3%81STICAS%203"
+  },
+  {
+    "id": 444,
+    "nombre": "BOLSAS PLÁSTICAS 4",
+    "precio": 12817,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSAS PLÁSTICAS",
+    "subcategoria_slug": "bolsas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSAS%20PL%C3%81STICAS%204"
+  },
+  {
+    "id": 445,
+    "nombre": "BOLSAS PLÁSTICAS 5",
+    "precio": 5788,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSAS PLÁSTICAS",
+    "subcategoria_slug": "bolsas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSAS%20PL%C3%81STICAS%205"
+  },
+  {
+    "id": 446,
+    "nombre": "BOLSAS PLÁSTICAS 6",
+    "precio": 7417,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSAS PLÁSTICAS",
+    "subcategoria_slug": "bolsas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSAS%20PL%C3%81STICAS%206"
+  },
+  {
+    "id": 447,
+    "nombre": "BOLSAS PLÁSTICAS 7",
+    "precio": 11305,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSAS PLÁSTICAS",
+    "subcategoria_slug": "bolsas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSAS%20PL%C3%81STICAS%207"
+  },
+  {
+    "id": 448,
+    "nombre": "BOLSAS PLÁSTICAS 8",
+    "precio": 9289,
+    "categoria": "PAPELERA",
+    "categoria_slug": "papelera",
+    "subcategoria": "BOLSAS PLÁSTICAS",
+    "subcategoria_slug": "bolsas-plasticas",
+    "imagen": "https://placehold.co/600x400?text=PAPELERA%20-%20BOLSAS%20PL%C3%81STICAS%208"
+  },
+  {
+    "id": 449,
+    "nombre": "ARTICULOS CON SONIDO 1",
+    "precio": 5364,
+    "categoria": "ARTICULOS CON SONIDO",
+    "categoria_slug": "articulos-con-sonido",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20CON%20SONIDO%201"
+  },
+  {
+    "id": 450,
+    "nombre": "ARTICULOS CON SONIDO 2",
+    "precio": 6536,
+    "categoria": "ARTICULOS CON SONIDO",
+    "categoria_slug": "articulos-con-sonido",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20CON%20SONIDO%202"
+  },
+  {
+    "id": 451,
+    "nombre": "ARTICULOS CON SONIDO 3",
+    "precio": 11028,
+    "categoria": "ARTICULOS CON SONIDO",
+    "categoria_slug": "articulos-con-sonido",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20CON%20SONIDO%203"
+  },
+  {
+    "id": 452,
+    "nombre": "ARTICULOS CON SONIDO 4",
+    "precio": 11132,
+    "categoria": "ARTICULOS CON SONIDO",
+    "categoria_slug": "articulos-con-sonido",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20CON%20SONIDO%204"
+  },
+  {
+    "id": 453,
+    "nombre": "ARTICULOS CON SONIDO 5",
+    "precio": 12997,
+    "categoria": "ARTICULOS CON SONIDO",
+    "categoria_slug": "articulos-con-sonido",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20CON%20SONIDO%205"
+  },
+  {
+    "id": 454,
+    "nombre": "ARTICULOS CON SONIDO 6",
+    "precio": 13379,
+    "categoria": "ARTICULOS CON SONIDO",
+    "categoria_slug": "articulos-con-sonido",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20CON%20SONIDO%206"
+  },
+  {
+    "id": 455,
+    "nombre": "ARTICULOS CON SONIDO 7",
+    "precio": 10160,
+    "categoria": "ARTICULOS CON SONIDO",
+    "categoria_slug": "articulos-con-sonido",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20CON%20SONIDO%207"
+  },
+  {
+    "id": 456,
+    "nombre": "ARTICULOS CON SONIDO 8",
+    "precio": 1674,
+    "categoria": "ARTICULOS CON SONIDO",
+    "categoria_slug": "articulos-con-sonido",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20CON%20SONIDO%208"
+  },
+  {
+    "id": 457,
+    "nombre": "ARTICULOS EN TELGOPOR 1",
+    "precio": 4485,
+    "categoria": "ARTICULOS EN TELGOPOR",
+    "categoria_slug": "articulos-en-telgopor",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20EN%20TELGOPOR%201"
+  },
+  {
+    "id": 458,
+    "nombre": "ARTICULOS EN TELGOPOR 2",
+    "precio": 1885,
+    "categoria": "ARTICULOS EN TELGOPOR",
+    "categoria_slug": "articulos-en-telgopor",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20EN%20TELGOPOR%202"
+  },
+  {
+    "id": 459,
+    "nombre": "ARTICULOS EN TELGOPOR 3",
+    "precio": 9646,
+    "categoria": "ARTICULOS EN TELGOPOR",
+    "categoria_slug": "articulos-en-telgopor",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20EN%20TELGOPOR%203"
+  },
+  {
+    "id": 460,
+    "nombre": "ARTICULOS EN TELGOPOR 4",
+    "precio": 14584,
+    "categoria": "ARTICULOS EN TELGOPOR",
+    "categoria_slug": "articulos-en-telgopor",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20EN%20TELGOPOR%204"
+  },
+  {
+    "id": 461,
+    "nombre": "ARTICULOS EN TELGOPOR 5",
+    "precio": 10606,
+    "categoria": "ARTICULOS EN TELGOPOR",
+    "categoria_slug": "articulos-en-telgopor",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20EN%20TELGOPOR%205"
+  },
+  {
+    "id": 462,
+    "nombre": "ARTICULOS EN TELGOPOR 6",
+    "precio": 8221,
+    "categoria": "ARTICULOS EN TELGOPOR",
+    "categoria_slug": "articulos-en-telgopor",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20EN%20TELGOPOR%206"
+  },
+  {
+    "id": 463,
+    "nombre": "ARTICULOS EN TELGOPOR 7",
+    "precio": 1081,
+    "categoria": "ARTICULOS EN TELGOPOR",
+    "categoria_slug": "articulos-en-telgopor",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20EN%20TELGOPOR%207"
+  },
+  {
+    "id": 464,
+    "nombre": "ARTICULOS EN TELGOPOR 8",
+    "precio": 6854,
+    "categoria": "ARTICULOS EN TELGOPOR",
+    "categoria_slug": "articulos-en-telgopor",
+    "imagen": "https://placehold.co/600x400?text=ARTICULOS%20EN%20TELGOPOR%208"
+  },
+  {
+    "id": 465,
+    "nombre": "ARTÍCULOS PARA MANUALIDADES 1",
+    "precio": 1189,
+    "categoria": "ARTÍCULOS PARA MANUALIDADES",
+    "categoria_slug": "articulos-para-manualidades",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20MANUALIDADES%201"
+  },
+  {
+    "id": 466,
+    "nombre": "ARTÍCULOS PARA MANUALIDADES 2",
+    "precio": 9876,
+    "categoria": "ARTÍCULOS PARA MANUALIDADES",
+    "categoria_slug": "articulos-para-manualidades",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20MANUALIDADES%202"
+  },
+  {
+    "id": 467,
+    "nombre": "ARTÍCULOS PARA MANUALIDADES 3",
+    "precio": 11297,
+    "categoria": "ARTÍCULOS PARA MANUALIDADES",
+    "categoria_slug": "articulos-para-manualidades",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20MANUALIDADES%203"
+  },
+  {
+    "id": 468,
+    "nombre": "ARTÍCULOS PARA MANUALIDADES 4",
+    "precio": 14536,
+    "categoria": "ARTÍCULOS PARA MANUALIDADES",
+    "categoria_slug": "articulos-para-manualidades",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20MANUALIDADES%204"
+  },
+  {
+    "id": 469,
+    "nombre": "ARTÍCULOS PARA MANUALIDADES 5",
+    "precio": 14035,
+    "categoria": "ARTÍCULOS PARA MANUALIDADES",
+    "categoria_slug": "articulos-para-manualidades",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20MANUALIDADES%205"
+  },
+  {
+    "id": 470,
+    "nombre": "ARTÍCULOS PARA MANUALIDADES 6",
+    "precio": 13244,
+    "categoria": "ARTÍCULOS PARA MANUALIDADES",
+    "categoria_slug": "articulos-para-manualidades",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20MANUALIDADES%206"
+  },
+  {
+    "id": 471,
+    "nombre": "ARTÍCULOS PARA MANUALIDADES 7",
+    "precio": 11434,
+    "categoria": "ARTÍCULOS PARA MANUALIDADES",
+    "categoria_slug": "articulos-para-manualidades",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20MANUALIDADES%207"
+  },
+  {
+    "id": 472,
+    "nombre": "ARTÍCULOS PARA MANUALIDADES 8",
+    "precio": 10193,
+    "categoria": "ARTÍCULOS PARA MANUALIDADES",
+    "categoria_slug": "articulos-para-manualidades",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20MANUALIDADES%208"
+  },
+  {
+    "id": 473,
+    "nombre": "ARTÍCULOS PARA COMUNIÓN 1",
+    "precio": 9374,
+    "categoria": "ARTÍCULOS PARA COMUNIÓN",
+    "categoria_slug": "articulos-para-comunion",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20COMUNI%C3%93N%201"
+  },
+  {
+    "id": 474,
+    "nombre": "ARTÍCULOS PARA COMUNIÓN 2",
+    "precio": 6958,
+    "categoria": "ARTÍCULOS PARA COMUNIÓN",
+    "categoria_slug": "articulos-para-comunion",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20COMUNI%C3%93N%202"
+  },
+  {
+    "id": 475,
+    "nombre": "ARTÍCULOS PARA COMUNIÓN 3",
+    "precio": 13269,
+    "categoria": "ARTÍCULOS PARA COMUNIÓN",
+    "categoria_slug": "articulos-para-comunion",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20COMUNI%C3%93N%203"
+  },
+  {
+    "id": 476,
+    "nombre": "ARTÍCULOS PARA COMUNIÓN 4",
+    "precio": 11744,
+    "categoria": "ARTÍCULOS PARA COMUNIÓN",
+    "categoria_slug": "articulos-para-comunion",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20COMUNI%C3%93N%204"
+  },
+  {
+    "id": 477,
+    "nombre": "ARTÍCULOS PARA COMUNIÓN 5",
+    "precio": 2695,
+    "categoria": "ARTÍCULOS PARA COMUNIÓN",
+    "categoria_slug": "articulos-para-comunion",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20COMUNI%C3%93N%205"
+  },
+  {
+    "id": 478,
+    "nombre": "ARTÍCULOS PARA COMUNIÓN 6",
+    "precio": 1653,
+    "categoria": "ARTÍCULOS PARA COMUNIÓN",
+    "categoria_slug": "articulos-para-comunion",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20COMUNI%C3%93N%206"
+  },
+  {
+    "id": 479,
+    "nombre": "ARTÍCULOS PARA COMUNIÓN 7",
+    "precio": 4638,
+    "categoria": "ARTÍCULOS PARA COMUNIÓN",
+    "categoria_slug": "articulos-para-comunion",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20COMUNI%C3%93N%207"
+  },
+  {
+    "id": 480,
+    "nombre": "ARTÍCULOS PARA COMUNIÓN 8",
+    "precio": 5994,
+    "categoria": "ARTÍCULOS PARA COMUNIÓN",
+    "categoria_slug": "articulos-para-comunion",
+    "imagen": "https://placehold.co/600x400?text=ART%C3%8DCULOS%20PARA%20COMUNI%C3%93N%208"
+  }
+]

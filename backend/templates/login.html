@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Ingresar | Coti Django{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-4">
+    <h1 class="h3 mb-3">Ingres&aacute; a tu cuenta</h1>
+    {% if form.errors %}
+      <div class="alert alert-danger">Credenciales inv&aacute;lidas, prob&aacute; de nuevo.</div>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="text-danger small">{{ field.errors|join:", " }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <button class="btn btn-primary w-100" type="submit">Ingresar</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

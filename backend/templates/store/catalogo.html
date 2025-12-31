@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Catálogo{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-3">
+    <div class="p-3 section-light rounded-3 shadow-sm">
+      <h5 class="mb-3">Categorías</h5>
+      <div class="list-group list-group-flush">
+        {% for name in static_categories %}
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ name }}</span>
+            <span class="text-muted">&#9662;</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-9">
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+      <h2 class="mb-0">Productos</h2>
+      <span class="text-muted">{{ page_obj.paginator.count }} productos</span>
+    </div>
+    <form class="row g-2 align-items-center mb-4" method="get">
+      <div class="col-md-5">
+        <input type="text" class="form-control" name="q" placeholder="Buscar" value="{{ q }}">
+      </div>
+      <div class="col-md-4">
+        <select name="categoria" class="form-select">
+          <option value="">Todas las categorías</option>
+          {% for cat in categorias %}
+            <option value="{{ cat.slug }}" {% if current_cat == cat.slug %}selected{% endif %}>{{ cat.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3 d-grid">
+        <button class="btn btn-primary" type="submit">Filtrar</button>
+      </div>
+    </form>
+    <div class="row g-3">
+      {% for product in products %}
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="card h-100 border-0 shadow-sm">
+            {% if product.imagen %}
+              <img src="{{ product.imagen.url }}" class="card-img-top" alt="{{ product.nombre }}" style="object-fit:cover; height:200px;">
+            {% else %}
+              <div class="bg-light d-flex align-items-center justify-content-center" style="height:200px;">Sin imagen</div>
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ product.nombre }}</h5>
+              <p class="text-muted small mb-1">{{ product.categoria }}</p>
+              {% if user.is_authenticated %}
+                <p class="fw-bold mb-0">${{ product.precio }}</p>
+              {% else %}
+                <p class="text-muted mb-0">Inicia sesión para ver el precio</p>
+              {% endif %}
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0">
+              <div class="d-flex gap-2">
+                <a class="btn btn-outline-primary w-100" href="{% url 'product-detail' product.pk %}">Ver</a>
+                <button
+                  class="btn btn-primary w-100"
+                  type="button"
+                  data-add-to-cart
+                  data-id="{{ product.id }}"
+                  data-nombre="{{ product.nombre }}"
+                  data-precio="{{ product.precio|floatformat:'2'|default:'0' }}"
+                  data-imagen="{% if product.imagen %}{{ product.imagen.url }}{% else %}https://via.placeholder.com/120?text=Producto{% endif %}"
+                  data-bs-toggle="offcanvas"
+                  data-bs-target="#offcanvasScrolling"
+                >
+                  Agregar al carrito
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-muted">Sin resultados.</p>
+      {% endfor %}
+    </div>
+    <div class="mt-4">
+      {% if is_paginated %}
+        <nav>
+          <ul class="pagination">
+            {% if page_obj.has_previous %}
+              <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ q }}&categoria={{ current_cat }}">&laquo;</a></li>
+            {% endif %}
+            <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+            {% if page_obj.has_next %}
+              <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ q }}&categoria={{ current_cat }}">&raquo;</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

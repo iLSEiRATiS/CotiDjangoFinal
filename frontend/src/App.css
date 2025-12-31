@@ -1,0 +1,264 @@
+/* =======================================================
+   Tema base
+   ======================================================= */
+:root{
+  /* Tu paleta */
+  --bg:#0F172A;
+  --surface:#162036;
+  --primary:#ce2544;      /* header */
+  --secondary:#2F6AEF;    /* color de botones "primarios" (login/register/buscar) */
+  --accent:#E7BC36;       /* focus/badges */
+  --link:#2DA4DF;
+  --text:#F3F4F6;
+  --text-muted:#C7D2FE;
+  --border:#26334D;
+
+  --r-xs:.375rem; --r-sm:.5rem; --r-md:.75rem; --r-lg:1rem;
+  --shadow-sm:0 2px 6px rgba(0,0,0,.08);
+  --shadow-md:0 16px 40px rgba(0,0,0,.35);
+
+  /* ===== Bootstrap 5.3 theme vars (esto es lo que gana) ===== */
+  --bs-primary: var(--secondary);
+  --bs-primary-rgb: 47,106,239;
+  --bs-link-color: var(--link);
+  --bs-link-hover-color: color-mix(in srgb, var(--link) 85%, #000 15%);
+  --bs-body-bg: var(--bg);
+  --bs-body-color: var(--text);
+  --bs-border-color: var(--border);
+  --bs-focus-ring-color: rgba(231,188,54,.35); /* focus acorde a --accent */
+  --bs-btn-border-radius: .5rem;
+}
+
+/* fallback por si usás data-bs-theme="dark/light" en algún lado */
+[data-bs-theme="dark"]{
+  --bs-primary: var(--secondary);
+  --bs-link-color: var(--link);
+  --bs-focus-ring-color: rgba(231,188,54,.35);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+}
+a{color:var(--link)} a:hover{opacity:.9}
+
+/* =======================================================
+   HEADER DESKTOP (grid para distribución pro)
+   ======================================================= */
+.header-navbar{ background:var(--primary); box-shadow:var(--shadow-sm); padding:0; }
+.header-navbar .container, .header-navbar .container-fluid{ min-height:110px; display:flex; align-items:center; }
+
+.header-grid{
+  display:grid; grid-template-columns:auto 1fr minmax(320px,420px) auto; gap:1.25rem; width:100%;
+}
+.brand{ gap:.5rem; } .brand-logo{ height:100px; width:auto; display:block; }
+.brand-name{ color:#fff; font-weight:700; font-size:1.1rem; letter-spacing:.2px; line-height:1; }
+
+/* nav centrado */
+.header-nav{ justify-self:center; align-items:center; }
+.nav-link-plain{ color:#fff!important; font-weight:600; letter-spacing:.15px; padding:.25rem .5rem; }
+.nav-link-plain:hover{ color:#fff!important; opacity:.9; }
+
+/* buscador */
+.header-search .form-control{
+  height:42px; width:100%; background:#fff; color:#111;
+  border:1px solid rgba(0,0,0,.12); border-right:none;
+  border-radius:var(--r-sm) 0 0 var(--r-sm);
+  padding:.52rem .75rem; box-shadow:none;
+}
+.header-search .form-control:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 .15rem rgba(231,188,54,.25); }
+.btn-search-accent{
+  height:42px; padding:.52rem .95rem;
+  background:var(--secondary); border-color:var(--secondary); color:#fff;
+  border-radius:0 var(--r-sm) var(--r-sm) 0;
+}
+.btn-search-accent:hover{ filter:brightness(.95); }
+
+/* acciones derecha */
+.header-actions{ justify-self:end; }
+.cart-icon-btn{ line-height:1; font-size:1.2rem; color:#fff!important; position:relative; }
+.cart-badge{ position:absolute; top:-6px; right:-10px; font-size:.62rem; background:var(--accent); color:#1b1b1b; border:1px solid rgba(0,0,0,.08); }
+
+/* Offcanvas del carrito */
+.offcanvas{ z-index:1060; width:100%; max-width:400px; background:var(--surface); color:var(--text) }
+.navbar{ z-index:1070; }
+.offcanvas .offcanvas-header{ border-bottom:1px solid var(--border) }
+.btn-danger,.btn-outline-danger{ background:var(--primary); border-color:var(--primary); color:#fff }
+.btn-danger:hover,.btn-outline-danger:hover{ filter:brightness(.95) }
+.btn-primary{ background:var(--secondary); border-color:var(--secondary) }
+.btn-primary:hover{ filter:brightness(.95) }
+
+/* =======================================================
+   HEADER MÓVIL
+   ======================================================= */
+.mobile-header{
+  position:sticky; top:0; background:var(--primary);
+  padding-top:max(.25rem, env(safe-area-inset-top));
+  box-shadow:var(--shadow-sm);
+}
+.mobile-topbar{
+  display:grid; grid-template-columns:1fr auto 1fr;
+  align-items:center; gap:.75rem; padding:.6rem .9rem;
+}
+.mobile-brand{ display:flex; align-items:center; }
+.mobile-brand img{ height:60px; width:auto; display:block; }
+
+.icon-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:48px; height:48px; border-radius:12px;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.25);
+  color:#fff; font-size:1.2rem;
+}
+.icon-btn:active{ transform:scale(.98); }
+.mobile-topbar .icon-btn{ place-self:center; }
+.mobile-topbar .icon-btn.cart{ justify-self:end; position:relative; }
+.icon-btn .cart-badge{ position:absolute; top:-4px; right:-6px; }
+
+.mobile-navrow{
+  display:flex; justify-content:center; padding:.45rem .9rem .7rem;
+  background:#0c1021; border-top:1px solid rgba(0,0,0,.15);
+}
+.hamburger-btn{
+  width:100%; max-width:520px; height:50px;
+  display:flex; align-items:center; justify-content:center; gap:.5rem;
+  color:#fff; font-weight:700; letter-spacing:.2px;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.2);
+  border-radius:12px;
+}
+.hamburger-btn:active{ transform:translateY(1px); }
+
+/* =======================================================
+   OFFCANVAS LATERALES (menú, productos, login, register)
+   ======================================================= */
+.offcanvas-mobile{
+  width:92vw; max-width:420px;
+  background:var(--surface); color:var(--text);
+  box-shadow:var(--shadow-md);
+}
+.offcanvas-mobile .offcanvas-header{ border-bottom:1px solid var(--border); }
+.offcanvas-mobile .list-group-item{
+  background:#fff; color:#111; border:0; padding:.95rem 1rem; font-weight:600;
+}
+.offcanvas-mobile .list-group-item + .list-group-item{ border-top:1px solid rgba(0,0,0,.08); }
+
+/* Árbol de categorías dentro del panel Productos */
+.products-tree .tree-head{
+  width:100%; text-align:left; background:#f7f7f9; color:#222;
+  border:1px solid rgba(0,0,0,.12); padding:.5rem .65rem; border-radius:.5rem; font-weight:700;
+}
+.products-tree .tree-leaf{
+  display:block; width:100%; text-align:left; background:transparent; border:0;
+  padding:.35rem .25rem; border-radius:.35rem; color:#111;
+}
+.products-tree .tree-leaf:hover{ background:#f2f2f5; }
+
+/* Formularios embebidos (login/register en panel) */
+.panel-form{ background:#fff; color:#111; padding:.25rem; border-radius:.5rem; }
+.panel-form .card{ background:#fff; color:#111; }
+
+/* =======================================================
+   AUTENTICACIÓN (Login / Register)
+   ======================================================= */
+.auth-page{
+  min-height:calc(100vh - 180px);
+  display:flex; align-items:center; justify-content:center;
+  padding:2rem 1rem;
+}
+.auth-card{
+  width:100%; max-width:540px; margin:0 auto;
+  background:#fff; color:#111; border:1px solid rgba(0,0,0,.08);
+  border-radius:1rem; box-shadow:var(--shadow-sm);
+  overflow:hidden;
+}
+.auth-card .auth-header{
+  background:linear-gradient(180deg, rgba(227,23,61,.08), rgba(47,106,239,.08));
+  padding:1.1rem 1.25rem; border-bottom:1px solid rgba(0,0,0,.06);
+}
+.auth-card .auth-title{ margin:0; font-weight:800; letter-spacing:.2px; color:#111; }
+.auth-card .auth-body{ padding:1.25rem; }
+
+.auth-card .form-control,.auth-card .form-select{
+  background:#fff; color:#111; border:1px solid rgba(0,0,0,.15); border-radius:var(--r-sm);
+}
+.auth-card .form-control:focus,.auth-card .form-select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 .15rem rgba(231,188,54,.25);
+}
+.auth-card .form-check-input:checked{ background-color:var(--secondary); border-color:var(--secondary); }
+
+/* Los botones ahora obedecen porque cambiamos --bs-primary arriba.
+   Igual reforzamos por si algún módulo raro pisa cosas: */
+.auth-card .btn.btn-primary,
+.panel-form .btn.btn-primary{ background:var(--secondary); border-color:var(--secondary); color:#fff; }
+.auth-card .btn.btn-primary:hover, .panel-form .btn.btn-primary:hover{ filter:brightness(.95); }
+.auth-card .btn.btn-outline-primary, .panel-form .btn.btn-outline-primary{ color:var(--secondary); border-color:var(--secondary); background:transparent; }
+.auth-card .btn.btn-outline-primary:hover{ color:#fff; background:var(--secondary); border-color:var(--secondary); }
+
+.auth-card .btn-link, .auth-card a{ color:var(--link); }
+.auth-card .btn-link:hover, .auth-card a:hover{ opacity:.9; }
+.auth-card .alert{ border-radius:var(--r-sm); border:1px solid rgba(0,0,0,.08); }
+.auth-card .alert-danger{ background:#fff1f3; color:#7f1d1d; }
+.auth-card .alert-success{ background:#eefdf3; color:#064e3b; }
+
+/* =======================================================
+   PÁGINA DE PRODUCTOS: sidebar + grilla
+   ======================================================= */
+.side-panel{
+  background:#fff; color:#1d1d1d; border:1px solid rgba(0,0,0,.08);
+  border-radius:.75rem; padding:1rem; box-shadow:var(--shadow-sm);
+}
+.side-section + .side-section{ border-top:1px dashed rgba(0,0,0,.12); padding-top:1rem; }
+.side-head{
+  width:100%; display:flex; align-items:center; justify-content:space-between;
+  background:#f7f7f9; color:#222; border:1px solid rgba(0,0,0,.08);
+  padding:.5rem .75rem; border-radius:.5rem; font-weight:600;
+}
+.side-head.active{ background:#ffeec2; border-color:#ffd27a; }
+.side-leaf{ width:100%; text-align:left; background:transparent; border:0; padding:.35rem .25rem; border-radius:.35rem; color:#333; }
+.side-leaf:hover{ background:#f2f2f5; }
+.side-leaf.active{ background:#e9f6ff; color:#0b69a3; font-weight:600; }
+.filter-chip{ background:var(--accent)!important; color:#1b1b1b!important; border:1px solid rgba(0,0,0,.08); }
+
+.product-card{
+  background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:1rem;
+  box-shadow:0 2px 6px rgba(0,0,0,.06); overflow:hidden;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.product-card:hover{ transform:translateY(-2px); box-shadow:0 12px 30px rgba(0,0,0,.12); }
+.product-img-wrap{ position:relative; background:#fafafa; }
+.product-img-wrap img{ width:100%; height:180px; object-fit:cover; display:block; }
+.badge-category{ position:absolute; left:.5rem; bottom:.5rem; background:var(--accent); color:#1b1b1b; border:1px solid rgba(0,0,0,.06) }
+
+.empty-state .display-6{ font-size:2.2rem; }
+
+/* =======================================================
+   Responsive
+   ======================================================= */
+@media (max-width:1200px){
+  .header-grid{ grid-template-columns:auto 1fr minmax(280px,360px) auto; }
+}
+@media (max-width:992px){
+  .brand-logo{ height:72px; }
+  .header-navbar .container,.header-navbar .container-fluid{ min-height:82px; }
+}
+@media (max-width:576px){
+  .brand-logo{ height:48px; }
+  .offcanvas{ max-width:100%; }
+  .btn{ font-size:.95rem; }
+}
+
+/* =======================================================
+   FIX capas móvil
+   ======================================================= */
+@media (max-width: 767.98px){
+  .mobile-header{ z-index:1040; }
+  .offcanvas, .offcanvas-mobile{ z-index:1200 !important; }
+  .offcanvas-backdrop.show{ z-index:1190 !important; }
+  .mobile-navrow, .mobile-topbar .icon-btn{ position:relative; z-index:1; }
+}
+
+/* sticky footer fallback */
+html, body, #root { height: 100%; }

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Coti Store{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  {% if theme_font_link %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{{ theme_font_link }}">
+  {% endif %}
+  <style>
+    :root {
+      --primary: {{ active_theme.primary_color|default:'#f26a8a' }};
+      --secondary: {{ active_theme.secondary_color|default:'#334155' }};
+      --accent: {{ active_theme.accent_color|default:'#ffde8a' }};
+      --bg: {{ active_theme.background_color|default:'#fff8fb' }};
+      --text: {{ active_theme.text_color|default:'#1f2937' }};
+      --font-body: {{ active_theme.font_family|default:"'Inter', sans-serif" }};
+      --font-heading: {{ active_theme.heading_font|default:"'Inter', sans-serif" }};
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); margin: 0; padding: 0; }
+    h1,h2,h3,h4,h5,h6 { font-family: var(--font-heading); }
+    .navbar-custom { background: var(--primary); }
+    .btn-primary { background: var(--primary); border-color: var(--primary); }
+    .btn-outline-primary { color: var(--primary); border-color: var(--primary); }
+    .badge-accent { background: var(--accent); }
+    .section-light { background: #ffffff; border: 1px solid rgba(0,0,0,0.04); }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom mb-4">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+        {% if active_theme.logo %}
+          <img src="{{ active_theme.logo.url }}" alt="logo" style="height:64px;">
+        {% endif %}
+        <span>Coti Store 2.0</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'catalogo' %}">Productos</a></li>
+        </ul>
+        <form class="d-flex me-3" action="{% url 'catalogo' %}" method="get" role="search">
+          <input class="form-control form-control-sm me-2" type="search" name="q" placeholder="Buscar" aria-label="Buscar">
+          <button class="btn btn-sm btn-outline-light" type="submit">Buscar</button>
+        </form>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-light position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling" title="Carrito">
+            <i class="bi bi-bag-heart-fill"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCountBadge" style="font-size:10px;">0</span>
+          </button>
+          {% if user.is_authenticated %}
+            <span class="text-white-50 small d-none d-md-inline">Hola, {{ user.username }}</span>
+            {% if user.is_staff or user.is_superuser %}
+              <a class="btn btn-sm btn-light" href="{% url 'admin:index' %}">Admin</a>
+            {% else %}
+              <a class="btn btn-sm btn-light" href="{% url 'account' %}">Mi cuenta</a>
+            {% endif %}
+            <form action="{% url 'logout' %}" method="post" class="d-inline">
+              {% csrf_token %}
+              <button class="btn btn-sm btn-outline-light" type="submit">Salir</button>
+            </form>
+          {% else %}
+            <a class="btn btn-sm btn-outline-light" href="{% url 'login' %}">Iniciar sesión</a>
+            <a class="btn btn-sm btn-light" href="{% url 'signup' %}">Registrarse</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+  <main class="container mb-5">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="pt-5 pb-4 bg-light border-top">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <h5 class="mb-2">CotiStore</h5>
+          <p class="mb-1 text-muted">Mayorista de cotillón y artículos para eventos.</p>
+          <p class="mb-0 text-muted">Calidad y buen precio.</p>
+        </div>
+        <div class="col-md-3">
+          <h6 class="mb-2">Contacto</h6>
+          <p class="mb-1 text-muted">ventascotistore@gmail.com</p>
+          <p class="mb-0 text-muted">11 3958-1816</p>
+        </div>
+        <div class="col-md-3 d-flex align-items-start justify-content-md-end">
+          <a class="text-primary d-flex align-items-center gap-2 text-decoration-none" href="https://www.instagram.com/cotistore_mayorista" target="_blank" rel="noopener noreferrer">
+            <i class="bi bi-instagram fs-4"></i>
+            <span>Instagram</span>
+          </a>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between align-items-center small text-muted mt-4">
+        <span>&copy; 2025 CotiStore — Todos los derechos reservados.</span>
+        <span>Diseñado con Bootstrap</span>
+      </div>
+    </div>
+  </footer>
+  <div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title fw-bold" id="offcanvasScrollingLabel">🛒 Tu carrito</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div id="cartItems"></div>
+      <hr>
+      <div class="d-flex justify-content-between mb-3">
+        <span class="fw-semibold">Total:</span>
+        <span class="fw-bold" id="cartTotal">$0,00</span>
+      </div>
+      <div class="d-grid gap-2">
+        <button class="btn btn-danger btn-sm" id="cartClearBtn">Vaciar carrito</button>
+        <button class="btn btn-success btn-sm" disabled>Confirmar pedido</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function(){
+      const money = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
+      const itemsEl = document.getElementById('cartItems');
+      const totalEl = document.getElementById('cartTotal');
+      const badgeEl = document.getElementById('cartCountBadge');
+      const clearBtn = document.getElementById('cartClearBtn');
+      const addButtons = document.querySelectorAll('[data-add-to-cart]');
+
+      let cart = [];
+
+      function render(items){
+        if (!itemsEl) return;
+        if (items.length === 0) {
+          itemsEl.innerHTML = '<p class="text-center text-muted">Carrito vacío.</p>';
+          totalEl.textContent = money.format(0);
+          badgeEl.textContent = 0;
+          return;
+        }
+        itemsEl.innerHTML = items.map(item => `
+          <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2">
+                <img src="${item.imagen}" alt="${item.nombre}" class="rounded-circle" style="width:56px; height:56px; object-fit:cover;">
+                <div class="flex-grow-1">
+                  <div class="fw-semibold text-truncate">${item.nombre}</div>
+                  <div class="small text-muted">${money.format(item.precio)} x ${item.cantidad}</div>
+                  <div class="mt-2 d-flex gap-2 align-items-center">
+                    <button class="btn btn-sm btn-outline-secondary" data-dec="${item.id}" aria-label="Disminuir">-</button>
+                    <input type="number" min="1" max="9999" value="${item.cantidad}" data-qty="${item.id}" class="form-control form-control-sm" style="width:80px; text-align:center;" aria-label="Cantidad de ${item.nombre}">
+                    <button class="btn btn-sm btn-outline-secondary" data-inc="${item.id}" aria-label="Aumentar">+</button>
+                  </div>
+                </div>
+                <div class="text-end">
+                  <div class="fw-bold small">${money.format(item.precio * item.cantidad)}</div>
+                  <button class="btn btn-sm btn-outline-danger mt-2" data-remove="${item.id}"><i class="bi bi-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+        const total = items.reduce((acc, it) => acc + (it.precio * it.cantidad), 0);
+        totalEl.textContent = money.format(total);
+        const count = items.reduce((acc, it) => acc + it.cantidad, 0);
+        badgeEl.textContent = count;
+      }
+
+      function addToCart(payload){
+        const existing = cart.find(it => it.id === payload.id);
+        if (existing) {
+          existing.cantidad = Math.min(9999, existing.cantidad + 1);
+        } else {
+          cart.push({...payload, cantidad: 1});
+        }
+        render(cart);
+      }
+
+      if (addButtons.length) {
+        addButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const precio = parseFloat(btn.dataset.precio) || 0;
+            const item = {
+              id: Number(btn.dataset.id) || Date.now(),
+              nombre: btn.dataset.nombre || 'Producto',
+              precio: precio,
+              imagen: btn.dataset.imagen || 'https://via.placeholder.com/120?text=Producto'
+            };
+            addToCart(item);
+          });
+        });
+      }
+
+      itemsEl?.addEventListener('click', (e) => {
+        const remove = e.target.closest('[data-remove]');
+        if(remove){
+          const id = Number(remove.dataset.remove);
+          cart = cart.filter(it => it.id !== id);
+          render(cart);
+          return;
+        }
+        const inc = e.target.closest('[data-inc]');
+        if(inc){
+          const id = Number(inc.dataset.inc);
+          const item = cart.find(it => it.id === id);
+          if(item){ item.cantidad = Math.min(9999, item.cantidad + 1); render(cart); }
+          return;
+        }
+        const dec = e.target.closest('[data-dec]');
+        if(dec){
+          const id = Number(dec.dataset.dec);
+          const item = cart.find(it => it.id === id);
+          if(item){ item.cantidad = Math.max(1, item.cantidad - 1); render(cart); }
+          return;
+        }
+      });
+
+      itemsEl?.addEventListener('change', (e) => {
+        const input = e.target.closest('input[data-qty]');
+        if(!input) return;
+        const id = Number(input.dataset.qty);
+        const val = Math.max(1, Math.min(9999, parseInt(input.value, 10) || 1));
+        const item = cart.find(it => it.id === id);
+        if(item){
+          item.cantidad = val;
+          render(cart);
+        }
+      });
+
+      clearBtn?.addEventListener('click', () => {
+        cart = [];
+        render(cart);
+      });
+
+      render(cart);
+    })();
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

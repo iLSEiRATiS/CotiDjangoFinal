@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Mi panel{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">Panel de usuario</h1>
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="p-3 bg-white border rounded-3 shadow-sm h-100">
+      <p class="text-muted small mb-1">Cuenta</p>
+      <ul class="list-unstyled mb-0 small">
+        <li><strong>Usuario:</strong> {{ request.user.username }}</li>
+        <li><strong>Nombre:</strong> {{ request.user.name }}</li>
+        <li><strong>Email:</strong> {{ request.user.email }}</li>
+      </ul>
+      <a class="btn btn-link p-0 mt-2" href="{% url 'account' %}">Editar perfil</a>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="p-3 bg-white border rounded-3 shadow-sm h-100">
+      <p class="text-muted small mb-1">ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œrdenes</p>
+      <p class="mb-2 small">Consulta tus pedidos.</p>
+      <a class="btn btn-outline-primary btn-sm" href="{% url 'orders-mine' %}">Ver mis ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³rdenes</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
