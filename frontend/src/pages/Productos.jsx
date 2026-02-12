@@ -174,7 +174,12 @@ export default function Productos() {
         const data = await api.products.list({ q: search.trim() || undefined, category, page, limit: per });
         const items = Array.isArray(data?.items) ? data.items : (Array.isArray(data) ? data : []);
         const mapped = items.map(p => {
-          let img = Array.isArray(p.images) && p.images[0] ? p.images[0] : `https://placehold.co/600x400?text=${encodeURIComponent(p.name || 'Producto')}`;
+          let img =
+            p.imageUrl ||
+            p.image_url ||
+            p.imagen ||
+            (Array.isArray(p.images) && p.images[0]) ||
+            `https://placehold.co/600x400?text=${encodeURIComponent(p.name || 'Producto')}`;
           if (typeof img === 'string') {
             if (img.startsWith('/')) img = `${API_BASE}${img}`;
             else if (!img.startsWith('http://') && !img.startsWith('https://')) img = '';

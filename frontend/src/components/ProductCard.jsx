@@ -13,7 +13,12 @@ const ProductCard = ({ product, onAdd }) => {
   const nombre = product.nombre || product.name || 'Producto';
   const precio = product.precio ?? product.price ?? 0;
   const categoria = product.categoria || product.category?.name || '-';
-  let imagen = product.imagen || (Array.isArray(product.images) && product.images[0]) || `https://placehold.co/600x400?text=${encodeURIComponent(nombre)}`;
+  let imagen =
+    product.imagen ||
+    product.image_url ||
+    product.imageUrl ||
+    (Array.isArray(product.images) && product.images[0]) ||
+    `https://placehold.co/600x400?text=${encodeURIComponent(nombre)}`;
   if (typeof imagen === 'string' && imagen.startsWith('/')) {
     imagen = `${API_BASE}${imagen}`;
   }

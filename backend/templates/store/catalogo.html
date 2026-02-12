@@ -40,7 +40,9 @@
       {% for product in products %}
         <div class="col-12 col-sm-6 col-lg-4">
           <div class="card h-100 border-0 shadow-sm">
-            {% if product.imagen %}
+            {% if product.image_url %}
+              <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.nombre }}" style="object-fit:cover; height:200px;">
+            {% elif product.imagen %}
               <img src="{{ product.imagen.url }}" class="card-img-top" alt="{{ product.nombre }}" style="object-fit:cover; height:200px;">
             {% else %}
               <div class="bg-light d-flex align-items-center justify-content-center" style="height:200px;">Sin imagen</div>
@@ -64,7 +66,7 @@
                   data-id="{{ product.id }}"
                   data-nombre="{{ product.nombre }}"
                   data-precio="{{ product.precio|floatformat:'2'|default:'0' }}"
-                  data-imagen="{% if product.imagen %}{{ product.imagen.url }}{% else %}https://via.placeholder.com/120?text=Producto{% endif %}"
+                  data-imagen="{% if product.image_url %}{{ product.image_url }}{% elif product.imagen %}{{ product.imagen.url }}{% else %}https://via.placeholder.com/120?text=Producto{% endif %}"
                   data-bs-toggle="offcanvas"
                   data-bs-target="#offcanvasScrolling"
                 >

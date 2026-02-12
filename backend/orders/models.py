@@ -9,6 +9,7 @@ class Order(models.Model):
     STATUS_CHOICES = [
         ("created", "Creado"),
         ("approved", "Aprobado"),
+        ("pending_payment", "Falta pago"),
         ("draft", "Borrador"),
         ("paid", "Pagado"),
         ("shipped", "Enviado"),
@@ -46,6 +47,7 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="order_items")
     cantidad = models.PositiveIntegerField(default=1)
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    atributos = models.JSONField(default=dict, blank=True)
 
     @property
     def subtotal(self):

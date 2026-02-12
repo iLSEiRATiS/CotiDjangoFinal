@@ -1,13 +1,21 @@
 from datetime import timedelta
+import os
+import json
+from pathlib import Path
+from urllib import request as urlrequest
+
+from django.conf import settings
 from decimal import Decimal
 from math import ceil
 
 from django.contrib.auth import authenticate, get_user_model
+from django.http import HttpResponse
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db import transaction, models
 from django.db.models import Q, Sum
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.utils.text import slugify
 from rest_framework import permissions, status
@@ -69,7 +77,9 @@ def serialize_category(cat):
 
 def serialize_product(prod, request=None):
     images = []
-    if prod.imagen:
+    if getattr(prod, "image_url", ""):
+        images.append(prod.image_url)
+    elif prod.imagen:
         images.append(_abs_media(request, prod.imagen.url))
     discount = resolve_discount_for_product(prod)
     final_price = discount["final_price"] if discount else prod.precio
@@ -80,9 +90,12 @@ def serialize_product(prod, request=None):
         "name": prod.nombre,
         "price": float(final_price),
         "priceOriginal": float(prod.precio),
+        "imageUrl": images[0] if images else None,
         "discount": discount["meta"] if discount else None,
         "description": prod.descripcion or "",
         "images": images,
+        "attributes": prod.atributos or {},
+        "attributes_stock": prod.atributos_stock or {},
         "category": serialize_category(prod.categoria),
         "stock": prod.stock,
         "active": prod.activo,
@@ -95,6 +108,7 @@ def serialize_order(order, request=None):
     status_labels = {
         "created": "Creado",
         "approved": "Aprobado",
+        "pending_payment": "Falta pago",
         "paid": "Pagado",
         "shipped": "Enviado",
         "delivered": "Entregado",
@@ -103,12 +117,24 @@ def serialize_order(order, request=None):
     }
     items = []
     for item in order.items.all():
+        attrs = item.atributos or {}
+        attrs_label = ""
+        if isinstance(attrs, dict) and attrs:
+            parts = []
+            for k, v in attrs.items():
+                if isinstance(v, list):
+                    v = ", ".join(str(x) for x in v)
+                if v not in (None, ""):
+                    parts.append(f"{k}: {v}")
+            if parts:
+                attrs_label = f" ({'; '.join(parts)})"
         items.append({
             "productId": item.product_id,
-            "name": item.product.nombre if item.product else "",
+            "name": (item.product.nombre if item.product else "") + attrs_label,
             "price": float(item.precio_unitario),
             "qty": item.cantidad,
             "subtotal": float(item.subtotal),
+            "attributes": attrs,
         })
     totals = {
         "items": sum(it["qty"] for it in items),
@@ -129,6 +155,7 @@ def serialize_order(order, request=None):
             "zip": order.cp,
             "phone": order.telefono,
         },
+        "note": order.nota or "",
         "createdAt": order.creado_en.isoformat() if order.creado_en else None,
     }
 
@@ -139,6 +166,23 @@ def resolve_category(value):
     slug = slugify(str(value))
     cat, _ = Category.objects.get_or_create(slug=slug, defaults={"nombre": value})
     return cat
+
+
+def get_descendant_ids(root_id):
+    if not root_id:
+        return []
+    cats = Category.objects.all().values("id", "parent_id")
+    children = {}
+    for c in cats:
+        pid = c["parent_id"]
+        children.setdefault(pid, []).append(c["id"])
+    out = []
+    stack = [root_id]
+    while stack:
+        current = stack.pop()
+        out.append(current)
+        stack.extend(children.get(current, []))
+    return out
 
 
 def resolve_product(value):
@@ -178,68 +222,88 @@ def resolve_discount_for_product(product: Product):
 
 
 def _escape_pdf_text(text: str) -> str:
+    # PDF minimalista: normalizamos para evitar problemas de acentos en Helvetica
+    try:
+        import unicodedata
+        text = unicodedata.normalize("NFKD", text or "")
+        text = "".join(c for c in text if not unicodedata.combining(c))
+    except Exception:
+        text = text or ""
     return (text or "").replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
 
 
 def build_invoice_pdf(order) -> bytes:
-    # PDF simple (texto) sin dependencias externas
+    # PDF con soporte de acentos usando reportlab
+    from io import BytesIO
+    from reportlab.pdfgen import canvas
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=(612, 792))  # Letter
+
+    font_name = "Helvetica"
+    arial_path = r"C:\Windows\Fonts\arial.ttf"
+    try:
+        if Path(arial_path).exists():
+            pdfmetrics.registerFont(TTFont("Arial", arial_path))
+            font_name = "Arial"
+    except Exception:
+        pass
+
+    c.setFont(font_name, 12)
+    y = 760
+    line_height = 16
+
+    status_labels = {
+        "created": "Creado",
+        "approved": "Aprobado",
+        "pending_payment": "Falta pago",
+        "paid": "Pagado",
+        "shipped": "Enviado",
+        "delivered": "Entregado",
+        "cancelled": "Cancelado",
+        "draft": "Borrador",
+    }
+
     lines = []
     lines.append(f"Factura / Pedido #{order.id}")
     lines.append(f"Fecha: {order.creado_en.strftime('%Y-%m-%d %H:%M') if order.creado_en else ''}")
     lines.append(f"Cliente: {order.nombre} - {order.email}")
     addr = ", ".join(filter(None, [order.direccion, order.ciudad, order.cp]))
-    lines.append(f"Envio: {addr}")
+    lines.append(f"Env?o: {addr}")
     lines.append("")
     lines.append("Items:")
     for item in order.items.all():
-        lines.append(f"- {item.product.nombre} x{item.cantidad} @ ${item.precio_unitario} = ${item.subtotal}")
+        attrs = item.atributos or {}
+        attrs_label = ""
+        if isinstance(attrs, dict) and attrs:
+            parts = []
+            for k, v in attrs.items():
+                if isinstance(v, list):
+                    v = ", ".join(str(x) for x in v)
+                if v not in (None, ""):
+                    parts.append(f"{k}: {v}")
+            if parts:
+                attrs_label = f" ({'; '.join(parts)})"
+        lines.append(
+            f"- {item.product.nombre}{attrs_label} x{item.cantidad} @ ${item.precio_unitario:.2f} = ${item.subtotal:.2f}"
+        )
     lines.append("")
-    lines.append(f"Total: ${order.total}")
-    lines.append(f"Estado: {order.status}")
+    lines.append(f"Total: ${order.total:.2f}")
+    lines.append(f"Estado: {status_labels.get(order.status, order.status)}")
 
-    # Construccion minimalista del PDF
-    content_parts = []
-    content_parts.append("BT /F1 12 Tf 50 760 Td")
-    first = True
-    for ln in lines:
-        if first:
-            content_parts.append(f"({_escape_pdf_text(ln)}) Tj")
-            first = False
-        else:
-            content_parts.append("0 -16 Td")
-            content_parts.append(f"({_escape_pdf_text(ln)}) Tj")
-    content_parts.append("ET")
-    content = "\n".join(content_parts)
-    content_bytes = content.encode("latin-1", errors="replace")
+    for line in lines:
+        if y < 40:
+            c.showPage()
+            c.setFont(font_name, 12)
+            y = 760
+        c.drawString(50, y, line)
+        y -= line_height
 
-    objects = []
-    # 1: catalog
-    objects.append(b"1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n")
-    # 2: pages
-    objects.append(b"2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n")
-    # 3: page
-    objects.append(b"3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>\nendobj\n")
-    # 4: font
-    objects.append(b"4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n")
-    # 5: contents
-    objects.append(b"5 0 obj\n<< /Length %d >>\nstream\n" % len(content_bytes))
-    objects.append(content_bytes + b"\nendstream\nendobj\n")
-
-    pdf_parts = [b"%PDF-1.4\n"]
-    offsets = []
-    pos = len(pdf_parts[0])
-    for obj in objects:
-        offsets.append(pos)
-        pdf_parts.append(obj)
-        pos += len(obj)
-    xref_pos = pos
-    pdf_parts.append(b"xref\n0 %d\n" % (len(objects) + 1))
-    pdf_parts.append(b"0000000000 65535 f \n")
-    for off in offsets:
-        pdf_parts.append(f"{off:010d} 00000 n \n".encode("ascii"))
-    pdf_parts.append(b"trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%EOF" % (len(objects) + 1, xref_pos))
-    return b"".join(pdf_parts)
-
+    c.showPage()
+    c.save()
+    return buffer.getvalue()
 
 def send_invoice_email(order, request=None):
     if not order.email:
@@ -253,8 +317,93 @@ def send_invoice_email(order, request=None):
         f"Estado: {order.status}\n\n"
         "Gracias por tu compra."
     )
+    reply_to = os.getenv("RESEND_REPLY_TO")
+    html_body = body.replace("\n", "<br>")
+    if send_resend_email([order.email], subject, body, html_body=html_body, reply_to=reply_to):
+        return
     email = EmailMessage(subject, body, to=[order.email])
     email.attach(f"pedido-{order.id}.pdf", pdf_bytes, "application/pdf")
+    try:
+        email.send(fail_silently=True)
+    except Exception:
+        pass
+
+
+def send_resend_email(to_emails, subject, text_body, html_body=None, reply_to=None):
+    api_key = os.getenv("RESEND_API_KEY", "").strip()
+    from_email = os.getenv("RESEND_FROM_EMAIL", "").strip() or "onboarding@resend.dev"
+    if not api_key:
+        return False
+    if not to_emails:
+        return False
+    payload = {
+        "from": from_email,
+        "to": to_emails,
+        "subject": subject or "",
+        "text": text_body or "",
+    }
+    if html_body:
+        payload["html"] = html_body
+    if reply_to:
+        payload["reply_to"] = reply_to
+    try:
+        req = urlrequest.Request(
+            "https://api.resend.com/emails",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        with urlrequest.urlopen(req, timeout=15) as resp:
+            status_code = getattr(resp, "status", 0) or 0
+            return 200 <= status_code < 300
+    except Exception:
+        return False
+
+
+def send_admin_order_email(order, request=None):
+    admin_email = (
+        os.getenv("ADMIN_ORDER_EMAIL", "").strip()
+        or os.getenv("GMAIL_USER", "").strip()
+        or getattr(settings, "DEFAULT_FROM_EMAIL", "")
+    )
+    if not admin_email:
+        return
+
+    subject = f"Nuevo pedido #{order.id} para aprobar"
+    lines = [
+        f"Pedido #{order.id}",
+        f"Cliente: {order.nombre} - {order.email}",
+        f"Total: ${order.total}",
+        f"Estado: {order.status}",
+        "",
+        "Items:",
+    ]
+    for item in order.items.all():
+        attrs = item.atributos or {}
+        attrs_label = ""
+        if isinstance(attrs, dict) and attrs:
+            parts = []
+            for k, v in attrs.items():
+                if isinstance(v, list):
+                    v = ", ".join(str(x) for x in v)
+                if v not in (None, ""):
+                    parts.append(f"{k}: {v}")
+            if parts:
+                attrs_label = f" ({'; '.join(parts)})"
+        lines.append(
+            f"- {item.product.nombre}{attrs_label} x{item.cantidad} @ ${item.precio_unitario:.2f} = ${item.subtotal:.2f}"
+        )
+    body = "\n".join(lines)
+    html_body = body.replace("\n", "<br>")
+    reply_to = os.getenv("RESEND_REPLY_TO")
+
+    if send_resend_email([admin_email], subject, body, html_body=html_body, reply_to=reply_to):
+        return
+
+    email = EmailMessage(subject, body, to=[admin_email])
     try:
         email.send(fail_silently=True)
     except Exception:
@@ -387,18 +536,47 @@ class ProductListView(APIView):
     def get(self, request):
         q = (request.query_params.get("q") or request.query_params.get("search") or "").strip()
         category = request.query_params.get("category") or request.query_params.get("cat")
+        category_id = request.query_params.get("category_id")
+        include_inactive = str(request.query_params.get("all") or "").lower() in {"1", "true", "yes", "si", "s"}
+        sort = (request.query_params.get("sort") or "").strip().lower()
         page = max(1, int(request.query_params.get("page") or 1))
         limit = max(1, min(100, int(request.query_params.get("limit") or 20)))
 
-        qs = Product.objects.filter(activo=True).select_related("categoria")
+        qs = Product.objects.select_related("categoria")
+        if not include_inactive:
+            qs = qs.filter(activo=True)
         if q:
             qs = qs.filter(Q(nombre__icontains=q) | Q(descripcion__icontains=q))
-        if category:
-            qs = qs.filter(categoria__slug=category)
+        if category_id:
+            try:
+                root_id = int(category_id)
+            except Exception:
+                root_id = None
+            if root_id:
+                ids = get_descendant_ids(root_id)
+                qs = qs.filter(categoria_id__in=ids)
+        elif category:
+            root = Category.objects.filter(slug=category).first()
+            if root:
+                ids = get_descendant_ids(root.id)
+                qs = qs.filter(categoria_id__in=ids)
+
+        if sort in {"mas_vendidos", "relevancia"}:
+            qs = qs.annotate(sold=Coalesce(Sum("order_items__cantidad"), 0)).order_by("-sold", "-creado_en")
+        elif sort == "precio_asc":
+            qs = qs.order_by("precio")
+        elif sort == "precio_desc":
+            qs = qs.order_by("-precio")
+        elif sort == "nombre_asc":
+            qs = qs.order_by("nombre")
+        elif sort == "nombre_desc":
+            qs = qs.order_by("-nombre")
+        else:
+            qs = qs.order_by("-creado_en")
 
         total = qs.count()
         start = (page - 1) * limit
-        items = qs.order_by("-creado_en")[start:start + limit]
+        items = qs[start:start + limit]
         data = [serialize_product(p, request) for p in items]
         return Response({"items": data, "total": total, "page": page, "pages": ceil(total / limit) if total else 1})
 
@@ -419,6 +597,30 @@ class OrderCreateView(APIView):
     def post(self, request):
         raw_items = request.data.get("items") or []
         shipping = request.data.get("shipping") or {}
+        note = (request.data.get("note") or request.data.get("nota") or "").strip()
+        if len(note) > 1000:
+            note = note[:1000]
+        if not isinstance(shipping, dict):
+            shipping = {}
+
+        # Validacion de datos del cliente
+        email = shipping.get('email') or request.user.email or ''
+        phone = shipping.get('phone') or request.user.phone or ''
+        missing = []
+        if not (shipping.get('name') or request.user.name or request.user.username):
+            missing.append('nombre')
+        if not email:
+            missing.append('email')
+        if not phone:
+            missing.append('telefono')
+        if not shipping.get('address'):
+            missing.append('direccion')
+        if not shipping.get('city'):
+            missing.append('ciudad')
+        if not shipping.get('zip'):
+            missing.append('cp')
+        if missing:
+            return Response({"error": f"Faltan datos obligatorios: {', '.join(missing)}"}, status=status.HTTP_400_BAD_REQUEST)
         if not isinstance(shipping, dict):
             shipping = {}
         if not isinstance(raw_items, list) or not raw_items:
@@ -433,10 +635,21 @@ class OrderCreateView(APIView):
             if price is None and product:
                 price = product.precio
             price = Decimal(str(price or 0))
+            raw_attrs = raw.get("attributes") or raw.get("atributos") or {}
+            attrs = raw_attrs if isinstance(raw_attrs, dict) else {}
             name = raw.get("name") or (product.nombre if product else "")
+            if attrs:
+                parts = []
+                for k, v in attrs.items():
+                    if isinstance(v, list):
+                        v = ", ".join(str(x) for x in v)
+                    if v not in (None, ""):
+                        parts.append(f"{k}: {v}")
+                if parts:
+                    name = f"{name} ({'; '.join(parts)})"
             if not name:
                 continue
-            built_items.append({"product": product, "qty": qty, "price": price, "name": name})
+            built_items.append({"product": product, "qty": qty, "price": price, "name": name, "attrs": attrs})
 
         if not built_items:
             return Response({"error": "Carrito vacio"}, status=status.HTTP_400_BAD_REQUEST)
@@ -445,13 +658,13 @@ class OrderCreateView(APIView):
             order = Order.objects.create(
                 user=request.user,
                 nombre=shipping.get("name") or request.user.name or request.user.username,
-                email=request.user.email or "",
+                email=shipping.get("email") or request.user.email or "",
                 direccion=shipping.get("address") or "",
                 ciudad=shipping.get("city") or "",
                 estado="",
                 cp=shipping.get("zip") or "",
-                telefono=shipping.get("phone") or request.user.phone,
-                nota="",
+                telefono=shipping.get("phone") or request.user.phone or "",
+                nota=note,
                 status="created",
                 total=Decimal("0.00"),
             )
@@ -464,11 +677,19 @@ class OrderCreateView(APIView):
                     product=item["product"],
                     cantidad=item["qty"],
                     precio_unitario=item["price"],
+                    atributos=item.get("attrs") or {},
                 )
             order.recalc_total()
 
         order = Order.objects.prefetch_related("items__product").select_related("user").get(pk=order.pk)
-        send_invoice_email(order, request)
+        try:
+            send_invoice_email(order, request)
+        except Exception:
+            pass
+        try:
+            send_admin_order_email(order, request)
+        except Exception:
+            pass
         return Response({"order": serialize_order(order, request)}, status=status.HTTP_201_CREATED)
 
 
@@ -507,7 +728,10 @@ class OrderMarkPaidView(APIView):
             return Response({"error": "Tu pedido aun no fue aprobado por el administrador"}, status=status.HTTP_400_BAD_REQUEST)
         order.status = "paid"
         order.save(update_fields=["status"])
-        send_invoice_email(order, request)
+        try:
+            send_invoice_email(order, request)
+        except Exception:
+            pass
         return Response({"order": serialize_order(order, request)})
 
 
@@ -525,6 +749,8 @@ class AdminOverviewView(APIView):
         recent = Order.objects.filter(creado_en__gte=since, status__in=paid_states)
         revenue = recent.aggregate(total=Sum("total")).get("total") or Decimal("0.00")
         last_orders = Order.objects.prefetch_related("items__product").select_related("user").order_by("-creado_en")[:5]
+        pending_orders = Order.objects.filter(status="created").prefetch_related("items__product").select_related("user").order_by("-creado_en")[:5]
+        recent_users = User.objects.order_by("-date_joined")[:5]
         return Response({
             "counts": counts,
             "last30d": {
@@ -533,6 +759,8 @@ class AdminOverviewView(APIView):
                 "items": sum(o.items.count() for o in recent),
             },
             "lastOrders": [serialize_order(o, request) for o in last_orders],
+            "pendingOrders": [serialize_order(o, request) for o in pending_orders],
+            "recentUsers": [serialize_user(u, request) for u in recent_users],
         })
 
 
@@ -627,7 +855,7 @@ class AdminOrderDetailView(APIView):
         if not order:
             return Response({"error": "Pedido no encontrado"}, status=status.HTTP_404_NOT_FOUND)
         status_val = request.data.get("status")
-        allowed = {"created", "approved", "paid", "shipped", "delivered", "cancelled", "draft"}
+        allowed = {"created", "approved", "pending_payment", "paid", "shipped", "delivered", "cancelled", "draft"}
         if status_val not in allowed:
             return Response({"error": "Estado invalido"}, status=status.HTTP_400_BAD_REQUEST)
         order.status = status_val
@@ -645,10 +873,21 @@ class AdminOrderDetailView(APIView):
                     if price is None and product:
                         price = product.precio
                     price = Decimal(str(price or 0))
+                    raw_attrs = raw.get("attributes") or raw.get("atributos") or {}
+                    attrs = raw_attrs if isinstance(raw_attrs, dict) else {}
                     name = raw.get("name") or (product.nombre if product else "")
+                    if attrs:
+                        parts = []
+                        for k, v in attrs.items():
+                            if isinstance(v, list):
+                                v = ", ".join(str(x) for x in v)
+                            if v not in (None, ""):
+                                parts.append(f"{k}: {v}")
+                        if parts:
+                            name = f"{name} ({'; '.join(parts)})"
                     if not name or not product:
                         continue
-                    built_items.append({"product": product, "qty": qty, "price": price})
+                    built_items.append({"product": product, "qty": qty, "price": price, "attrs": attrs})
                 if built_items:
                     for it in built_items:
                         OrderItem.objects.create(
@@ -656,11 +895,25 @@ class AdminOrderDetailView(APIView):
                             product=it["product"],
                             cantidad=it["qty"],
                             precio_unitario=it["price"],
+                            atributos=it.get("attrs") or {},
                         )
                     order.recalc_total()
         order.save()
         order.refresh_from_db()
         return Response(serialize_order(order, request))
+
+
+class AdminOrderPdfView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, pk):
+        order = Order.objects.prefetch_related("items__product").select_related("user").filter(pk=pk).first()
+        if not order:
+            return Response({"error": "Pedido no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+        pdf_bytes = build_invoice_pdf(order)
+        resp = HttpResponse(pdf_bytes, content_type="application/pdf")
+        resp["Content-Disposition"] = f'attachment; filename="pedido-{order.id}.pdf"'
+        return resp
 
 
 class AdminProductsView(APIView):
@@ -687,6 +940,7 @@ class AdminProductsView(APIView):
             return Response({"error": "Nombre y precio requeridos"}, status=status.HTTP_400_BAD_REQUEST)
         cat_val = request.data.get("category")
         category = resolve_category(cat_val) if cat_val else None
+        image_url = request.data.get("imageUrl") or request.data.get("image_url") or ""
         product = Product(
             user=request.user,
             nombre=name,
@@ -696,6 +950,8 @@ class AdminProductsView(APIView):
             stock=int(request.data.get("stock") or 0),
             activo=str(request.data.get("active") or "true").lower() in {"1", "true", "yes"},
         )
+        if image_url:
+            product.image_url = str(image_url).strip()
         if request.FILES.get("image"):
             product.imagen = request.FILES["image"]
         product.save()
@@ -723,6 +979,8 @@ class AdminProductDetailView(APIView):
         if "category" in request.data:
             cat = resolve_category(request.data.get("category"))
             product.categoria = cat
+        if "imageUrl" in request.data or "image_url" in request.data:
+            product.image_url = str(request.data.get("imageUrl") or request.data.get("image_url") or "").strip()
         if request.FILES.get("image"):
             product.imagen = request.FILES["image"]
         product.save()

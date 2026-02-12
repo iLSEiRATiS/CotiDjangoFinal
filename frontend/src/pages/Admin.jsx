@@ -3,6 +3,7 @@ import { Card, Table, Alert, Spinner, Button, Tabs, Tab, Form, Row, Col, Badge }
 import { API_BASE } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
+import { openCloudinaryWidget } from '../lib/cloudinary';
 
 const STATUSES = ['created', 'approved', 'paid', 'shipped', 'delivered', 'cancelled'];
 const STATUS_LABELS = {
@@ -25,6 +26,8 @@ const STATUS_VARIANTS = {
 export default function Admin() {
   const { token, user } = useAuth();
   const [tab, setTab] = useState('overview');
+  const cloudName = (import.meta?.env?.VITE_CLOUDINARY_CLOUD_NAME || '').trim();
+  const uploadPreset = (import.meta?.env?.VITE_CLOUDINARY_UPLOAD_PRESET || '').trim();
 
   // overview
   const [ovrLoading, setOvrLoading] = useState(true);
@@ -49,6 +52,15 @@ export default function Admin() {
   const [pErr, setPErr] = useState('');
   const [products, setProducts] = useState([]);
   const [productQ, setProductQ] = useState('');
+  const [creatingProduct, setCreatingProduct] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    price: '',
+    stock: '',
+    category: '',
+    imageUrl: '',
+    active: true,
+  });
 
   useEffect(() => {
     let alive = true;
@@ -129,6 +141,43 @@ export default function Admin() {
       setOrders(prev => prev.map(o => (o._id === order._id ? updated : o)));
     } catch (e) {
       window.alert(e?.message || 'No se pudo actualizar el estado.');
+    }
+  }
+
+  async function handleUploadProductImage() {
+    try {
+      const url = await openCloudinaryWidget({
+        cloudName,
+        uploadPreset,
+        folder: 'productos',
+      });
+      if (url) {
+        setNewProduct(prev => ({ ...prev, imageUrl: url }));
+      }
+    } catch (e) {
+      window.alert(e?.message || 'No se pudo subir la imagen a Cloudinary');
+    }
+  }
+
+  async function handleCreateProduct(e) {
+    e.preventDefault();
+    try {
+      setCreatingProduct(true);
+      const payload = {
+        name: newProduct.name,
+        price: newProduct.price,
+        stock: newProduct.stock,
+        category: newProduct.category || undefined,
+        imageUrl: newProduct.imageUrl || undefined,
+        active: newProduct.active,
+      };
+      const created = await api.admin.createProduct(token, payload);
+      setProducts(prev => [created, ...prev]);
+      setNewProduct({ name: '', price: '', stock: '', category: '', imageUrl: '', active: true });
+    } catch (e) {
+      window.alert(e?.message || 'No se pudo crear el producto.');
+    } finally {
+      setCreatingProduct(false);
     }
   }
 
@@ -375,6 +424,98 @@ export default function Admin() {
   const renderProducts = () => (
     <>
       {pErr && <Alert variant="danger" className="mb-3">{pErr}</Alert>}
+      <Card className="mb-3">
+        <Card.Body>
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <strong>Nuevo producto</strong>
+            {!cloudName || !uploadPreset ? (
+              <span className="text-muted small">Configura VITE_CLOUDINARY_CLOUD_NAME y VITE_CLOUDINARY_UPLOAD_PRESET</span>
+            ) : null}
+          </div>
+          <Form onSubmit={handleCreateProduct}>
+            <Row className="g-2">
+              <Col md>
+                <Form.Label>Nombre</Form.Label>
+                <Form.Control
+                  value={newProduct.name}
+                  onChange={e => setNewProduct(v => ({ ...v, name: e.target.value }))}
+                  required
+                />
+              </Col>
+              <Col md>
+                <Form.Label>Precio</Form.Label>
+                <Form.Control
+                  type="number"
+                  step="0.01"
+                  value={newProduct.price}
+                  onChange={e => setNewProduct(v => ({ ...v, price: e.target.value }))}
+                  required
+                />
+              </Col>
+              <Col md>
+                <Form.Label>Stock</Form.Label>
+                <Form.Control
+                  type="number"
+                  min="0"
+                  value={newProduct.stock}
+                  onChange={e => setNewProduct(v => ({ ...v, stock: e.target.value }))}
+                />
+              </Col>
+              <Col md>
+                <Form.Label>Categoria</Form.Label>
+                <Form.Control
+                  value={newProduct.category}
+                  onChange={e => setNewProduct(v => ({ ...v, category: e.target.value }))}
+                  placeholder="Ej: Cotillon"
+                />
+              </Col>
+            </Row>
+            <Row className="g-2 mt-1 align-items-end">
+              <Col md>
+                <Form.Label>Imagen (URL)</Form.Label>
+                <Form.Control
+                  value={newProduct.imageUrl}
+                  onChange={e => setNewProduct(v => ({ ...v, imageUrl: e.target.value }))}
+                  placeholder="https://res.cloudinary.com/..."
+                />
+              </Col>
+              <Col md="auto">
+                <Button
+                  variant="outline-secondary"
+                  type="button"
+                  onClick={handleUploadProductImage}
+                  disabled={!cloudName || !uploadPreset}
+                >
+                  Subir a Cloudinary
+                </Button>
+              </Col>
+              <Col md="auto">
+                <Form.Check
+                  type="switch"
+                  id="product-active"
+                  label="Activo"
+                  checked={!!newProduct.active}
+                  onChange={e => setNewProduct(v => ({ ...v, active: e.target.checked }))}
+                />
+              </Col>
+              <Col md="auto">
+                <Button type="submit" disabled={creatingProduct}>
+                  {creatingProduct ? 'Creando...' : 'Crear'}
+                </Button>
+              </Col>
+            </Row>
+            {newProduct.imageUrl && (
+              <div className="mt-2">
+                <img
+                  src={newProduct.imageUrl}
+                  alt="preview"
+                  style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 6 }}
+                />
+              </div>
+            )}
+          </Form>
+        </Card.Body>
+      </Card>
       <Form onSubmit={(e)=>{e.preventDefault();}} className="mb-2">
         <Row className="g-2 align-items-end">
           <Col md>

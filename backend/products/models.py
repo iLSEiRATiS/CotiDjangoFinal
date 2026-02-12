@@ -5,8 +5,8 @@ from django.utils.text import slugify
 
 
 class Category(models.Model):
-    nombre = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=110, unique=True, blank=True)
+    nombre = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=110, blank=True)
     descripcion = models.TextField(blank=True)
     parent = models.ForeignKey(
         "self",
@@ -38,6 +38,9 @@ class Product(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     descripcion = models.TextField(blank=True)
     imagen = models.ImageField(upload_to="products/", blank=True, null=True)
+    image_url = models.URLField(blank=True, default="")
+    atributos = models.JSONField(default=dict, blank=True)
+    atributos_stock = models.JSONField(default=dict, blank=True)
     stock = models.PositiveIntegerField(default=0)
     activo = models.BooleanField(default=True)
     creado_en = models.DateTimeField(auto_now_add=True)

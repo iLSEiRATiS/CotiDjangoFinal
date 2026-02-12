@@ -16,6 +16,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = None
     lookup_field = "slug"
     filter_backends = [filters.SearchFilter]
     search_fields = ["nombre", "descripcion"]

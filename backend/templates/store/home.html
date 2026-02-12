@@ -75,7 +75,9 @@
         {% for p in destacados %}
           <div class="col-sm-6">
             <div class="card h-100 border-0 shadow-sm">
-              {% if p.imagen %}
+              {% if p.image_url %}
+                <img src="{{ p.image_url }}" class="card-img-top" style="object-fit:cover; height:160px;" alt="{{ p.nombre }}">
+              {% elif p.imagen %}
                 <img src="{{ p.imagen.url }}" class="card-img-top" style="object-fit:cover; height:160px;" alt="{{ p.nombre }}">
               {% else %}
                 <div class="bg-light d-flex align-items-center justify-content-center" style="height:160px;">Sin imagen</div>
@@ -99,7 +101,7 @@
                     data-id="{{ p.id }}"
                     data-nombre="{{ p.nombre }}"
                     data-precio="{{ p.precio|floatformat:'2'|default:'0' }}"
-                    data-imagen="{% if p.imagen %}{{ p.imagen.url }}{% else %}https://via.placeholder.com/120?text=Producto{% endif %}"
+                    data-imagen="{% if p.image_url %}{{ p.image_url }}{% elif p.imagen %}{{ p.imagen.url }}{% else %}https://via.placeholder.com/120?text=Producto{% endif %}"
                     data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasScrolling"
                   >

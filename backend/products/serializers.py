@@ -35,6 +35,7 @@ class ProductSerializer(serializers.ModelSerializer):
     categoria_id = serializers.PrimaryKeyRelatedField(
         source="categoria", queryset=Category.objects.all(), write_only=True, required=False, allow_null=True
     )
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -48,10 +49,24 @@ class ProductSerializer(serializers.ModelSerializer):
             "precio",
             "descripcion",
             "imagen",
+            "image_url",
+            "images",
+            "atributos",
+            "atributos_stock",
             "stock",
             "activo",
             "creado_en",
         ]
+
+    def get_images(self, instance):
+        if getattr(instance, "image_url", ""):
+            return [instance.image_url]
+        if instance.imagen:
+            try:
+                return [instance.imagen.url]
+            except Exception:
+                return []
+        return []
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

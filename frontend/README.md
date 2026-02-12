@@ -2,6 +2,16 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
+## Cloudinary (productos)
+Configura estas variables en un `.env` en `frontend/`:
+
+```
+VITE_CLOUDINARY_CLOUD_NAME=tu_cloud_name
+VITE_CLOUDINARY_UPLOAD_PRESET=tu_upload_preset
+```
+
+Luego, en el panel Admin del frontend, usa el botÃ³n "Subir a Cloudinary" para obtener la URL de la imagen.
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh

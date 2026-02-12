@@ -4,7 +4,9 @@
 <div class="row g-4">
   <div class="col-md-6">
     <div class="card border-0 shadow-sm">
-      {% if product.imagen %}
+      {% if product.image_url %}
+        <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.nombre }}" style="object-fit:cover; max-height:360px;">
+      {% elif product.imagen %}
         <img src="{{ product.imagen.url }}" class="card-img-top" alt="{{ product.nombre }}" style="object-fit:cover; max-height:360px;">
       {% else %}
         <div class="p-5 text-center text-muted">Sin imagen</div>
