@@ -1,6 +1,7 @@
 from datetime import timedelta
 import os
 import json
+import unicodedata
 from pathlib import Path
 from urllib import request as urlrequest
 
@@ -26,9 +27,15 @@ from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import EmailMessage
 
 from orders.models import Order, OrderItem
-from products.models import Category, Product, Offer
+from products.models import Category, Product, Offer, HomeImage
 
 User = get_user_model()
+
+
+def _norm_text(value):
+    text = str(value or "").strip().lower()
+    text = unicodedata.normalize("NFKD", text)
+    return "".join(c for c in text if not unicodedata.combining(c))
 
 
 def build_token(user):
@@ -157,6 +164,19 @@ def serialize_order(order, request=None):
         },
         "note": order.nota or "",
         "createdAt": order.creado_en.isoformat() if order.creado_en else None,
+    }
+
+
+def serialize_home_image(item):
+    return {
+        "id": item.id,
+        "key": item.key,
+        "section": item.section,
+        "title": item.title or "",
+        "imageUrl": item.image_url,
+        "targetUrl": item.target_url or "",
+        "order": item.order,
+        "active": item.activo,
     }
 
 
@@ -530,6 +550,17 @@ class AccountPasswordView(APIView):
         return Response({"detail": "Contrasena actualizada"})
 
 
+class HomeImagesView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        qs = HomeImage.objects.filter(activo=True).order_by("section", "order", "id")
+        items = [serialize_home_image(x) for x in qs]
+        by_key_image = {x["key"]: x["imageUrl"] for x in items}
+        by_key_target = {x["key"]: x["targetUrl"] for x in items if x.get("targetUrl")}
+        return Response({"items": items, "byKey": by_key_image, "byKeyTarget": by_key_target})
+
+
 class ProductListView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -546,7 +577,19 @@ class ProductListView(APIView):
         if not include_inactive:
             qs = qs.filter(activo=True)
         if q:
+            # Filtro tolerante a tildes/variantes unicode para que la busqueda
+            # no pierda productos por diferencias de codificacion.
+            q_norm = _norm_text(q)
+            base_qs = qs
             qs = qs.filter(Q(nombre__icontains=q) | Q(descripcion__icontains=q))
+            if q_norm:
+                extra_ids = [
+                    p.id
+                    for p in base_qs
+                    if (q_norm in _norm_text(p.nombre)) or (q_norm in _norm_text(p.descripcion))
+                ]
+                if extra_ids:
+                    qs = base_qs.filter(Q(id__in=extra_ids) | Q(nombre__icontains=q) | Q(descripcion__icontains=q))
         if category_id:
             try:
                 root_id = int(category_id)
@@ -557,6 +600,14 @@ class ProductListView(APIView):
                 qs = qs.filter(categoria_id__in=ids)
         elif category:
             root = Category.objects.filter(slug=category).first()
+            if not root:
+                wanted = _norm_text(category).replace("-", " ")
+                for c in Category.objects.all().only("id", "nombre", "slug"):
+                    name_norm = _norm_text(c.nombre)
+                    slug_norm = _norm_text(c.slug).replace("-", " ")
+                    if wanted in {name_norm, slug_norm}:
+                        root = c
+                        break
             if root:
                 ids = get_descendant_ids(root.id)
                 qs = qs.filter(categoria_id__in=ids)
@@ -741,7 +792,7 @@ class AdminOverviewView(APIView):
     def get(self, request):
         counts = {
             "users": User.objects.count(),
-            "products": Product.objects.count(),
+            "products": Product.objects.filter(activo=True).count(),
             "orders": Order.objects.count(),
         }
         since = timezone.now() - timedelta(days=30)

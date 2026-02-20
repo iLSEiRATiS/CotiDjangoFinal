@@ -93,3 +93,27 @@ class Offer(models.Model):
         if self.termina and now > self.termina:
             return False
         return True
+
+
+class HomeImage(models.Model):
+    SECTION_CHOICES = [
+        ("hero", "Hero"),
+        ("category_tile", "Explora por categoria"),
+        ("featured_collection", "Colecciones destacadas"),
+    ]
+
+    key = models.SlugField(max_length=80, unique=True)
+    section = models.CharField(max_length=20, choices=SECTION_CHOICES)
+    title = models.CharField(max_length=120, blank=True)
+    image_url = models.URLField()
+    target_url = models.CharField(max_length=255, blank=True, default="")
+    order = models.PositiveIntegerField(default=0)
+    activo = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["section", "order", "id"]
+        verbose_name = "Imagen Home"
+        verbose_name_plural = "Imagenes Home"
+
+    def __str__(self):
+        return f"{self.section}: {self.title or self.key}"

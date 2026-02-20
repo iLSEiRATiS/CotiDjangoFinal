@@ -1,5 +1,7 @@
 from decimal import Decimal
+import hashlib
 import os
+import re
 import openpyxl
 from django.contrib import admin, messages
 from django.db import transaction
@@ -10,7 +12,11 @@ from django.urls import path, reverse
 from django.utils.text import slugify
 import unicodedata
 
-from .models import Product, Category, Offer
+from .models import Product, Category, Offer, HomeImage
+
+admin.site.site_header = "Admin Coti"
+admin.site.site_title = "Admin Coti"
+admin.site.index_title = "Panel de administracion"
 
 
 @admin.register(Category)
@@ -104,6 +110,32 @@ class ProductAdmin(admin.ModelAdmin):
         },
     ]
 
+    _KNOWN_COLORS = {
+        "rojo": "Rojo",
+        "azul": "Azul",
+        "celeste": "Celeste",
+        "verde": "Verde",
+        "verde agua": "Verde Agua",
+        "verde manzana": "Verde Manzana",
+        "amarillo": "Amarillo",
+        "naranja": "Naranja",
+        "violeta": "Violeta",
+        "morado": "Morado",
+        "rosa": "Rosa",
+        "rosa gold": "Rosa Gold",
+        "fucsia": "Fucsia",
+        "dorado": "Dorado",
+        "oro": "Oro",
+        "plateado": "Plateado",
+        "plata": "Plata",
+        "negro": "Negro",
+        "blanco": "Blanco",
+        "multicolor": "Multicolor",
+        "turquesa": "Turquesa",
+        "salmon": "Salmón",
+        "calido": "Cálido",
+    }
+
     def get_urls(self):
         urls = super().get_urls()
         custom = [
@@ -189,11 +221,117 @@ class ProductAdmin(admin.ModelAdmin):
         text = str(raw).strip()
         if not text:
             return []
-        for sep in (" > ", ">", " / ", "/", " | ", "|", " - ", "-"):
+        # Soporta separadores jerarquicos sin romper nombres con guion interno
+        # como "Miniaturas-Juguetitos" (sin espacios).
+        for sep in (" > ", ">", " / ", "/", " | ", "|", " - ", " – "):
             if sep in text:
                 parts = [p.strip() for p in text.split(sep)]
                 return [p for p in parts if p]
         return [text]
+
+    def _compose_category_path(self, categoria_raw, subcategoria_raw):
+        categoria_parts = self._parse_category_path(categoria_raw)
+        subcategoria_parts = self._parse_category_path(subcategoria_raw)
+        if not categoria_parts and not subcategoria_parts:
+            return []
+        if not categoria_parts:
+            return subcategoria_parts
+        if not subcategoria_parts:
+            return categoria_parts
+        # Evita repetir nodos cuando subcategoria ya viene dentro de categoria.
+        cat_norm = [self._norm_header(p) for p in categoria_parts]
+        out = list(categoria_parts)
+        for part in subcategoria_parts:
+            if self._norm_header(part) not in cat_norm:
+                out.append(part)
+        return out
+
+    def _get_or_create_category_normalized(self, name, parent=None):
+        target = self._norm_header(name)
+        for cat in Category.objects.filter(parent=parent):
+            if self._norm_header(cat.nombre) == target:
+                return cat
+        return Category.objects.create(nombre=name, parent=parent)
+
+    def _name_tokens(self, name):
+        return re.findall(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]+", str(name or ""))
+
+    def _detect_color_in_name(self, name):
+        n = self._norm_header(name).replace("/", " ")
+        # prioriza match de frases largas
+        for raw, val in sorted(self._KNOWN_COLORS.items(), key=lambda x: len(x[0]), reverse=True):
+            if f" {raw} " in f" {n} ":
+                return val
+        return None
+
+    def _detect_number_in_name(self, name):
+        text = str(name or "")
+        m = re.search(r"\bN\s*([0-9])\b", text, flags=re.IGNORECASE)
+        if m:
+            return m.group(1)
+        m = re.search(r"\b([0-9])\b", text)
+        if m:
+            return m.group(1)
+        return None
+
+    def _common_root_name(self, a, b):
+        wa = self._name_tokens(a)
+        wb = self._name_tokens(b)
+        i = 0
+        while i < len(wa) and i < len(wb) and self._norm_header(wa[i]) == self._norm_header(wb[i]):
+            i += 1
+        if i < 2:
+            return None
+        root = " ".join(wa[:i]).strip()
+        if not root:
+            return None
+        # Si alguno tiene "(ELEGIR ...)" se lo conservamos al nombre base.
+        for src in (a, b):
+            m = re.search(r"\((ELEGIR[^)]*)\)", str(src or ""), flags=re.IGNORECASE)
+            if m and m.group(1):
+                tag = m.group(1).strip()
+                if tag and f"({tag})" not in root:
+                    return f"{root} ({tag})"
+        return root
+
+    def _infer_attr_from_names(self, old_name, new_name):
+        c_old = self._detect_color_in_name(old_name)
+        c_new = self._detect_color_in_name(new_name)
+        if c_new and c_new != c_old:
+            return "Colores", c_new
+
+        n_old = self._detect_number_in_name(old_name)
+        n_new = self._detect_number_in_name(new_name)
+        if n_new and n_new != n_old and ("elegir numero" in self._norm_header(old_name) or "elegir numero" in self._norm_header(new_name)):
+            return "Número", n_new
+        return None
+
+    def _build_identity_slug(self, *, sku_raw, slug_raw, nombre, path_parts, precio, parent_sku_raw):
+        sku_text = str(sku_raw or "").strip()
+        if sku_text:
+            return slugify(sku_text)[:110] or self._build_slug(nombre)
+
+        base_slug = slugify(slug_raw or nombre or "")[:70] or "producto"
+        path_key = "|".join(self._norm_header(p) for p in (path_parts or []))
+        price_key = str(precio if precio is not None else "")
+        raw = "|".join([
+            self._norm_header(nombre),
+            path_key,
+            self._norm_header(parent_sku_raw),
+            price_key,
+        ])
+        digest = hashlib.md5(raw.encode("utf-8")).hexdigest()[:12]
+        return f"{base_slug}-{digest}"[:110]
+
+    def _build_group_slug(self, *, nombre, path_parts, precio):
+        base_slug = slugify(nombre or "")[:70] or "producto"
+        raw = "|".join([
+            self._norm_header(nombre),
+            "|".join(self._norm_header(p) for p in (path_parts or [])),
+            str(precio if precio is not None else ""),
+        ])
+        digest = hashlib.md5(raw.encode("utf-8")).hexdigest()[:12]
+        return f"{base_slug}-{digest}"[:110]
 
     def _export_workbook(self, rows, filename):
         wb = openpyxl.Workbook()
@@ -261,6 +399,10 @@ class ProductAdmin(admin.ModelAdmin):
                 alias = {
                     "categorias": "categoria",
                     "categoria": "categoria",
+                    "subcategoria": "subcategoria",
+                    "sub categoria": "subcategoria",
+                    "subcategoría": "subcategoria",
+                    "url imagenes": "url imag",
                     "url imag": "url imag",
                     "url_imag": "url imag",
                     "mostrar en tienda": "activo",
@@ -282,6 +424,23 @@ class ProductAdmin(admin.ModelAdmin):
                 missing = {"sku", "nombre", "precio"} - set(header_map.keys())
                 if missing:
                     errors.append(f"Faltan columnas obligatorias: {', '.join(sorted(missing))}")
+
+                # SKUs reutilizados con nombres diferentes dentro del mismo XLSX.
+                # En esos casos no usamos SKU como identidad unica para evitar pisado de filas.
+                sku_name_sets = {}
+                for row_idx, raw in enumerate(rows, start=1):
+                    if header_idx is not None and row_idx - 1 == header_idx:
+                        continue
+                    row_data = {
+                        h: raw[header_map[h]] if h in header_map and header_map[h] < len(raw) else ""
+                        for h in header_map
+                    }
+                    nombre_row = str(row_data.get("nombre") or "").strip()
+                    sku_row = str(row_data.get("sku") or "").strip().upper()
+                    if not nombre_row or not sku_row:
+                        continue
+                    sku_name_sets.setdefault(sku_row, set()).add(self._norm_header(nombre_row))
+                multi_name_skus = {sku for sku, names in sku_name_sets.items() if len(names) > 1}
 
                 with transaction.atomic():
 
@@ -306,28 +465,38 @@ class ProductAdmin(admin.ModelAdmin):
                         opt2_val = row_data.get("opcion_2_valor")
                         opt1_vals = self._parse_attr_values(opt1_val)
                         opt2_vals = self._parse_attr_values(opt2_val)
-                        base_name = self._strip_attr_from_name(nombre, opt1_vals + opt2_vals)
-
-                        parent_sku = (row_data.get("parent_sku") or "").strip()
-                        if parent_sku:
-                            slug_src = parent_sku
-                        elif opt1_name or opt2_name:
-                            slug_src = base_name
-                        else:
-                            slug_src = row_data.get("slug") or row_data.get("sku") or nombre
-                        slug = slugify(slug_src)[:110] or self._build_slug(nombre)
+                        has_declared_attrs = bool((opt1_name and opt1_vals) or (opt2_name and opt2_vals))
+                        sku_raw = row_data.get("sku") or ""
+                        parent_sku_raw = row_data.get("parent_sku") or ""
+                        slug_raw = row_data.get("slug") or ""
                         categoria_raw = row_data.get("categoria") or ""
+                        subcategoria_raw = row_data.get("subcategoria") or ""
                         categoria_obj = None
-                        if categoria_raw:
-                            path_parts = self._parse_category_path(categoria_raw)
+                        path_parts = self._compose_category_path(categoria_raw, subcategoria_raw)
+                        if path_parts:
                             parent = None
                             for part in path_parts:
-                                parent, _ = Category.objects.get_or_create(nombre=part, parent=parent)
+                                parent = self._get_or_create_category_normalized(part, parent=parent)
                             categoria_obj = parent
+                        if has_declared_attrs:
+                            # Regla principal: mismo nombre + categoria + precio = mismo producto con variantes.
+                            slug = self._build_group_slug(nombre=nombre, path_parts=path_parts, precio=precio)
+                        else:
+                            sku_upper = str(sku_raw).strip().upper()
+                            effective_sku = "" if (sku_upper and sku_upper in multi_name_skus) else sku_raw
+                            slug = self._build_identity_slug(
+                                sku_raw=effective_sku,
+                                slug_raw=slug_raw,
+                                nombre=nombre,
+                                path_parts=path_parts,
+                                precio=precio,
+                                parent_sku_raw=parent_sku_raw or sku_raw,
+                            )
                         existing = Product.objects.filter(slug=slug).first()
                         is_new = existing is None
                         product = existing or Product(slug=slug, user=request.user)
-                        product.nombre = base_name if (opt1_name or opt2_name) else nombre
+                        # Conserva el nombre exacto del Excel como verdad de origen.
+                        product.nombre = nombre
                         product.descripcion = row_data.get("descripcion") or ""
                         product.precio = precio
                         stock = self._parse_int(row_data.get("stock"))
@@ -343,31 +512,47 @@ class ProductAdmin(admin.ModelAdmin):
                             values = opt2_vals
                             if values:
                                 attrs[opt2_name] = values
-                        if attrs:
+                        has_sku = bool(str(sku_raw).strip())
+                        if has_declared_attrs:
                             merged = {}
                             if isinstance(product.atributos, dict):
                                 merged.update(product.atributos)
                             for key, values in attrs.items():
-                                existing_vals = merged.get(key, [])
-                                if not isinstance(existing_vals, list):
-                                    existing_vals = [existing_vals] if existing_vals else []
-                                combined = list(existing_vals)
+                                current = merged.get(key, [])
+                                if not isinstance(current, list):
+                                    current = [current] if current else []
                                 for v in values:
-                                    if v not in combined:
-                                        combined.append(v)
-                                merged[key] = combined
-                            product.atributos = merged
-                            # stock por variante (solo si tenemos stock y valor singular)
+                                    if v not in current:
+                                        current.append(v)
+                                merged[key] = current
+                            product.atributos = merged if merged else {}
+
+                            stock_map = product.atributos_stock if isinstance(product.atributos_stock, dict) else {}
                             if stock is not None:
-                                stock_map = product.atributos_stock if isinstance(product.atributos_stock, dict) else {}
                                 for key, values in attrs.items():
                                     if not values:
                                         continue
-                                    current = stock_map.get(key, {}) if isinstance(stock_map.get(key), dict) else {}
+                                    existing_map = stock_map.get(key, {}) if isinstance(stock_map.get(key), dict) else {}
                                     for v in values:
-                                        current[v] = max(int(current.get(v, 0)), int(stock))
-                                    stock_map[key] = current
+                                        existing_map[v] = max(int(existing_map.get(v, 0)), int(stock))
+                                    stock_map[key] = existing_map
+                            product.atributos_stock = stock_map if stock_map else {}
+                        elif has_sku:
+                            # SKU con fila simple: conserva datos exactos del XLSX.
+                            product.atributos = attrs if attrs else {}
+                            if stock is not None and attrs:
+                                stock_map = {}
+                                for key, values in attrs.items():
+                                    if not values:
+                                        continue
+                                    stock_map[key] = {v: int(stock) for v in values}
                                 product.atributos_stock = stock_map
+                            elif not attrs:
+                                product.atributos_stock = {}
+                        else:
+                            # Sin SKU y sin atributos: se conserva como producto simple.
+                            product.atributos = {}
+                            product.atributos_stock = {}
                         image_url = row_data.get("imagen_1") or row_data.get("url imag") or row_data.get("url_imag") or ""
                         if image_url and str(image_url).startswith(("http://", "https://")):
                             product.image_url = str(image_url).strip()
@@ -420,3 +605,11 @@ class OfferAdmin(admin.ModelAdmin):
     @admin.action(description="Desactivar ofertas seleccionadas")
     def desactivar_ofertas(self, request, queryset):
         queryset.update(activo=False)
+
+
+@admin.register(HomeImage)
+class HomeImageAdmin(admin.ModelAdmin):
+    list_display = ("key", "section", "title", "target_url", "order", "activo")
+    list_filter = ("section", "activo")
+    search_fields = ("key", "title", "image_url", "target_url")
+    list_editable = ("order", "activo")

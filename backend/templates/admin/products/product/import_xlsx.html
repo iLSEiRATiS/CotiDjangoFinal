@@ -2,20 +2,33 @@
 
 {% block content %}
   <div id="content-main">
-    <h1>Importar productos via XLSX</h1>
+    <h1>Importar productos v&iacute;a XLSX</h1>
+
     <p>
-      Usa una hoja con estos encabezados (fila 1):<br>
+      Esta pantalla est&aacute; preparada para importar el archivo
+      <strong>Exportacion-productos-03-02-26.fixed.xlsx</strong>.
+    </p>
+
+    <h2 style="margin:16px 0 8px; font-size:16px;">Formato requerido</h2>
+    <p style="margin-top:0;">
+      La fila 1 debe contener exactamente estos encabezados:<br>
       <code>{{ headers|join:", " }}</code>
     </p>
+
+    <h2 style="margin:16px 0 8px; font-size:16px;">Plantillas</h2>
     <p>
-      <a class="button" href="{{ template_url }}">Descargar plantilla vacía</a>
+      <a class="button" href="{{ template_url }}">Descargar plantilla vac&iacute;a</a>
       <a class="button" href="{{ example_url }}">Descargar ejemplo</a>
     </p>
-    <p class="help">
-      Se consumen los campos: nombre, slug/sku (para buscar o crear), descripcion, categoria, precio, stock, activo.
-      Las dem&aacute;s columnas se ignoran por ahora pero quedan en la plantilla para mantener compatibilidad.
-      Las categor&iacute;as se crean si no existen.
-    </p>
+
+    <h2 style="margin:16px 0 8px; font-size:16px;">C&oacute;mo procesa la importaci&oacute;n</h2>
+    <ul class="help" style="margin-top:0;">
+      <li>Campos usados hoy: <strong>nombre, slug/sku, descripcion, categoria, precio, stock, activo</strong>.</li>
+      <li>Las dem&aacute;s columnas se conservan para compatibilidad de plantilla.</li>
+      <li>Si una categor&iacute;a no existe, se crea autom&aacute;ticamente.</li>
+      <li><strong>Nuevos</strong>: productos creados. <strong>Actualizados</strong>: productos existentes modificados.</li>
+    </ul>
+
     <form method="post" enctype="multipart/form-data" novalidate>
       {% csrf_token %}
       <fieldset class="module aligned">
@@ -29,9 +42,14 @@
         <a class="button cancel-link" href="{% url 'admin:products_product_changelist' %}">Volver</a>
       </div>
     </form>
+
     {% if created or updated %}
-      <p class="success">Importados: {{ created }} nuevos, {{ updated }} actualizados.</p>
+      <p class="success">
+        Resultado de importaci&oacute;n: <strong>{{ created }}</strong> nuevos,
+        <strong>{{ updated }}</strong> actualizados.
+      </p>
     {% endif %}
+
     {% if errors %}
       <div class="errornote">
         {% for e in errors %}<div>{{ e }}</div>{% endfor %}
