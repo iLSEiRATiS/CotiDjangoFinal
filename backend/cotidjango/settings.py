@@ -49,6 +49,16 @@ def _env_csv(name, default=""):
     value = os.getenv(name, default)
     return [item.strip() for item in value.split(",") if item.strip()]
 
+
+def _env_int(name, default):
+    value = os.getenv(name)
+    if value is None or str(value).strip() == "":
+        return default
+    try:
+        return int(value)
+    except Exception:
+        return default
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -205,6 +215,10 @@ CSRF_TRUSTED_ORIGINS = _env_csv(
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Upload limits (default Django values are too low for large XLSX imports).
+DATA_UPLOAD_MAX_MEMORY_SIZE = _env_int("DATA_UPLOAD_MAX_MEMORY_SIZE", 25 * 1024 * 1024)  # 25MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = _env_int("FILE_UPLOAD_MAX_MEMORY_SIZE", 25 * 1024 * 1024)  # 25MB
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
