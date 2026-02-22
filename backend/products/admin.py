@@ -4,7 +4,6 @@ import os
 import re
 import openpyxl
 from django.contrib import admin, messages
-from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -374,15 +373,15 @@ class ProductAdmin(admin.ModelAdmin):
                     reverse("admin:products_product_import_xlsx")
                 )
             try:
-                wb = openpyxl.load_workbook(upload, data_only=True)
-                sheet = wb.active
-                rows = list(sheet.iter_rows(values_only=True))
-                if not rows:
-                    raise ValueError("El archivo est? vac?o.")
+                def _open_sheet():
+                    upload.seek(0)
+                    wb_local = openpyxl.load_workbook(upload, data_only=True, read_only=True)
+                    return wb_local, wb_local.active
 
+                wb, sheet = _open_sheet()
                 header_idx = None
                 header_row = None
-                for i, row in enumerate(rows):
+                for i, row in enumerate(sheet.iter_rows(values_only=True)):
                     if not row:
                         continue
                     normalized = [self._norm_header(h) for h in row]
@@ -390,6 +389,7 @@ class ProductAdmin(admin.ModelAdmin):
                         header_idx = i
                         header_row = row
                         break
+                wb.close()
 
                 if header_row is None:
                     header_row = self.product_headers
@@ -401,7 +401,7 @@ class ProductAdmin(admin.ModelAdmin):
                     "categoria": "categoria",
                     "subcategoria": "subcategoria",
                     "sub categoria": "subcategoria",
-                    "subcategoría": "subcategoria",
+                    "subcategor?a": "subcategoria",
                     "url imagenes": "url imag",
                     "url imag": "url imag",
                     "url_imag": "url imag",
@@ -425,10 +425,9 @@ class ProductAdmin(admin.ModelAdmin):
                 if missing:
                     errors.append(f"Faltan columnas obligatorias: {', '.join(sorted(missing))}")
 
-                # SKUs reutilizados con nombres diferentes dentro del mismo XLSX.
-                # En esos casos no usamos SKU como identidad unica para evitar pisado de filas.
                 sku_name_sets = {}
-                for row_idx, raw in enumerate(rows, start=1):
+                wb, sheet = _open_sheet()
+                for row_idx, raw in enumerate(sheet.iter_rows(values_only=True), start=1):
                     if header_idx is not None and row_idx - 1 == header_idx:
                         continue
                     row_data = {
@@ -440,133 +439,120 @@ class ProductAdmin(admin.ModelAdmin):
                     if not nombre_row or not sku_row:
                         continue
                     sku_name_sets.setdefault(sku_row, set()).add(self._norm_header(nombre_row))
+                wb.close()
                 multi_name_skus = {sku for sku, names in sku_name_sets.items() if len(names) > 1}
 
-                with transaction.atomic():
-
-                    for idx, raw in enumerate(rows, start=1):
-                        if header_idx is not None and idx - 1 == header_idx:
-                            continue
-                        data = {h: raw[header_map[h]] if h in header_map and header_map[h] < len(raw) else "" for h in header_map}
-                        # normaliza claves originales (con y sin mayúsculas)
-                        row_data = {k: data.get(k) for k in header_map}
-                        if all(v in ("", None) for v in row_data.values()):
-                            continue
-                        nombre = row_data.get("nombre") or ""
-                        precio = self._parse_decimal(row_data.get("precio"))
-                        if not nombre:
-                            errors.append(f"Fila {idx}: nombre es obligatorio.")
-                            continue
-                        if precio is None:
-                            precio = Decimal("0")
-                        opt1_name = (row_data.get("opcion_1_nombre") or "").strip()
-                        opt1_val = row_data.get("opcion_1_valor")
-                        opt2_name = (row_data.get("opcion_2_nombre") or "").strip()
-                        opt2_val = row_data.get("opcion_2_valor")
-                        opt1_vals = self._parse_attr_values(opt1_val)
-                        opt2_vals = self._parse_attr_values(opt2_val)
-                        has_declared_attrs = bool((opt1_name and opt1_vals) or (opt2_name and opt2_vals))
-                        sku_raw = row_data.get("sku") or ""
-                        parent_sku_raw = row_data.get("parent_sku") or ""
-                        slug_raw = row_data.get("slug") or ""
-                        categoria_raw = row_data.get("categoria") or ""
-                        subcategoria_raw = row_data.get("subcategoria") or ""
-                        categoria_obj = None
-                        path_parts = self._compose_category_path(categoria_raw, subcategoria_raw)
-                        if path_parts:
-                            parent = None
-                            for part in path_parts:
-                                parent = self._get_or_create_category_normalized(part, parent=parent)
-                            categoria_obj = parent
-                        if has_declared_attrs:
-                            # Regla principal: mismo nombre + categoria + precio = mismo producto con variantes.
-                            slug = self._build_group_slug(nombre=nombre, path_parts=path_parts, precio=precio)
-                        else:
-                            sku_upper = str(sku_raw).strip().upper()
-                            effective_sku = "" if (sku_upper and sku_upper in multi_name_skus) else sku_raw
-                            slug = self._build_identity_slug(
-                                sku_raw=effective_sku,
-                                slug_raw=slug_raw,
-                                nombre=nombre,
-                                path_parts=path_parts,
-                                precio=precio,
-                                parent_sku_raw=parent_sku_raw or sku_raw,
-                            )
-                        existing = Product.objects.filter(slug=slug).first()
-                        is_new = existing is None
-                        product = existing or Product(slug=slug, user=request.user)
-                        # Conserva el nombre exacto del Excel como verdad de origen.
-                        product.nombre = nombre
-                        product.descripcion = row_data.get("descripcion") or ""
-                        product.precio = precio
-                        stock = self._parse_int(row_data.get("stock"))
-                        product.stock = stock if stock is not None else 0
-                        product.activo = self._parse_bool(row_data.get("activo"), default=True)
-                        product.categoria = categoria_obj
-                        attrs = {}
-                        if opt1_name:
-                            values = opt1_vals
-                            if values:
-                                attrs[opt1_name] = values
-                        if opt2_name:
-                            values = opt2_vals
-                            if values:
-                                attrs[opt2_name] = values
-                        has_sku = bool(str(sku_raw).strip())
-                        if has_declared_attrs:
-                            merged = {}
-                            if isinstance(product.atributos, dict):
-                                merged.update(product.atributos)
+                wb, sheet = _open_sheet()
+                for idx, raw in enumerate(sheet.iter_rows(values_only=True), start=1):
+                    if header_idx is not None and idx - 1 == header_idx:
+                        continue
+                    data = {h: raw[header_map[h]] if h in header_map and header_map[h] < len(raw) else "" for h in header_map}
+                    row_data = {k: data.get(k) for k in header_map}
+                    if all(v in ("", None) for v in row_data.values()):
+                        continue
+                    nombre = row_data.get("nombre") or ""
+                    precio = self._parse_decimal(row_data.get("precio"))
+                    if not nombre:
+                        errors.append(f"Fila {idx}: nombre es obligatorio.")
+                        continue
+                    if precio is None:
+                        precio = Decimal("0")
+                    opt1_name = (row_data.get("opcion_1_nombre") or "").strip()
+                    opt1_val = row_data.get("opcion_1_valor")
+                    opt2_name = (row_data.get("opcion_2_nombre") or "").strip()
+                    opt2_val = row_data.get("opcion_2_valor")
+                    opt1_vals = self._parse_attr_values(opt1_val)
+                    opt2_vals = self._parse_attr_values(opt2_val)
+                    has_declared_attrs = bool((opt1_name and opt1_vals) or (opt2_name and opt2_vals))
+                    sku_raw = row_data.get("sku") or ""
+                    parent_sku_raw = row_data.get("parent_sku") or ""
+                    slug_raw = row_data.get("slug") or ""
+                    categoria_raw = row_data.get("categoria") or ""
+                    subcategoria_raw = row_data.get("subcategoria") or ""
+                    categoria_obj = None
+                    path_parts = self._compose_category_path(categoria_raw, subcategoria_raw)
+                    if path_parts:
+                        parent = None
+                        for part in path_parts:
+                            parent = self._get_or_create_category_normalized(part, parent=parent)
+                        categoria_obj = parent
+                    if has_declared_attrs:
+                        slug = self._build_group_slug(nombre=nombre, path_parts=path_parts, precio=precio)
+                    else:
+                        sku_upper = str(sku_raw).strip().upper()
+                        effective_sku = "" if (sku_upper and sku_upper in multi_name_skus) else sku_raw
+                        slug = self._build_identity_slug(
+                            sku_raw=effective_sku,
+                            slug_raw=slug_raw,
+                            nombre=nombre,
+                            path_parts=path_parts,
+                            precio=precio,
+                            parent_sku_raw=parent_sku_raw or sku_raw,
+                        )
+                    existing = Product.objects.filter(slug=slug).first()
+                    is_new = existing is None
+                    product = existing or Product(slug=slug, user=request.user)
+                    product.nombre = nombre
+                    product.descripcion = row_data.get("descripcion") or ""
+                    product.precio = precio
+                    stock = self._parse_int(row_data.get("stock"))
+                    product.stock = stock if stock is not None else 0
+                    product.activo = self._parse_bool(row_data.get("activo"), default=True)
+                    product.categoria = categoria_obj
+                    attrs = {}
+                    if opt1_name and opt1_vals:
+                        attrs[opt1_name] = opt1_vals
+                    if opt2_name and opt2_vals:
+                        attrs[opt2_name] = opt2_vals
+                    has_sku = bool(str(sku_raw).strip())
+                    if has_declared_attrs:
+                        merged = {}
+                        if isinstance(product.atributos, dict):
+                            merged.update(product.atributos)
+                        for key, values in attrs.items():
+                            current = merged.get(key, [])
+                            if not isinstance(current, list):
+                                current = [current] if current else []
+                            for v in values:
+                                if v not in current:
+                                    current.append(v)
+                            merged[key] = current
+                        product.atributos = merged if merged else {}
+                        stock_map = product.atributos_stock if isinstance(product.atributos_stock, dict) else {}
+                        if stock is not None:
                             for key, values in attrs.items():
-                                current = merged.get(key, [])
-                                if not isinstance(current, list):
-                                    current = [current] if current else []
+                                existing_map = stock_map.get(key, {}) if isinstance(stock_map.get(key), dict) else {}
                                 for v in values:
-                                    if v not in current:
-                                        current.append(v)
-                                merged[key] = current
-                            product.atributos = merged if merged else {}
-
-                            stock_map = product.atributos_stock if isinstance(product.atributos_stock, dict) else {}
-                            if stock is not None:
-                                for key, values in attrs.items():
-                                    if not values:
-                                        continue
-                                    existing_map = stock_map.get(key, {}) if isinstance(stock_map.get(key), dict) else {}
-                                    for v in values:
-                                        existing_map[v] = max(int(existing_map.get(v, 0)), int(stock))
-                                    stock_map[key] = existing_map
-                            product.atributos_stock = stock_map if stock_map else {}
-                        elif has_sku:
-                            # SKU con fila simple: conserva datos exactos del XLSX.
-                            product.atributos = attrs if attrs else {}
-                            if stock is not None and attrs:
-                                stock_map = {}
-                                for key, values in attrs.items():
-                                    if not values:
-                                        continue
-                                    stock_map[key] = {v: int(stock) for v in values}
-                                product.atributos_stock = stock_map
-                            elif not attrs:
-                                product.atributos_stock = {}
-                        else:
-                            # Sin SKU y sin atributos: se conserva como producto simple.
-                            product.atributos = {}
+                                    existing_map[v] = max(int(existing_map.get(v, 0)), int(stock))
+                                stock_map[key] = existing_map
+                        product.atributos_stock = stock_map if stock_map else {}
+                    elif has_sku:
+                        product.atributos = attrs if attrs else {}
+                        if stock is not None and attrs:
+                            stock_map = {}
+                            for key, values in attrs.items():
+                                stock_map[key] = {v: int(stock) for v in values}
+                            product.atributos_stock = stock_map
+                        elif not attrs:
                             product.atributos_stock = {}
-                        image_url = row_data.get("imagen_1") or row_data.get("url imag") or row_data.get("url_imag") or ""
-                        if image_url and str(image_url).startswith(("http://", "https://")):
-                            product.image_url = str(image_url).strip()
-                        if is_new and not product.slug:
-                            product.slug = self._build_slug(nombre)
-                        product.save()
-                        if is_new:
-                            created += 1
-                        else:
-                            updated += 1
+                    else:
+                        product.atributos = {}
+                        product.atributos_stock = {}
+                    image_url = row_data.get("imagen_1") or row_data.get("url imag") or row_data.get("url_imag") or ""
+                    if image_url and str(image_url).startswith(("http://", "https://")):
+                        product.image_url = str(image_url).strip()
+                    if is_new and not product.slug:
+                        product.slug = self._build_slug(nombre)
+                    product.save()
+                    if is_new:
+                        created += 1
+                    else:
+                        updated += 1
+                wb.close()
                 if created or updated:
                     messages.success(
                         request,
-                        f"Importación completada. Nuevos: {created} | Actualizados: {updated}",
+                        f"Importaci?n completada. Nuevos: {created} | Actualizados: {updated}",
                     )
                 if errors:
                     for err in errors:
@@ -587,6 +573,7 @@ class ProductAdmin(admin.ModelAdmin):
             "errors": errors,
         }
         return TemplateResponse(request, "admin/products/product/import_xlsx.html", context)
+
 
 
 @admin.register(Offer)
