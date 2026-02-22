@@ -216,9 +216,11 @@ CSRF_TRUSTED_ORIGINS = _env_csv(
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# Upload limits (default Django values are too low for large XLSX imports).
-DATA_UPLOAD_MAX_MEMORY_SIZE = _env_int("DATA_UPLOAD_MAX_MEMORY_SIZE", 25 * 1024 * 1024)  # 25MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = _env_int("FILE_UPLOAD_MAX_MEMORY_SIZE", 25 * 1024 * 1024)  # 25MB
+# Upload tuning for large XLSX in low-memory environments:
+# - keep request body limit high enough
+# - force files to temp-disk early (not RAM)
+DATA_UPLOAD_MAX_MEMORY_SIZE = _env_int("DATA_UPLOAD_MAX_MEMORY_SIZE", 50 * 1024 * 1024)  # 50MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = _env_int("FILE_UPLOAD_MAX_MEMORY_SIZE", 1 * 1024 * 1024)    # 1MB
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
