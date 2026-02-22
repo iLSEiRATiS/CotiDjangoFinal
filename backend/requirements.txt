@@ -3,6 +3,7 @@ beautifulsoup4==4.14.2
 certifi==2025.11.12
 charset-normalizer==3.4.4
 Django==5.2.8
+gunicorn==23.0.0
 django-cors-headers==4.9.0
 djangorestframework==3.16.1
 djangorestframework-simplejwt==5.5.1
