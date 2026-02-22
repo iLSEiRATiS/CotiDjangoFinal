@@ -23,7 +23,7 @@ def health_check(_request):
 
 
 urlpatterns = [
-    path("", product_views.StoreHomeView.as_view(), name="home"),
+    path("", health_check, name="home"),
     path("catalogo/", product_views.StoreListView.as_view(), name="catalogo"),
     path("producto/<int:pk>/", product_views.StoreDetailView.as_view(), name="product-detail"),
     path("orden/nueva/", product_views.StoreOrderView.as_view(), name="order-new"),
