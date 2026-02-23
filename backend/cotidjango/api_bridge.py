@@ -253,11 +253,31 @@ def _escape_pdf_text(text: str) -> str:
 
 
 def build_invoice_pdf(order) -> bytes:
-    # PDF con soporte de acentos usando reportlab
     from io import BytesIO
+    from decimal import Decimal
     from reportlab.pdfgen import canvas
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
+
+    def _money(value):
+        try:
+            val = Decimal(str(value or 0))
+        except Exception:
+            val = Decimal("0")
+        s = f"{val:,.2f}"
+        # 1,234.56 -> 1.234,56
+        return "$" + s.replace(",", "X").replace(".", ",").replace("X", ".")
+
+    def _attrs_label(attrs):
+        if not isinstance(attrs, dict) or not attrs:
+            return ""
+        parts = []
+        for k, v in attrs.items():
+            if isinstance(v, list):
+                v = ", ".join(str(x) for x in v)
+            if v not in (None, ""):
+                parts.append(f"{k}: {v}")
+        return f" - {' | '.join(parts)}" if parts else ""
 
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=(612, 792))  # Letter
@@ -271,9 +291,10 @@ def build_invoice_pdf(order) -> bytes:
     except Exception:
         pass
 
-    c.setFont(font_name, 12)
     y = 760
-    line_height = 16
+    line_height = 18
+    x_left = 50
+    x_right = 562
 
     status_labels = {
         "created": "Creado",
@@ -285,41 +306,97 @@ def build_invoice_pdf(order) -> bytes:
         "cancelled": "Cancelado",
         "draft": "Borrador",
     }
+    payment_label = status_labels.get(order.status, order.status)
+    date_label = order.creado_en.strftime("%d/%m/%Y %H:%M") if order.creado_en else ""
+    address = ", ".join(filter(None, [order.direccion, order.ciudad, order.cp]))
 
-    lines = []
-    lines.append(f"Factura / Pedido #{order.id}")
-    lines.append(f"Fecha: {order.creado_en.strftime('%Y-%m-%d %H:%M') if order.creado_en else ''}")
-    lines.append(f"Cliente: {order.nombre} - {order.email}")
-    addr = ", ".join(filter(None, [order.direccion, order.ciudad, order.cp]))
-    lines.append(f"Env?o: {addr}")
-    lines.append("")
-    lines.append("Items:")
+    def _draw_page_header(current_y):
+        c.setFont(font_name, 22)
+        c.drawString(x_left, current_y, f"Orden: #{order.id}")
+        c.setFont(font_name, 11)
+        c.drawRightString(x_right, current_y + 4, "CotiStore")
+
+        current_y -= 28
+        c.setFont(font_name, 12)
+        c.drawString(x_left, current_y, f"Fecha: {date_label}")
+        current_y -= 16
+        c.drawString(x_left, current_y, f"Pago: {payment_label}")
+        current_y -= 16
+        c.drawString(x_left, current_y, "Metodo de envio: Acordar envio")
+        current_y -= 10
+        c.line(x_left, current_y, x_right, current_y)
+        current_y -= 18
+        return current_y
+
+    def _draw_customer_block(current_y):
+        c.setFont(font_name, 12)
+        c.drawString(x_left, current_y, f"Recibe: {order.nombre or '-'}")
+        current_y -= 16
+        c.drawString(x_left, current_y, f"Telefono: {order.telefono or '-'}")
+        current_y -= 16
+        c.drawString(x_left, current_y, f"Email: {order.email or '-'}")
+        current_y -= 16
+        c.drawString(x_left, current_y, f"Direccion: {address or '-'}")
+        current_y -= 16
+        return current_y
+
+    col_code = 50
+    col_qty = 105
+    col_desc = 170
+    col_unit = 455
+    col_total = 530
+
+    def _draw_table_header(current_y):
+        top = current_y
+        bottom = current_y - 24
+        c.rect(x_left, bottom, x_right - x_left, top - bottom, stroke=1, fill=0)
+        for xx in (95, 155, 440, 520):
+            c.line(xx, bottom, xx, top)
+        c.setFont(font_name, 11)
+        c.drawString(col_code, current_y - 16, "Codigo")
+        c.drawString(col_qty, current_y - 16, "Cantidad")
+        c.drawString(col_desc, current_y - 16, "Descripcion")
+        c.drawRightString(col_unit, current_y - 16, "P. unitario")
+        c.drawRightString(col_total + 20, current_y - 16, "Total")
+        return bottom
+
+    def _draw_row(current_y, code, qty, desc, unit_price, row_total):
+        row_h = 20
+        bottom = current_y - row_h
+        c.rect(x_left, bottom, x_right - x_left, row_h, stroke=1, fill=0)
+        for xx in (95, 155, 440, 520):
+            c.line(xx, bottom, xx, current_y)
+        c.setFont(font_name, 10)
+        c.drawString(col_code, current_y - 14, str(code))
+        c.drawString(col_qty, current_y - 14, str(qty))
+        c.drawString(col_desc, current_y - 14, (desc or "")[:58])
+        c.drawRightString(col_unit, current_y - 14, _money(unit_price))
+        c.drawRightString(col_total + 20, current_y - 14, _money(row_total))
+        return bottom
+
+    y = _draw_page_header(y)
+    y = _draw_customer_block(y)
+    y -= 6
+    y = _draw_table_header(y)
+
     for item in order.items.all():
-        attrs = item.atributos or {}
-        attrs_label = ""
-        if isinstance(attrs, dict) and attrs:
-            parts = []
-            for k, v in attrs.items():
-                if isinstance(v, list):
-                    v = ", ".join(str(x) for x in v)
-                if v not in (None, ""):
-                    parts.append(f"{k}: {v}")
-            if parts:
-                attrs_label = f" ({'; '.join(parts)})"
-        lines.append(
-            f"- {item.product.nombre}{attrs_label} x{item.cantidad} @ ${item.precio_unitario:.2f} = ${item.subtotal:.2f}"
-        )
-    lines.append("")
-    lines.append(f"Total: ${order.total:.2f}")
-    lines.append(f"Estado: {status_labels.get(order.status, order.status)}")
-
-    for line in lines:
-        if y < 40:
+        desc = f"{item.product.nombre}{_attrs_label(item.atributos)}"
+        if y < 70:
             c.showPage()
-            c.setFont(font_name, 12)
             y = 760
-        c.drawString(50, y, line)
-        y -= line_height
+            y = _draw_page_header(y)
+            y = _draw_customer_block(y)
+            y -= 6
+            y = _draw_table_header(y)
+        code = item.product_id or "-"
+        y = _draw_row(y, code, item.cantidad, desc, item.precio_unitario, item.subtotal)
+
+    y -= 14
+    c.setFont(font_name, 13)
+    c.drawRightString(x_right, y, f"TOTAL: {_money(order.total)}")
+    y -= line_height
+    c.setFont(font_name, 11)
+    c.drawRightString(x_right, y, f"Estado: {payment_label}")
 
     c.showPage()
     c.save()
