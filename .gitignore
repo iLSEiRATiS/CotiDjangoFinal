@@ -4,6 +4,9 @@
 backend/.venv/
 backend/venv/
 .env
+backend/.django_secret_key
+backend/db.sqlite3
+backend/staticfiles/
 
 # Node/Vite artifacts
 frontend/node_modules/

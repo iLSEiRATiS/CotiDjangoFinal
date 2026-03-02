@@ -255,17 +255,22 @@ def _escape_pdf_text(text: str) -> str:
 def build_invoice_pdf(order) -> bytes:
     from io import BytesIO
     from decimal import Decimal
+    from pathlib import Path
+    import os
+
     from reportlab.pdfgen import canvas
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.utils import ImageReader
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
 
+    # ----------------- helpers -----------------
     def _money(value):
         try:
             val = Decimal(str(value or 0))
         except Exception:
             val = Decimal("0")
         s = f"{val:,.2f}"
-        # 1,234.56 -> 1.234,56
         return "$" + s.replace(",", "X").replace(".", ",").replace("X", ".")
 
     def _attrs_label(attrs):
@@ -279,129 +284,210 @@ def build_invoice_pdf(order) -> bytes:
                 parts.append(f"{k}: {v}")
         return f" - {' | '.join(parts)}" if parts else ""
 
-    buffer = BytesIO()
-    c = canvas.Canvas(buffer, pagesize=(612, 792))  # Letter
+    def _safe(txt, fallback="-"):
+        s = (str(txt or "")).strip()
+        return s if s else fallback
 
-    font_name = "Helvetica"
-    arial_path = r"C:\Windows\Fonts\arial.ttf"
+    # ----------------- PDF base -----------------
+    buffer = BytesIO()
+    W, H = A4
+    c = canvas.Canvas(buffer, pagesize=A4)
+
+    # Tipografía
+    font_regular = "Helvetica"
+    font_bold = "Helvetica-Bold"
     try:
-        if Path(arial_path).exists():
-            pdfmetrics.registerFont(TTFont("Arial", arial_path))
-            font_name = "Arial"
+        arial = r"C:\Windows\Fonts\arial.ttf"
+        arial_bold = r"C:\Windows\Fonts\arialbd.ttf"
+        if Path(arial).exists():
+            pdfmetrics.registerFont(TTFont("Arial", arial))
+            font_regular = "Arial"
+        if Path(arial_bold).exists():
+            pdfmetrics.registerFont(TTFont("Arial-Bold", arial_bold))
+            font_bold = "Arial-Bold"
     except Exception:
         pass
 
-    y = 760
-    line_height = 18
-    x_left = 50
-    x_right = 562
+    # Estilo líneas
+    def stroke_light():
+        c.setLineWidth(0.6)
+        c.setStrokeColorRGB(0.7, 0.7, 0.7)
 
-    status_labels = {
-        "created": "Creado",
-        "approved": "Aprobado",
-        "pending_payment": "Falta pago",
+    def text_dark():
+        c.setFillColorRGB(0.1, 0.1, 0.1)
+
+    margin_l = 36
+    margin_r = 36
+    x_left = margin_l
+    x_right = W - margin_r
+
+    # ----------------- datos -----------------
+    date_label = order.creado_en.strftime("%d/%m/%y %H:%M") if order.creado_en else ""
+
+    status_to_pago = {
+        "created": "Acordar (Pendiente)",
+        "approved": "Acordar (Pendiente)",
+        "pending_payment": "Acordar (Pendiente)",
         "paid": "Pagado",
         "shipped": "Enviado",
         "delivered": "Entregado",
         "cancelled": "Cancelado",
         "draft": "Borrador",
     }
-    payment_label = status_labels.get(order.status, order.status)
-    date_label = order.creado_en.strftime("%d/%m/%Y %H:%M") if order.creado_en else ""
-    address = ", ".join(filter(None, [order.direccion, order.ciudad, order.cp]))
+    pago_label = status_to_pago.get(order.status, order.status)
 
-    def _draw_page_header(current_y):
-        c.setFont(font_name, 22)
-        c.drawString(x_left, current_y, f"Orden: #{order.id}")
-        c.setFont(font_name, 11)
-        c.drawRightString(x_right, current_y + 4, "CotiStore")
+    address = ", ".join(filter(None, [
+        order.direccion,
+        order.ciudad,
+        order.cp,
+    ]))
 
-        current_y -= 28
-        c.setFont(font_name, 12)
-        c.drawString(x_left, current_y, f"Fecha: {date_label}")
-        current_y -= 16
-        c.drawString(x_left, current_y, f"Pago: {payment_label}")
-        current_y -= 16
-        c.drawString(x_left, current_y, "Metodo de envio: Acordar envio")
-        current_y -= 10
-        c.line(x_left, current_y, x_right, current_y)
-        current_y -= 18
-        return current_y
+    # ----------------- LOGO -----------------
+    LOGO_PATH = r"C:\Users\facun\OneDrive\Escritorio\CotiWeb\DjangoFrontCoti\src\assets\logo-coti.png"
+    logo_path = Path(LOGO_PATH) if Path(LOGO_PATH).exists() else None
 
-    def _draw_customer_block(current_y):
-        c.setFont(font_name, 12)
-        c.drawString(x_left, current_y, f"Recibe: {order.nombre or '-'}")
-        current_y -= 16
-        c.drawString(x_left, current_y, f"Telefono: {order.telefono or '-'}")
-        current_y -= 16
-        c.drawString(x_left, current_y, f"Email: {order.email or '-'}")
-        current_y -= 16
-        c.drawString(x_left, current_y, f"Direccion: {address or '-'}")
-        current_y -= 16
-        return current_y
+    def draw_logo(y_top):
+        if not logo_path:
+            return
+        try:
+            img = ImageReader(str(logo_path))
+            c.drawImage(
+                img,
+                x_right - 130,
+                y_top - 36,
+                width=120,
+                height=34,
+                mask="auto",
+                preserveAspectRatio=True
+            )
+        except Exception:
+            pass
 
-    col_code = 50
-    col_qty = 105
-    col_desc = 170
-    col_unit = 455
-    col_total = 530
+    # ----------------- BLOQUES -----------------
+    def header(y):
+        text_dark()
+        draw_logo(y)
 
-    def _draw_table_header(current_y):
-        top = current_y
-        bottom = current_y - 24
-        c.rect(x_left, bottom, x_right - x_left, top - bottom, stroke=1, fill=0)
-        for xx in (95, 155, 440, 520):
-            c.line(xx, bottom, xx, top)
-        c.setFont(font_name, 11)
-        c.drawString(col_code, current_y - 16, "Codigo")
-        c.drawString(col_qty, current_y - 16, "Cantidad")
-        c.drawString(col_desc, current_y - 16, "Descripcion")
-        c.drawRightString(col_unit, current_y - 16, "P. unitario")
-        c.drawRightString(col_total + 20, current_y - 16, "Total")
-        return bottom
+        c.setFont(font_bold, 14)
+        c.drawString(x_left, y, f"Orden: #{order.id}")
 
-    def _draw_row(current_y, code, qty, desc, unit_price, row_total):
-        row_h = 20
-        bottom = current_y - row_h
-        c.rect(x_left, bottom, x_right - x_left, row_h, stroke=1, fill=0)
-        for xx in (95, 155, 440, 520):
-            c.line(xx, bottom, xx, current_y)
-        c.setFont(font_name, 10)
-        c.drawString(col_code, current_y - 14, str(code))
-        c.drawString(col_qty, current_y - 14, str(qty))
-        c.drawString(col_desc, current_y - 14, (desc or "")[:58])
-        c.drawRightString(col_unit, current_y - 14, _money(unit_price))
-        c.drawRightString(col_total + 20, current_y - 14, _money(row_total))
-        return bottom
+        y -= 16
+        c.setFont(font_regular, 9.5)
+        c.drawString(x_left, y, f"Fecha: {date_label}")
 
-    y = _draw_page_header(y)
-    y = _draw_customer_block(y)
-    y -= 6
-    y = _draw_table_header(y)
+        y -= 12
+        c.drawString(x_left, y, f"Pago: {pago_label}")
+
+        y -= 14
+        c.drawString(x_left, y, "Método de envío: Acordar envío")
+
+        y -= 10
+        stroke_light()
+        c.line(x_left, y, x_right, y)
+        return y - 16
+
+    def customer(y):
+        c.setFont(font_bold, 9.5)
+        c.drawString(x_left, y, "Recibe:")
+        c.setFont(font_regular, 9.5)
+        c.drawString(x_left + 45, y, _safe(order.nombre))
+
+        y -= 12
+        c.setFont(font_bold, 9.5)
+        c.drawString(x_left, y, "Teléfono:")
+        c.setFont(font_regular, 9.5)
+        c.drawString(x_left + 55, y, _safe(order.telefono))
+
+        y -= 12
+        c.setFont(font_bold, 9.5)
+        c.drawString(x_left, y, "Email:")
+        c.setFont(font_regular, 9.5)
+        c.drawString(x_left + 38, y, _safe(order.email))
+
+        y -= 12
+        c.setFont(font_bold, 9.5)
+        c.drawString(x_left, y, "Dirección:")
+        c.setFont(font_regular, 9.5)
+        c.drawString(x_left + 55, y, _safe(address))
+
+        return y - 10
+
+    # ----------------- TABLA -----------------
+    col_code = x_left
+    col_qty = x_left + 55
+    col_desc = x_left + 110
+    v1 = x_left + 48
+    v2 = x_left + 102
+    v3 = x_right - 140
+    v4 = x_right - 70
+
+    def table_header(y):
+        row_h = 22
+        stroke_light()
+        c.rect(x_left, y - row_h, x_right - x_left, row_h)
+        for v in (v1, v2, v3, v4):
+            c.line(v, y - row_h, v, y)
+
+        c.setFont(font_bold, 9.2)
+        text_dark()
+        c.drawString(col_code + 2, y - 15, "Código")
+        c.drawString(col_qty + 2, y - 15, "Cantidad")
+        c.drawString(col_desc + 2, y - 15, "Descripción")
+        c.drawRightString(v4 - 6, y - 15, "P. unitario")
+        c.drawRightString(x_right - 6, y - 15, "Total")
+        return y - row_h
+
+    def table_row(y, code, qty, desc, unit, total):
+        row_h = 18
+        stroke_light()
+        c.rect(x_left, y - row_h, x_right - x_left, row_h)
+        for v in (v1, v2, v3, v4):
+            c.line(v, y - row_h, v, y)
+
+        c.setFont(font_regular, 9)
+        text_dark()
+        c.drawString(col_code + 2, y - 13, str(code))
+        c.drawString(col_qty + 2, y - 13, str(qty))
+
+        if len(desc) > 60:
+            desc = desc[:59] + "…"
+        c.drawString(col_desc + 2, y - 13, desc)
+
+        c.drawRightString(v4 - 6, y - 13, _money(unit))
+        c.drawRightString(x_right - 6, y - 13, _money(total))
+        return y - row_h
+
+    # ----------------- CONSTRUCCIÓN -----------------
+    y = H - 40
+    y = header(y)
+    y = customer(y)
+    y = table_header(y)
 
     for item in order.items.all():
-        desc = f"{item.product.nombre}{_attrs_label(item.atributos)}"
-        if y < 70:
+        if y < 90:
             c.showPage()
-            y = 760
-            y = _draw_page_header(y)
-            y = _draw_customer_block(y)
-            y -= 6
-            y = _draw_table_header(y)
-        code = item.product_id or "-"
-        y = _draw_row(y, code, item.cantidad, desc, item.precio_unitario, item.subtotal)
+            y = H - 40
+            y = header(y)
+            y = customer(y)
+            y = table_header(y)
+
+        desc = f"{item.product.nombre}{_attrs_label(item.atributos)}"
+        y = table_row(
+            y,
+            item.product_id or "-",
+            item.cantidad,
+            desc,
+            item.precio_unitario,
+            item.subtotal
+        )
 
     y -= 14
-    c.setFont(font_name, 13)
+    c.setFont(font_bold, 11)
     c.drawRightString(x_right, y, f"TOTAL: {_money(order.total)}")
-    y -= line_height
-    c.setFont(font_name, 11)
-    c.drawRightString(x_right, y, f"Estado: {payment_label}")
 
     c.showPage()
     c.save()
     return buffer.getvalue()
-
 def send_invoice_email(order, request=None):
     if not order.email:
         return
@@ -1233,3 +1319,4 @@ class AdminOfferDetailView(APIView):
             return Response({"error": "Oferta no encontrada"}, status=status.HTTP_404_NOT_FOUND)
         offer.delete()
         return Response({"ok": True})
+

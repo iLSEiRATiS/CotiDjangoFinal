@@ -38,6 +38,16 @@ def _load_env_file(path):
 _load_env_file(ENV_PATH)
 
 
+def _load_or_create_local_secret(path):
+    if path.exists():
+        value = path.read_text(encoding="utf-8").strip()
+        if value:
+            return value
+    value = secrets.token_urlsafe(50)
+    path.write_text(value, encoding="utf-8")
+    return value
+
+
 def _env_bool(name, default=False):
     value = os.getenv(name)
     if value is None:
@@ -63,8 +73,13 @@ def _env_int(name, default):
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Pull from env to avoid hardcoding; generate ephemeral key for local dev if missing.
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY") or os.getenv("SECRET_KEY") or secrets.token_urlsafe(50)
+# Local fallback is persisted to keep JWT/session tokens valid across restarts.
+LOCAL_SECRET_PATH = BASE_DIR / ".django_secret_key"
+SECRET_KEY = (
+    os.getenv("DJANGO_SECRET_KEY")
+    or os.getenv("SECRET_KEY")
+    or _load_or_create_local_secret(LOCAL_SECRET_PATH)
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = _env_bool("DEBUG", default=False)
@@ -183,11 +198,17 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
 
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    "staticfiles": {
+        "BACKEND": (
+            "django.contrib.staticfiles.storage.StaticFilesStorage"
+            if DEBUG or not (STATIC_ROOT / "staticfiles.json").exists()
+            else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        )
+    },
 }
 
 MEDIA_URL = '/media/'
