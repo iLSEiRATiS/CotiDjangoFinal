@@ -32,7 +32,7 @@ class OfferViewSet(viewsets.ModelViewSet):
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.select_related("user", "categoria").all()
+    queryset = Product.objects.select_related("user", "categoria").prefetch_related("extra_images").all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]

@@ -63,6 +63,23 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
 
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="extra_images")
+    image = models.ImageField(upload_to="products/gallery/", blank=True, null=True)
+    image_url = models.URLField(max_length=500, blank=True, default="")
+    order = models.PositiveIntegerField(default=0)
+    activo = models.BooleanField(default=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "id"]
+        verbose_name = "Imagen de producto"
+        verbose_name_plural = "Imagenes de producto"
+
+    def __str__(self):
+        return f"{self.product_id} - {self.order}"
+
+
 class Offer(models.Model):
     nombre = models.CharField(max_length=120)
     slug = models.SlugField(max_length=140, unique=True, blank=True)

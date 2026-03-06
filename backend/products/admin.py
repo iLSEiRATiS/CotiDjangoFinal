@@ -11,7 +11,7 @@ from django.urls import path, reverse
 from django.utils.text import slugify
 import unicodedata
 
-from .models import Product, Category, Offer, HomeImage
+from .models import Product, ProductImage, Category, Offer, HomeImage
 
 admin.site.site_header = "Admin Coti"
 admin.site.site_title = "Admin Coti"
@@ -26,6 +26,12 @@ class CategoryAdmin(admin.ModelAdmin):
     list_filter = ("parent",)
 
 
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1
+    fields = ("order", "image_url", "image", "activo")
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ("nombre", "slug", "precio", "user", "categoria", "stock", "activo", "creado_en")
@@ -33,13 +39,15 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ("creado_en", "activo", "categoria")
     list_editable = ("precio", "stock", "activo")
     change_list_template = "admin/products/product/change_list.html"
+    inlines = [ProductImageInline]
 
     template_xlsx_path = r"C:\Users\facun\OneDrive\Escritorio\CotiWeb\Exportacion-productos-03-02-26.fixed.xlsx"
 
     product_headers = [
         "sku", "parent_sku", "nombre", "slug", "descripcion", "categoria", "subcategoria", "marca",
         "precio", "costo", "moneda", "stock", "activo", "opcion_1_nombre", "opcion_1_valor",
-        "opcion_2_nombre", "opcion_2_valor", "imagen_1", "url imag", "imagen_2", "meta_title",
+        "opcion_2_nombre", "opcion_2_valor", "imagen_1", "url imag", "imagen_2", "imagen_3", "imagen_4",
+        "imagen_5", "meta_title",
         "meta_description", "peso", "largo", "ancho", "alto", "es_destacado", "requiere_envio",
         "gestion_stock",
     ]
@@ -182,6 +190,38 @@ class ProductAdmin(admin.ModelAdmin):
                 parts = [p.strip() for p in text.split(sep)]
                 return [p for p in parts if p]
         return [text]
+
+    def _extract_image_urls(self, row_data):
+        raw_values = [
+            row_data.get("imagen_1"),
+            row_data.get("url imag"),
+            row_data.get("url_imag"),
+            row_data.get("imagen_2"),
+            row_data.get("imagen_3"),
+            row_data.get("imagen_4"),
+            row_data.get("imagen_5"),
+        ]
+        out = []
+        seen = set()
+        for raw in raw_values:
+            if raw in (None, ""):
+                continue
+            text = str(raw).strip()
+            if not text:
+                continue
+            parts = [text]
+            for sep in ["|", ";", ","]:
+                if sep in text:
+                    parts = [p.strip() for p in text.split(sep)]
+                    break
+            for part in parts:
+                if not part or not part.startswith(("http://", "https://")):
+                    continue
+                if part in seen:
+                    continue
+                seen.add(part)
+                out.append(part)
+        return out
 
     def _strip_attr_from_name(self, name, values):
         if not name:
@@ -405,6 +445,11 @@ class ProductAdmin(admin.ModelAdmin):
                     "url imagenes": "url imag",
                     "url imag": "url imag",
                     "url_imag": "url imag",
+                    "imagen 1": "imagen_1",
+                    "imagen 2": "imagen_2",
+                    "imagen 3": "imagen_3",
+                    "imagen 4": "imagen_4",
+                    "imagen 5": "imagen_5",
                     "mostrar en tienda": "activo",
                     "nombre atributo 1": "opcion_1_nombre",
                     "valor atributo 1": "opcion_1_valor",
@@ -538,12 +583,40 @@ class ProductAdmin(admin.ModelAdmin):
                     else:
                         product.atributos = {}
                         product.atributos_stock = {}
-                    image_url = row_data.get("imagen_1") or row_data.get("url imag") or row_data.get("url_imag") or ""
-                    if image_url and str(image_url).startswith(("http://", "https://")):
-                        product.image_url = str(image_url).strip()
+                    image_urls = self._extract_image_urls(row_data)
+                    if image_urls:
+                        product.image_url = image_urls[0]
                     if is_new and not product.slug:
                         product.slug = self._build_slug(nombre)
                     product.save()
+                    if image_urls:
+                        gallery_urls = image_urls[1:]
+                        existing_qs = ProductImage.objects.filter(product=product)
+                        existing_by_url = {x.image_url: x for x in existing_qs if x.image_url}
+                        keep = set()
+                        for idx2, url in enumerate(gallery_urls, start=1):
+                            keep.add(url)
+                            existing = existing_by_url.get(url)
+                            if existing:
+                                changed = False
+                                if existing.order != idx2:
+                                    existing.order = idx2
+                                    changed = True
+                                if not existing.activo:
+                                    existing.activo = True
+                                    changed = True
+                                if changed:
+                                    existing.save(update_fields=["order", "activo"])
+                            else:
+                                ProductImage.objects.create(
+                                    product=product,
+                                    image_url=url,
+                                    order=idx2,
+                                    activo=True,
+                                )
+                        existing_qs.exclude(image_url__in=keep).delete()
+                    else:
+                        ProductImage.objects.filter(product=product).delete()
                     if is_new:
                         created += 1
                     else:
@@ -599,4 +672,12 @@ class HomeImageAdmin(admin.ModelAdmin):
     list_display = ("key", "section", "title", "target_url", "order", "activo")
     list_filter = ("section", "activo")
     search_fields = ("key", "title", "image_url", "target_url")
+    list_editable = ("order", "activo")
+
+
+@admin.register(ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
+    list_display = ("product", "order", "image_url", "activo", "creado_en")
+    list_filter = ("activo", "creado_en")
+    search_fields = ("product__nombre", "image_url")
     list_editable = ("order", "activo")

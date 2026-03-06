@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Product, Category, Offer
+from .models import Product, ProductImage, Category, Offer
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -59,14 +59,34 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
     def get_images(self, instance):
-        if getattr(instance, "image_url", ""):
-            return [instance.image_url]
+        out = []
+        seen = set()
+
+        def append_url(value):
+            url = str(value or "").strip()
+            if not url or url in seen:
+                return
+            seen.add(url)
+            out.append(url)
+
+        append_url(getattr(instance, "image_url", ""))
         if instance.imagen:
             try:
-                return [instance.imagen.url]
+                append_url(instance.imagen.url)
             except Exception:
-                return []
-        return []
+                pass
+
+        queryset = getattr(instance, "extra_images", None)
+        if queryset is None:
+            queryset = ProductImage.objects.filter(product=instance)
+        for img in queryset.filter(activo=True).order_by("order", "id"):
+            append_url(getattr(img, "image_url", ""))
+            if img.image:
+                try:
+                    append_url(img.image.url)
+                except Exception:
+                    pass
+        return out
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

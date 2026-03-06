@@ -27,7 +27,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import EmailMessage
 
 from orders.models import Order, OrderItem
-from products.models import Category, Product, Offer, HomeImage
+from products.models import Category, Product, ProductImage, Offer, HomeImage
 
 User = get_user_model()
 
@@ -51,6 +51,41 @@ def _abs_media(request, path):
         return path
     base = request.build_absolute_uri("/")
     return f"{base.rstrip('/')}/{str(path).lstrip('/')}"
+
+
+def _collect_product_images(prod, request=None):
+    out = []
+    seen = set()
+
+    def append(url):
+        value = str(url or "").strip()
+        if not value or value in seen:
+            return
+        seen.add(value)
+        out.append(value)
+
+    append(getattr(prod, "image_url", ""))
+    if getattr(prod, "imagen", None):
+        try:
+            append(_abs_media(request, prod.imagen.url))
+        except Exception:
+            pass
+
+    extra_images = getattr(prod, "extra_images", None)
+    if extra_images is not None:
+        iterable = extra_images.all()
+    else:
+        iterable = ProductImage.objects.filter(product=prod)
+    for img in iterable:
+        if not getattr(img, "activo", True):
+            continue
+        append(getattr(img, "image_url", ""))
+        if getattr(img, "image", None):
+            try:
+                append(_abs_media(request, img.image.url))
+            except Exception:
+                pass
+    return out
 
 
 def serialize_user(user, request=None):
@@ -83,11 +118,7 @@ def serialize_category(cat):
 
 
 def serialize_product(prod, request=None):
-    images = []
-    if getattr(prod, "image_url", ""):
-        images.append(prod.image_url)
-    elif prod.imagen:
-        images.append(_abs_media(request, prod.imagen.url))
+    images = _collect_product_images(prod, request)
     discount = resolve_discount_for_product(prod)
     final_price = discount["final_price"] if discount else prod.precio
     return {
@@ -137,7 +168,7 @@ def serialize_order(order, request=None):
                 attrs_label = f" ({'; '.join(parts)})"
         items.append({
             "productId": item.product_id,
-            "name": (item.product.nombre if item.product else "") + attrs_label,
+            "name": _order_item_name(item) + attrs_label,
             "price": float(item.precio_unitario),
             "qty": item.cantidad,
             "subtotal": float(item.subtotal),
@@ -214,6 +245,55 @@ def resolve_product(value):
         return Product.objects.filter(slug=value).first()
 
 
+def parse_image_urls_payload(raw_value):
+    if raw_value in (None, ""):
+        return []
+    items = raw_value if isinstance(raw_value, list) else [raw_value]
+    out = []
+    seen = set()
+    for item in items:
+        if isinstance(item, str):
+            parts = [item]
+            for sep in ["|", ";", ","]:
+                if sep in item:
+                    parts = [x.strip() for x in item.split(sep)]
+                    break
+            for part in parts:
+                url = str(part or "").strip()
+                if not url:
+                    continue
+                if url in seen:
+                    continue
+                seen.add(url)
+                out.append(url)
+    return out
+
+
+def sync_product_images(product: Product, image_urls):
+    urls = [str(u or "").strip() for u in (image_urls or []) if str(u or "").strip()]
+    if urls:
+        product.image_url = urls[0]
+    extra_urls = urls[1:]
+    existing = {x.image_url: x for x in ProductImage.objects.filter(product=product)}
+    keep = set()
+    for idx, url in enumerate(extra_urls, start=1):
+        keep.add(url)
+        row = existing.get(url)
+        if row:
+            changed = False
+            if row.order != idx:
+                row.order = idx
+                changed = True
+            if not row.activo:
+                row.activo = True
+                changed = True
+            if changed:
+                row.save(update_fields=["order", "activo"])
+        else:
+            ProductImage.objects.create(product=product, image_url=url, order=idx, activo=True)
+    ProductImage.objects.filter(product=product).exclude(image_url__in=keep).delete()
+
+
 def resolve_discount_for_product(product: Product):
     now = timezone.now()
     offers = Offer.objects.filter(activo=True).filter(
@@ -252,11 +332,33 @@ def _escape_pdf_text(text: str) -> str:
     return (text or "").replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
 
 
+def _order_item_name(item):
+    if getattr(item, "product_name", ""):
+        return item.product_name
+    if getattr(item, "product", None):
+        return item.product.nombre
+    return "Producto"
+
+
+def _invoice_logo_path():
+    explicit_logo = getattr(settings, "INVOICE_LOGO_PATH", "") or os.getenv("INVOICE_LOGO_PATH", "")
+    base_dir = Path(getattr(settings, "BASE_DIR", Path.cwd()))
+    candidates = []
+    if explicit_logo:
+        candidates.append(Path(explicit_logo))
+    candidates.extend([
+        base_dir / "static" / "logo-coti.png",
+        base_dir / "static" / "logo.png",
+        base_dir.parent / "DjangoFrontCoti" / "src" / "assets" / "logo-coti.png",
+        base_dir.parent / "DjangoFrontCoti" / "public" / "logo-coti.png",
+        base_dir.parent / "frontend" / "src" / "assets" / "logo-coti.png",
+    ])
+    return next((path for path in candidates if path.exists()), None)
+
+
 def build_invoice_pdf(order) -> bytes:
     from io import BytesIO
     from decimal import Decimal
-    from pathlib import Path
-    import os
 
     from reportlab.pdfgen import canvas
     from reportlab.lib.pagesizes import A4
@@ -343,8 +445,7 @@ def build_invoice_pdf(order) -> bytes:
     ]))
 
     # ----------------- LOGO -----------------
-    LOGO_PATH = r"C:\Users\facun\OneDrive\Escritorio\CotiWeb\DjangoFrontCoti\src\assets\logo-coti.png"
-    logo_path = Path(LOGO_PATH) if Path(LOGO_PATH).exists() else None
+    logo_path = _invoice_logo_path()
 
     def draw_logo(y_top):
         if not logo_path:
@@ -471,7 +572,7 @@ def build_invoice_pdf(order) -> bytes:
             y = customer(y)
             y = table_header(y)
 
-        desc = f"{item.product.nombre}{_attrs_label(item.atributos)}"
+        desc = f"{_order_item_name(item)}{_attrs_label(item.atributos)}"
         y = table_row(
             y,
             item.product_id or "-",
@@ -485,7 +586,6 @@ def build_invoice_pdf(order) -> bytes:
     c.setFont(font_bold, 11)
     c.drawRightString(x_right, y, f"TOTAL: {_money(order.total)}")
 
-    c.showPage()
     c.save()
     return buffer.getvalue()
 def send_invoice_email(order, request=None):
@@ -577,7 +677,7 @@ def send_admin_order_email(order, request=None):
             if parts:
                 attrs_label = f" ({'; '.join(parts)})"
         lines.append(
-            f"- {item.product.nombre}{attrs_label} x{item.cantidad} @ ${item.precio_unitario:.2f} = ${item.subtotal:.2f}"
+            f"- {_order_item_name(item)}{attrs_label} x{item.cantidad} @ ${item.precio_unitario:.2f} = ${item.subtotal:.2f}"
         )
     body = "\n".join(lines)
     html_body = body.replace("\n", "<br>")
@@ -736,23 +836,37 @@ class ProductListView(APIView):
         page = max(1, int(request.query_params.get("page") or 1))
         limit = max(1, min(100, int(request.query_params.get("limit") or 20)))
 
-        qs = Product.objects.select_related("categoria")
+        qs = Product.objects.select_related("categoria").prefetch_related("extra_images")
         if not include_inactive:
             qs = qs.filter(activo=True)
         if q:
-            # Filtro tolerante a tildes/variantes unicode para que la busqueda
-            # no pierda productos por diferencias de codificacion.
             q_norm = _norm_text(q)
-            base_qs = qs
-            qs = qs.filter(Q(nombre__icontains=q) | Q(descripcion__icontains=q))
-            if q_norm:
-                extra_ids = [
-                    p.id
-                    for p in base_qs
-                    if (q_norm in _norm_text(p.nombre)) or (q_norm in _norm_text(p.descripcion))
-                ]
-                if extra_ids:
-                    qs = base_qs.filter(Q(id__in=extra_ids) | Q(nombre__icontains=q) | Q(descripcion__icontains=q))
+            q_like = q.strip()
+            tokens = [t for t in q_like.split() if t]
+            if not tokens:
+                tokens = [q_like] if q_like else []
+
+            search_filter = Q()
+            # AND por token para evitar resultados demasiados amplios.
+            # Cada token puede aparecer en nombre / descripcion / slug.
+            for token in tokens:
+                t = token.strip()
+                if not t:
+                    continue
+                token_filter = (
+                    Q(nombre__icontains=t)
+                    | Q(descripcion__icontains=t)
+                    | Q(slug__icontains=t)
+                    | Q(categoria__nombre__icontains=t)
+                )
+                if q_norm != t.lower():
+                    token_filter |= (
+                        Q(nombre__icontains=q_norm)
+                        | Q(descripcion__icontains=q_norm)
+                    )
+                search_filter &= token_filter
+            if search_filter:
+                qs = qs.filter(search_filter)
         if category_id:
             try:
                 root_id = int(category_id)
@@ -764,11 +878,19 @@ class ProductListView(APIView):
         elif category:
             root = Category.objects.filter(slug=category).first()
             if not root:
-                wanted = _norm_text(category).replace("-", " ")
+                wanted = _norm_text(category)
+                wanted_slug = _norm_text(slugify(category))
+                wanted_space = wanted.replace("-", " ")
                 for c in Category.objects.all().only("id", "nombre", "slug"):
                     name_norm = _norm_text(c.nombre)
-                    slug_norm = _norm_text(c.slug).replace("-", " ")
-                    if wanted in {name_norm, slug_norm}:
+                    slug_norm = _norm_text(c.slug)
+                    if (
+                        wanted == name_norm
+                        or wanted_slug == slug_norm
+                        or wanted_space == slug_norm.replace("-", " ")
+                        or wanted in name_norm
+                        or wanted in slug_norm
+                    ):
                         root = c
                         break
             if root:
@@ -889,6 +1011,7 @@ class OrderCreateView(APIView):
                 OrderItem.objects.create(
                     order=order,
                     product=item["product"],
+                    product_name=item["name"],
                     cantidad=item["qty"],
                     precio_unitario=item["price"],
                     atributos=item.get("attrs") or {},
@@ -1107,6 +1230,7 @@ class AdminOrderDetailView(APIView):
                         OrderItem.objects.create(
                             order=order,
                             product=it["product"],
+                            product_name=raw.get("name") or it["product"].nombre,
                             cantidad=it["qty"],
                             precio_unitario=it["price"],
                             atributos=it.get("attrs") or {},
@@ -1138,7 +1262,7 @@ class AdminProductsView(APIView):
         q = (request.query_params.get("q") or "").strip()
         page = max(1, int(request.query_params.get("page") or 1))
         limit = max(1, min(100, int(request.query_params.get("limit") or 20)))
-        qs = Product.objects.select_related("categoria").order_by("-creado_en")
+        qs = Product.objects.select_related("categoria").prefetch_related("extra_images").order_by("-creado_en")
         if q:
             qs = qs.filter(Q(nombre__icontains=q) | Q(descripcion__icontains=q))
         total = qs.count()
@@ -1155,6 +1279,9 @@ class AdminProductsView(APIView):
         cat_val = request.data.get("category")
         category = resolve_category(cat_val) if cat_val else None
         image_url = request.data.get("imageUrl") or request.data.get("image_url") or ""
+        image_urls = parse_image_urls_payload(request.data.get("images"))
+        if not image_urls and image_url:
+            image_urls = parse_image_urls_payload(image_url)
         product = Product(
             user=request.user,
             nombre=name,
@@ -1164,11 +1291,16 @@ class AdminProductsView(APIView):
             stock=int(request.data.get("stock") or 0),
             activo=str(request.data.get("active") or "true").lower() in {"1", "true", "yes"},
         )
-        if image_url:
+        if image_urls:
+            product.image_url = image_urls[0]
+        elif image_url:
             product.image_url = str(image_url).strip()
         if request.FILES.get("image"):
             product.imagen = request.FILES["image"]
         product.save()
+        if image_urls:
+            sync_product_images(product, image_urls)
+            product.refresh_from_db()
         return Response(serialize_product(product, request), status=status.HTTP_201_CREATED)
 
 
@@ -1193,11 +1325,19 @@ class AdminProductDetailView(APIView):
         if "category" in request.data:
             cat = resolve_category(request.data.get("category"))
             product.categoria = cat
+        incoming_images = None
+        if "images" in request.data:
+            incoming_images = parse_image_urls_payload(request.data.get("images"))
         if "imageUrl" in request.data or "image_url" in request.data:
             product.image_url = str(request.data.get("imageUrl") or request.data.get("image_url") or "").strip()
+            if incoming_images is None:
+                incoming_images = parse_image_urls_payload(product.image_url)
         if request.FILES.get("image"):
             product.imagen = request.FILES["image"]
         product.save()
+        if incoming_images is not None:
+            sync_product_images(product, incoming_images)
+            product.refresh_from_db()
         return Response(serialize_product(product, request))
 
     def delete(self, request, pk):
