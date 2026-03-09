@@ -38,6 +38,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ("nombre", "descripcion", "slug")
     list_filter = ("creado_en", "activo", "categoria")
     list_editable = ("precio", "stock", "activo")
+    search_help_text = "Buscar producto por nombre, slug o descripcion"
     change_list_template = "admin/products/product/change_list.html"
     inlines = [ProductImageInline]
 
@@ -678,6 +679,7 @@ class HomeImageAdmin(admin.ModelAdmin):
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = ("product", "order", "image_url", "activo", "creado_en")
-    list_filter = ("activo", "creado_en")
+    list_filter = ("activo", "product", "creado_en")
     search_fields = ("product__nombre", "image_url")
+    search_help_text = "Buscar por nombre del producto o URL de imagen"
     list_editable = ("order", "activo")

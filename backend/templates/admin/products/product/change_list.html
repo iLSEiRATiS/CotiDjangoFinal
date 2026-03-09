@@ -1,5 +1,30 @@
 {% extends "admin/change_list.html" %}
 
+{% block search %}
+  <div style="margin: 12px 0 14px;">
+    <form method="get" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <label for="product-quick-search" style="font-weight:600;">Buscar producto</label>
+      <input
+        id="product-quick-search"
+        type="text"
+        name="q"
+        value="{{ request.GET.q|default:'' }}"
+        placeholder="Nombre, slug o descripcion"
+        style="min-width:280px; max-width:440px; width:100%;"
+      />
+      {% for key, value in cl.params.items %}
+        {% if key != 'q' %}
+          <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endif %}
+      {% endfor %}
+      <button type="submit" class="button">Buscar</button>
+      {% if cl.query %}
+        <a href="?" class="button">Limpiar</a>
+      {% endif %}
+    </form>
+  </div>
+{% endblock %}
+
 {% block object-tools-items %}
   <li>
     <a href="{% url 'admin:products_product_import_xlsx' %}" class="addlink">Importar XLSX</a>
