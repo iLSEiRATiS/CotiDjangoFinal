@@ -11,6 +11,7 @@ from django.urls import path, reverse
 from django.utils.text import slugify
 import unicodedata
 
+from .forms import ProductAdminForm
 from .models import Product, ProductImage, Category, Offer, HomeImage
 
 admin.site.site_header = "Admin Coti"
@@ -34,6 +35,7 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    form = ProductAdminForm
     list_display = ("nombre", "slug", "precio", "user", "categoria", "stock", "activo", "creado_en")
     search_fields = ("nombre", "descripcion", "slug")
     list_filter = ("creado_en", "activo", "categoria")

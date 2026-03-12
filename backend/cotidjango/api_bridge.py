@@ -1,6 +1,8 @@
 from datetime import timedelta
 import os
 import json
+import hashlib
+import secrets
 import unicodedata
 from pathlib import Path
 from urllib import request as urlrequest
@@ -28,6 +30,7 @@ from django.core.mail import EmailMessage
 
 from orders.models import Order, OrderItem
 from products.models import Category, Product, ProductImage, Offer, HomeImage
+from users.models import PasswordResetToken
 
 User = get_user_model()
 
@@ -693,6 +696,47 @@ def send_admin_order_email(order, request=None):
         pass
 
 
+def _reset_token_hash(raw_token: str) -> str:
+    return hashlib.sha256((raw_token or "").encode("utf-8")).hexdigest()
+
+
+def _frontend_base_url():
+    return (
+        os.getenv("FRONTEND_URL", "").strip()
+        or os.getenv("APP_FRONTEND_URL", "").strip()
+        or "http://localhost:5173"
+    ).rstrip("/")
+
+
+def send_password_reset_email(user, raw_token):
+    if not user or not user.email:
+        return {"sent": False, "error": "missing-recipient"}
+    frontend = _frontend_base_url()
+    reset_link = f"{frontend}/reset-password?token={raw_token}"
+    subject = "Recuperar contraseña - CotiStore"
+    body = (
+        f"Hola {user.name or user.username},\n\n"
+        "Recibimos una solicitud para cambiar tu contraseña.\n"
+        f"Usá este enlace (válido por 30 minutos):\n{reset_link}\n\n"
+        "Si no fuiste vos, podés ignorar este correo."
+    )
+    html_body = (
+        f"<p>Hola {user.name or user.username},</p>"
+        "<p>Recibimos una solicitud para cambiar tu contraseña.</p>"
+        f"<p><a href=\"{reset_link}\">Cambiar contraseña</a> (válido por 30 minutos)</p>"
+        "<p>Si no fuiste vos, podés ignorar este correo.</p>"
+    )
+    reply_to = os.getenv("RESEND_REPLY_TO")
+    if send_resend_email([user.email], subject, body, html_body=html_body, reply_to=reply_to):
+        return {"sent": True, "provider": "resend", "reset_link": reset_link}
+    email = EmailMessage(subject, body, to=[user.email])
+    try:
+        email.send(fail_silently=False)
+        return {"sent": True, "provider": "smtp", "reset_link": reset_link}
+    except Exception as exc:
+        return {"sent": False, "error": str(exc), "reset_link": reset_link}
+
+
 class AuthRegisterView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -736,6 +780,65 @@ class AuthMeView(APIView):
 
     def get(self, request):
         return Response({"user": serialize_user(request.user, request)})
+
+
+class AuthForgotPasswordView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email = str(request.data.get("email") or "").strip().lower()
+        generic_ok = {"ok": True, "detail": "Si el email existe, enviamos instrucciones para restablecer la contraseña."}
+        if not email:
+            return Response(generic_ok)
+        user = User.objects.filter(email__iexact=email).first()
+        if not user:
+            return Response(generic_ok)
+        raw_token = secrets.token_urlsafe(32)
+        token_hash = _reset_token_hash(raw_token)
+        expires_at = timezone.now() + timedelta(minutes=30)
+        PasswordResetToken.objects.filter(user=user, used_at__isnull=True).update(used_at=timezone.now())
+        PasswordResetToken.objects.create(
+            user=user,
+            token_hash=token_hash,
+            expires_at=expires_at,
+        )
+        mail_result = send_password_reset_email(user, raw_token) or {}
+        if not mail_result.get("sent") and settings.DEBUG:
+            return Response({
+                **generic_ok,
+                "debug": {
+                    "resetLink": mail_result.get("reset_link"),
+                    "mailError": mail_result.get("error") or "mail-not-sent",
+                },
+            })
+        return Response(generic_ok)
+
+
+class AuthResetPasswordView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        raw_token = str(request.data.get("token") or "").strip()
+        new_password = str(request.data.get("newPassword") or request.data.get("new_password") or "").strip()
+        if not raw_token or not new_password:
+            return Response({"error": "Token y nueva contraseña son requeridos"}, status=status.HTTP_400_BAD_REQUEST)
+        token_hash = _reset_token_hash(raw_token)
+        row = PasswordResetToken.objects.select_related("user").filter(
+            token_hash=token_hash,
+            used_at__isnull=True,
+        ).first()
+        if not row or row.expires_at <= timezone.now():
+            return Response({"error": "Enlace inválido o expirado"}, status=status.HTTP_400_BAD_REQUEST)
+        user = row.user
+        try:
+            validate_password(new_password, user=user)
+        except ValidationError as exc:
+            return Response({"error": exc.messages}, status=status.HTTP_400_BAD_REQUEST)
+        user.set_password(new_password)
+        user.save(update_fields=["password"])
+        row.used_at = timezone.now()
+        row.save(update_fields=["used_at"])
+        return Response({"ok": True, "detail": "Contraseña actualizada correctamente"})
 
 
 class AccountProfileView(APIView):
@@ -1049,6 +1152,22 @@ class OrderDetailView(APIView):
         if not is_owner and not request.user.is_staff:
             return Response({"error": "Sin permiso"}, status=status.HTTP_403_FORBIDDEN)
         return Response({"order": serialize_order(order, request)})
+
+
+class OrderPdfView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        order = Order.objects.prefetch_related("items__product").select_related("user").filter(pk=pk).first()
+        if not order:
+            return Response({"error": "Pedido no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+        is_owner = order.user_id == request.user.id
+        if not is_owner and not request.user.is_staff:
+            return Response({"error": "Sin permiso"}, status=status.HTTP_403_FORBIDDEN)
+        pdf_bytes = build_invoice_pdf(order)
+        resp = HttpResponse(pdf_bytes, content_type="application/pdf")
+        resp["Content-Disposition"] = f'attachment; filename="pedido-{order.id}.pdf"'
+        return resp
 
 
 class OrderMarkPaidView(APIView):
