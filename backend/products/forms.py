@@ -1,7 +1,7 @@
 from django import forms
 import re
 
-from .models import Product, ProductImage
+from .models import Product, ProductImage, HomeMarquee
 
 
 class ProductForm(forms.ModelForm):
@@ -105,3 +105,14 @@ class ProductAdminForm(forms.ModelForm):
                     ProductImage.objects.create(product=product, image_url=url, order=idx, activo=True)
             ProductImage.objects.filter(product=product).exclude(image_url__in=keep).delete()
         return product
+
+
+class HomeMarqueeAdminForm(forms.ModelForm):
+    class Meta:
+        model = HomeMarquee
+        fields = "__all__"
+        widgets = {
+            "text": forms.TextInput(attrs={"class": "vTextField"}),
+            "text_color": forms.TextInput(attrs={"type": "color", "style": "width: 64px; height: 40px; padding: 4px;"}),
+            "background_color": forms.TextInput(attrs={"type": "color", "style": "width: 64px; height: 40px; padding: 4px;"}),
+        }

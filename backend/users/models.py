@@ -8,6 +8,11 @@ class CustomUser(AbstractUser):
         ("user", "Usuario"),
         ("admin", "Administrador"),
     )
+    APPROVAL_CHOICES = (
+        ("pending", "Pendiente"),
+        ("approved", "Aprobado"),
+        ("rejected", "Rechazado"),
+    )
     name = models.CharField(max_length=150, blank=True, default="")
     phone = models.CharField(max_length=50, blank=True, default="")
     address = models.CharField(max_length=255, blank=True, default="")
@@ -15,6 +20,7 @@ class CustomUser(AbstractUser):
     zip_code = models.CharField(max_length=20, blank=True, default="")
     avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="user")
+    approval_status = models.CharField(max_length=10, choices=APPROVAL_CHOICES, default="pending")
     groups = models.ManyToManyField(
         "auth.Group",
         related_name="customuser_set",
@@ -29,8 +35,14 @@ class CustomUser(AbstractUser):
     )
 
     def save(self, *args, **kwargs):
-        if self.is_superuser:
+        if self.is_superuser or self.role == "admin" or self.is_staff:
             self.role = "admin"
+            self.approval_status = "approved"
+            self.is_active = True
+        elif self.approval_status == "approved":
+            self.is_active = True
+        else:
+            self.is_active = False
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:

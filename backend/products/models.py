@@ -134,3 +134,36 @@ class HomeImage(models.Model):
 
     def __str__(self):
         return f"{self.section}: {self.title or self.key}"
+
+
+class HomeMarquee(models.Model):
+    text = models.CharField(max_length=255, blank=True, default="")
+    text_color = models.CharField(max_length=7, default="#ffffff")
+    background_color = models.CharField(max_length=7, default="#dc3545")
+    activo = models.BooleanField(default=False)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Marquee Home"
+        verbose_name_plural = "Marquee Home"
+
+    def __str__(self):
+        return self.text or "Marquee Home"
+
+
+class JobApplication(models.Model):
+    nombre = models.CharField(max_length=120)
+    apellido = models.CharField(max_length=120)
+    telefono = models.CharField(max_length=40)
+    mensaje = models.TextField()
+    cv = models.FileField(upload_to="job_applications/cv/", blank=True, null=True)
+    revisado = models.BooleanField(default=False)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-creado_en"]
+        verbose_name = "Postulacion"
+        verbose_name_plural = "Postulaciones"
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellido}".strip()

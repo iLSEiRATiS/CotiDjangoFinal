@@ -29,7 +29,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import EmailMessage
 
 from orders.models import Order, OrderItem
-from products.models import Category, Product, ProductImage, Offer, HomeImage
+from products.models import Category, Product, ProductImage, Offer, HomeImage, HomeMarquee, JobApplication
 from users.models import PasswordResetToken
 
 User = get_user_model()
@@ -54,6 +54,30 @@ def _abs_media(request, path):
         return path
     base = request.build_absolute_uri("/")
     return f"{base.rstrip('/')}/{str(path).lstrip('/')}"
+
+
+def _verify_turnstile(token, remote_ip=""):
+    secret = getattr(settings, "TURNSTILE_SECRET_KEY", "").strip()
+    if not secret:
+        return True
+    if not token:
+        return False
+    payload = json.dumps({
+        "secret": secret,
+        "response": token,
+        "remoteip": remote_ip or "",
+    }).encode("utf-8")
+    req = urlrequest.Request(
+        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        with urlrequest.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return bool(data.get("success"))
+    except Exception:
+        return False
 
 
 def _collect_product_images(prod, request=None):
@@ -211,6 +235,22 @@ def serialize_home_image(item):
         "targetUrl": item.target_url or "",
         "order": item.order,
         "active": item.activo,
+    }
+
+
+def serialize_home_marquee(item):
+    if not item:
+        return {
+            "enabled": False,
+            "text": "",
+            "textColor": "#ffffff",
+            "backgroundColor": "#dc3545",
+        }
+    return {
+        "enabled": bool(item.activo and item.text),
+        "text": item.text or "",
+        "textColor": item.text_color or "#ffffff",
+        "backgroundColor": item.background_color or "#dc3545",
     }
 
 
@@ -749,9 +789,22 @@ class AuthRegisterView(APIView):
         if User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).exists():
             return Response({"error": "Email ya registrado"}, status=status.HTTP_409_CONFLICT)
         username = email or slugify(name) or f"user-{timezone.now().timestamp()}"
-        user = User.objects.create_user(username=username, email=email, password=password, name=name)
-        token = build_token(user)
-        return Response({"token": token, "user": serialize_user(user, request)}, status=status.HTTP_201_CREATED)
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            name=name,
+            approval_status="pending",
+            is_active=False,
+        )
+        return Response(
+            {
+                "pending": True,
+                "detail": "Cuenta creada. Un administrador debe aprobar tu registro antes de ingresar.",
+                "user": serialize_user(user, request),
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class AuthLoginView(APIView):
@@ -763,11 +816,21 @@ class AuthLoginView(APIView):
         if not email or not password:
             return Response({"error": "Email y contrasena son requeridos"}, status=status.HTTP_400_BAD_REQUEST)
 
+        candidate = None
+        if "@" in email:
+            candidate = User.objects.filter(email__iexact=email).first()
+        if not candidate:
+            candidate = User.objects.filter(username__iexact=email).first()
+
         user = authenticate(request, username=email, password=password)
         if not user and "@" in email:
-            candidate = User.objects.filter(email__iexact=email).first()
             if candidate:
                 user = authenticate(request, username=candidate.username, password=password)
+        if candidate and candidate.check_password(password):
+            if candidate.approval_status == "pending":
+                return Response({"error": "Tu cuenta esta pendiente de aprobacion por un administrador."}, status=status.HTTP_403_FORBIDDEN)
+            if candidate.approval_status == "rejected":
+                return Response({"error": "Tu registro fue rechazado. Contacta al administrador para mas informacion."}, status=status.HTTP_403_FORBIDDEN)
         if not user:
             return Response({"error": "Credenciales invalidas"}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -924,7 +987,93 @@ class HomeImagesView(APIView):
         items = [serialize_home_image(x) for x in qs]
         by_key_image = {x["key"]: x["imageUrl"] for x in items}
         by_key_target = {x["key"]: x["targetUrl"] for x in items if x.get("targetUrl")}
-        return Response({"items": items, "byKey": by_key_image, "byKeyTarget": by_key_target})
+        marquee = HomeMarquee.objects.order_by("-id").first()
+        return Response({
+            "items": items,
+            "byKey": by_key_image,
+            "byKeyTarget": by_key_target,
+            "marquee": serialize_home_marquee(marquee),
+        })
+
+
+class JobApplicationCreateView(APIView):
+    permission_classes = [permissions.AllowAny]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        nombre = str(request.data.get("nombre") or "").strip()
+        apellido = str(request.data.get("apellido") or "").strip()
+        telefono = str(request.data.get("telefono") or "").strip()
+        mensaje = str(request.data.get("mensaje") or "").strip()
+        turnstile_token = str(request.data.get("turnstileToken") or "").strip()
+        cv = request.FILES.get("archivo")
+
+        if not nombre or not apellido or not telefono or not mensaje:
+            return Response({"detail": "Completa todos los campos obligatorios."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not _verify_turnstile(turnstile_token, request.META.get("REMOTE_ADDR", "")):
+            return Response({"detail": "Captcha invalido. Intenta nuevamente."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if cv:
+            ext = Path(cv.name or "").suffix.lower()
+            allowed_exts = {".pdf", ".doc", ".docx"}
+            allowed_types = {
+                "application/pdf",
+                "application/msword",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            }
+            if ext not in allowed_exts and getattr(cv, "content_type", "") not in allowed_types:
+                return Response({"detail": "El CV debe ser PDF, DOC o DOCX."}, status=status.HTTP_400_BAD_REQUEST)
+            if getattr(cv, "size", 0) > 5 * 1024 * 1024:
+                return Response({"detail": "El CV no puede superar los 5 MB."}, status=status.HTTP_400_BAD_REQUEST)
+
+        app = JobApplication.objects.create(
+            nombre=nombre,
+            apellido=apellido,
+            telefono=telefono,
+            mensaje=mensaje,
+            cv=cv,
+        )
+        mail_sent = False
+        recipients = list(getattr(settings, "ADMIN_NOTIFICATION_EMAILS", []) or [])
+        if recipients:
+            body = "\n".join([
+                "Nueva postulacion recibida desde el formulario web.",
+                "",
+                f"Nombre: {nombre} {apellido}",
+                f"Telefono: {telefono}",
+                "",
+                "Mensaje:",
+                mensaje,
+            ])
+            email = EmailMessage(
+                subject=f"Nueva postulacion - {nombre} {apellido}",
+                body=body,
+                from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "") or None,
+                to=recipients,
+            )
+            if cv:
+                try:
+                    cv.seek(0)
+                except Exception:
+                    pass
+                try:
+                    email.attach(cv.name, cv.read(), getattr(cv, "content_type", "application/octet-stream"))
+                except Exception:
+                    pass
+            try:
+                email.send(fail_silently=False)
+                mail_sent = True
+            except Exception:
+                mail_sent = False
+        return Response(
+            {
+                "id": app.id,
+                "message": "Postulacion recibida correctamente.",
+                "mailSent": mail_sent,
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class ProductListView(APIView):
@@ -1578,4 +1727,3 @@ class AdminOfferDetailView(APIView):
             return Response({"error": "Oferta no encontrada"}, status=status.HTTP_404_NOT_FOUND)
         offer.delete()
         return Response({"ok": True})
-

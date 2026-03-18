@@ -3,6 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.contrib.staticfiles.views import serve as staticfiles_serve
 from django.http import JsonResponse, HttpResponse
 from django.urls import include, path, re_path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -56,6 +57,7 @@ urlpatterns += [
     re_path(r"^api/account/profile/?$", api_bridge.AccountProfileView.as_view(), name="api-bridge-profile"),
     re_path(r"^api/account/password/?$", api_bridge.AccountPasswordView.as_view(), name="api-bridge-password"),
     re_path(r"^api/home-images/?$", api_bridge.HomeImagesView.as_view(), name="api-bridge-home-images"),
+    re_path(r"^api/job-applications/?$", api_bridge.JobApplicationCreateView.as_view(), name="api-bridge-job-applications"),
     re_path(r"^api/products/?$", api_bridge.ProductListView.as_view(), name="api-bridge-products"),
     re_path(r"^api/products/(?P<pk>[^/]+)/?$", api_bridge.ProductDetailView.as_view(), name="api-bridge-product-detail"),
     re_path(r"^api/orders/?$", api_bridge.OrderCreateView.as_view(), name="api-bridge-orders"),
@@ -79,7 +81,13 @@ urlpatterns += [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += staticfiles_urlpatterns()
 elif not (settings.STATIC_ROOT / "staticfiles.json").exists():
     # Local fallback so Django admin assets still load before collectstatic runs.
-    urlpatterns += staticfiles_urlpatterns()
+    urlpatterns += [
+        re_path(
+            r"^static/(?P<path>.*)$",
+            staticfiles_serve,
+            {"insecure": True},
+        ),
+    ]

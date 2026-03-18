@@ -274,3 +274,4 @@ ADMIN_NOTIFICATION_EMAILS = [
     e.strip() for e in os.getenv('ADMIN_NOTIFICATION_EMAILS', 'Facundotomasgallardo@gmail.com').split(',')
     if e.strip()
 ]
+TURNSTILE_SECRET_KEY = os.getenv('TURNSTILE_SECRET_KEY', '').strip()

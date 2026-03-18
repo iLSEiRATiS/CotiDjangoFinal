@@ -11,8 +11,8 @@ from django.urls import path, reverse
 from django.utils.text import slugify
 import unicodedata
 
-from .forms import ProductAdminForm
-from .models import Product, ProductImage, Category, Offer, HomeImage
+from .forms import ProductAdminForm, HomeMarqueeAdminForm
+from .models import Product, ProductImage, Category, Offer, HomeImage, HomeMarquee, JobApplication
 
 admin.site.site_header = "Admin Coti"
 admin.site.site_title = "Admin Coti"
@@ -678,6 +678,18 @@ class HomeImageAdmin(admin.ModelAdmin):
     list_editable = ("order", "activo")
 
 
+@admin.register(HomeMarquee)
+class HomeMarqueeAdmin(admin.ModelAdmin):
+    form = HomeMarqueeAdminForm
+    list_display = ("text", "text_color", "background_color", "activo", "actualizado_en")
+    list_editable = ("activo",)
+
+    def has_add_permission(self, request):
+        if HomeMarquee.objects.exists():
+            return False
+        return super().has_add_permission(request)
+
+
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = ("product", "order", "image_url", "activo", "creado_en")
@@ -685,3 +697,12 @@ class ProductImageAdmin(admin.ModelAdmin):
     search_fields = ("product__nombre", "image_url")
     search_help_text = "Buscar por nombre del producto o URL de imagen"
     list_editable = ("order", "activo")
+
+
+@admin.register(JobApplication)
+class JobApplicationAdmin(admin.ModelAdmin):
+    list_display = ("nombre", "apellido", "telefono", "revisado", "creado_en")
+    list_filter = ("revisado", "creado_en")
+    search_fields = ("nombre", "apellido", "telefono", "mensaje")
+    list_editable = ("revisado",)
+    readonly_fields = ("nombre", "apellido", "telefono", "mensaje", "cv", "creado_en")

@@ -7,7 +7,7 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "name", "phone", "address", "city", "zip_code", "role"]
+        fields = ["id", "username", "email", "name", "phone", "address", "city", "zip_code", "role", "approval_status"]
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -33,4 +33,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=validated_data.get("email", ""),
             password=validated_data["password"],
             name=validated_data.get("name", ""),
+            approval_status="pending",
+            is_active=False,
         )

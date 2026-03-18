@@ -86,13 +86,22 @@ class TokenLoginView(APIView):
         identifier = request.data.get("username") or request.data.get("email")
         password = request.data.get("password")
         user = None
+        candidate = None
 
         if identifier and "@" in str(identifier):
             candidate = User.objects.filter(email__iexact=identifier).first()
             if candidate:
                 user = authenticate(request, username=candidate.username, password=password)
         if not user and identifier:
+            if not candidate:
+                candidate = User.objects.filter(username__iexact=identifier).first()
             user = authenticate(request, username=identifier, password=password)
+
+        if candidate and candidate.check_password(password):
+            if candidate.approval_status == "pending":
+                return Response({"detail": "Tu cuenta esta pendiente de aprobacion por un administrador."}, status=status.HTTP_403_FORBIDDEN)
+            if candidate.approval_status == "rejected":
+                return Response({"detail": "Tu registro fue rechazado. Contacta al administrador para mas informacion."}, status=status.HTTP_403_FORBIDDEN)
 
         if not user:
             return Response({"detail": "Credenciales invalidas"}, status=status.HTTP_400_BAD_REQUEST)
@@ -109,8 +118,11 @@ class SignupApiView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         headers = self.get_success_headers(serializer.data)
-        token, _ = Token.objects.get_or_create(user=user)
-        data = {"token": token.key, "user": UserSerializer(user).data}
+        data = {
+            "pending": True,
+            "detail": "Cuenta creada. Un administrador debe aprobar tu registro antes de ingresar.",
+            "user": UserSerializer(user).data,
+        }
         return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
 
