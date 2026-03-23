@@ -53,6 +53,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "images",
             "atributos",
             "atributos_stock",
+            "atributos_precio",
             "stock",
             "activo",
             "creado_en",

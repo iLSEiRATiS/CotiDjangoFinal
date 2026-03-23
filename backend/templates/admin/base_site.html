@@ -1,5 +1,5 @@
 {% extends "admin/base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{{ title }} | Admin Coti{% endblock %}
 
@@ -9,27 +9,5 @@
 
 {% block extrastyle %}
 {{ block.super }}
-<style>
-  #header {
-    background: #fff;
-    color: #ce2544;
-  }
-  #site-name a, #site-name a:visited {
-    color: #ce2544;
-  }
-  #user-tools,
-  #user-tools *,
-  #user-tools a,
-  #user-tools a:link,
-  #user-tools a:visited,
-  #user-tools button,
-  #user-tools select,
-  #user-tools option {
-    color: #ce2544;
-  }
-  #user-tools a:hover,
-  #user-tools a:focus {
-    color: #ce2544;
-  }
-</style>
+<link rel="stylesheet" href="{% static 'admin/css/coti-admin.css' %}">
 {% endblock %}

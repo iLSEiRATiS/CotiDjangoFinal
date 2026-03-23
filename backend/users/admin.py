@@ -22,13 +22,11 @@ class CustomUserAdmin(UserAdmin):
     @admin.action(description="Aprobar usuarios seleccionados")
     def approve_users(self, request, queryset):
         for user in queryset:
-            user.approval_status = "approved"
-            user.is_active = True
-            user.save(update_fields=["approval_status", "is_active"])
+            user.set_approval_status("approved")
+            user.save(update_fields=["approval_status", "is_active", "role"])
 
     @admin.action(description="Rechazar usuarios seleccionados")
     def reject_users(self, request, queryset):
         for user in queryset:
-            user.approval_status = "rejected"
-            user.is_active = False
-            user.save(update_fields=["approval_status", "is_active"])
+            user.set_approval_status("rejected")
+            user.save(update_fields=["approval_status", "is_active", "role"])

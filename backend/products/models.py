@@ -13,13 +13,13 @@ class Category(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="children"
+        related_name="children",
     )
 
     class Meta:
         ordering = ["nombre"]
-        verbose_name = "Categoría"
-        verbose_name_plural = "Categorías"
+        verbose_name = "Categoria"
+        verbose_name_plural = "Categorias"
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -41,12 +41,15 @@ class Product(models.Model):
     image_url = models.URLField(max_length=500, blank=True, default="")
     atributos = models.JSONField(default=dict, blank=True)
     atributos_stock = models.JSONField(default=dict, blank=True)
+    atributos_precio = models.JSONField(default=dict, blank=True)
     stock = models.PositiveIntegerField(default=0)
     activo = models.BooleanField(default=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-creado_en"]
+        verbose_name = "Producto"
+        verbose_name_plural = "Productos"
 
     def __str__(self) -> str:
         return self.nombre
@@ -55,10 +58,10 @@ class Product(models.Model):
         if not self.slug and self.nombre:
             base = slugify(self.nombre)[:110]
             candidate = base
-            i = 1
+            counter = 1
             while Product.objects.filter(slug=candidate).exclude(pk=self.pk).exists():
-                i += 1
-                candidate = f"{base}-{i}"
+                counter += 1
+                candidate = f"{base}-{counter}"
             self.slug = candidate
         super().save(*args, **kwargs)
 
@@ -94,6 +97,8 @@ class Offer(models.Model):
 
     class Meta:
         ordering = ["-creado_en"]
+        verbose_name = "Oferta"
+        verbose_name_plural = "Ofertas"
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -144,26 +149,26 @@ class HomeMarquee(models.Model):
     actualizado_en = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Marquee Home"
-        verbose_name_plural = "Marquee Home"
+        verbose_name = "Franja Home"
+        verbose_name_plural = "Franjas Home"
 
     def __str__(self):
-        return self.text or "Marquee Home"
+        return self.text or "Franja Home"
 
 
-class JobApplication(models.Model):
+class SupplierContact(models.Model):
     nombre = models.CharField(max_length=120)
     apellido = models.CharField(max_length=120)
     telefono = models.CharField(max_length=40)
     mensaje = models.TextField()
-    cv = models.FileField(upload_to="job_applications/cv/", blank=True, null=True)
+    archivo = models.FileField(upload_to="supplier_contacts/files/", blank=True, null=True)
     revisado = models.BooleanField(default=False)
     creado_en = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-creado_en"]
-        verbose_name = "Postulacion"
-        verbose_name_plural = "Postulaciones"
+        verbose_name = "Contacto de proveedor"
+        verbose_name_plural = "Contactos de proveedores"
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}".strip()

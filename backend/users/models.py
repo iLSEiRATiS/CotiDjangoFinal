@@ -13,14 +13,14 @@ class CustomUser(AbstractUser):
         ("approved", "Aprobado"),
         ("rejected", "Rechazado"),
     )
-    name = models.CharField(max_length=150, blank=True, default="")
-    phone = models.CharField(max_length=50, blank=True, default="")
-    address = models.CharField(max_length=255, blank=True, default="")
-    city = models.CharField(max_length=120, blank=True, default="")
-    zip_code = models.CharField(max_length=20, blank=True, default="")
-    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="user")
-    approval_status = models.CharField(max_length=10, choices=APPROVAL_CHOICES, default="pending")
+    name = models.CharField("nombre", max_length=150, blank=True, default="")
+    phone = models.CharField("telefono", max_length=50, blank=True, default="")
+    address = models.CharField("direccion", max_length=255, blank=True, default="")
+    city = models.CharField("ciudad", max_length=120, blank=True, default="")
+    zip_code = models.CharField("codigo postal", max_length=20, blank=True, default="")
+    avatar = models.ImageField("avatar", upload_to="avatars/", blank=True, null=True)
+    role = models.CharField("rol", max_length=10, choices=ROLE_CHOICES, default="user")
+    approval_status = models.CharField("estado de aprobacion", max_length=10, choices=APPROVAL_CHOICES, default="pending")
     groups = models.ManyToManyField(
         "auth.Group",
         related_name="customuser_set",
@@ -34,15 +34,27 @@ class CustomUser(AbstractUser):
         help_text="Permisos específicos para el usuario."
     )
 
-    def save(self, *args, **kwargs):
-        if self.is_superuser or self.role == "admin" or self.is_staff:
+    class Meta:
+        verbose_name = "Usuario"
+        verbose_name_plural = "Usuarios"
+
+    def _should_be_admin(self):
+        return self.is_superuser or self.is_staff or self.role == "admin"
+
+    def _sync_access_flags(self):
+        if self._should_be_admin():
             self.role = "admin"
             self.approval_status = "approved"
             self.is_active = True
-        elif self.approval_status == "approved":
-            self.is_active = True
-        else:
-            self.is_active = False
+            return
+        self.is_active = self.approval_status == "approved"
+
+    def set_approval_status(self, status):
+        self.approval_status = status
+        self._sync_access_flags()
+
+    def save(self, *args, **kwargs):
+        self._sync_access_flags()
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
@@ -50,14 +62,16 @@ class CustomUser(AbstractUser):
 
 
 class PasswordResetToken(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="password_reset_tokens")
-    token_hash = models.CharField(max_length=64, unique=True, db_index=True)
-    expires_at = models.DateTimeField()
-    used_at = models.DateTimeField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(CustomUser, verbose_name="usuario", on_delete=models.CASCADE, related_name="password_reset_tokens")
+    token_hash = models.CharField("hash del token", max_length=64, unique=True, db_index=True)
+    expires_at = models.DateTimeField("vence el")
+    used_at = models.DateTimeField("usado el", null=True, blank=True)
+    created_at = models.DateTimeField("creado el", auto_now_add=True)
 
     class Meta:
         ordering = ["-created_at"]
+        verbose_name = "Token de restablecimiento"
+        verbose_name_plural = "Tokens de restablecimiento"
 
     @property
     def is_active(self):

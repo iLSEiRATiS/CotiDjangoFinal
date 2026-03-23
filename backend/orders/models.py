@@ -32,6 +32,8 @@ class Order(models.Model):
 
     class Meta:
         ordering = ["-creado_en"]
+        verbose_name = "Pedido"
+        verbose_name_plural = "Pedidos"
 
     def __str__(self):
         return f"Pedido #{self.id or ''} - {self.nombre}"
@@ -49,6 +51,10 @@ class OrderItem(models.Model):
     cantidad = models.PositiveIntegerField(default=1)
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     atributos = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        verbose_name = "Item de pedido"
+        verbose_name_plural = "Items de pedido"
 
     @property
     def subtotal(self):
