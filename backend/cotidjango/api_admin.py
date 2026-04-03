@@ -5,6 +5,7 @@ from math import ceil
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
+from django.db.models.deletion import ProtectedError
 from django.db import transaction
 from django.db.models import Q, Sum
 from django.http import HttpResponse
@@ -116,7 +117,18 @@ class AdminUserDetailView(APIView):
         user = User.objects.filter(pk=pk).first()
         if not user:
             return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-        user.delete()
+        try:
+            user.delete()
+        except ProtectedError:
+            return Response(
+                {
+                    "error": (
+                        "No se puede borrar este usuario porque tiene productos vinculados "
+                        "a pedidos existentes. Desactivalo o reasigna sus productos antes de eliminarlo."
+                    )
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
         return Response({"ok": True})
 
 
