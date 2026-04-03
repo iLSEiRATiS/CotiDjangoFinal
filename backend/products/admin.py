@@ -4,7 +4,7 @@ from django.template.response import TemplateResponse
 from django.urls import path, reverse
 
 from .forms import HomeMarqueeAdminForm, ProductAdminForm
-from .models import Category, HomeImage, HomeMarquee, Offer, Product, ProductImage
+from .models import Category, HomeImage, HomeMarquee, Offer, Product, ProductImage, StoreSettings
 from .product_importer import PRODUCT_HEADERS, SAMPLE_ROWS, ProductXlsxImporter
 
 admin.site.site_header = "Admin Coti"
@@ -29,7 +29,7 @@ class ProductImageInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
-    list_display = ("nombre", "slug", "precio", "user", "categoria", "stock", "activo", "creado_en")
+    list_display = ("nombre", "slug", "precio", "user", "categoria", "has_video", "stock", "activo", "creado_en")
     search_fields = ("nombre", "descripcion", "slug")
     list_filter = ("creado_en", "activo", "categoria")
     list_editable = ("precio", "stock", "activo")
@@ -40,6 +40,10 @@ class ProductAdmin(admin.ModelAdmin):
     template_xlsx_path = r"C:\Users\facun\OneDrive\Escritorio\CotiWeb\Exportacion-productos-03-02-26.fixed.xlsx"
     product_headers = PRODUCT_HEADERS
     sample_rows = SAMPLE_ROWS
+
+    @admin.display(description="Video")
+    def has_video(self, obj):
+        return bool(obj.video_url)
 
     def get_urls(self):
         urls = super().get_urls()
@@ -136,6 +140,19 @@ class HomeMarqueeAdmin(admin.ModelAdmin):
         if HomeMarquee.objects.exists():
             return False
         return super().has_add_permission(request)
+
+
+@admin.register(StoreSettings)
+class StoreSettingsAdmin(admin.ModelAdmin):
+    list_display = ("min_order_amount", "actualizado_en")
+
+    def has_add_permission(self, request):
+        if StoreSettings.objects.exists():
+            return False
+        return super().has_add_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(ProductImage)

@@ -157,6 +157,7 @@ def serialize_product(prod, request=None):
         "price": float(final_price),
         "priceOriginal": float(prod.precio),
         "imageUrl": images[0] if images else None,
+        "videoUrl": prod.video_url or "",
         "discount": discount["meta"] if discount else None,
         "description": prod.descripcion or "",
         "images": images,
@@ -272,6 +273,17 @@ def get_descendant_ids(root_id):
     return out
 
 
+def get_ancestor_ids(category):
+    out = []
+    current = category
+    seen = set()
+    while current and getattr(current, "id", None) and current.id not in seen:
+        seen.add(current.id)
+        out.append(current.id)
+        current = getattr(current, "parent", None)
+    return out
+
+
 def resolve_product(value):
     if not value:
         return None
@@ -330,13 +342,15 @@ def sync_product_images(product: Product, image_urls):
 
 def resolve_discount_for_product(product: Product):
     now = timezone.now()
-    offers = Offer.objects.filter(activo=True).filter(
-        models.Q(producto=product) | models.Q(categoria=product.categoria)
-    )
+    category_ids = get_ancestor_ids(getattr(product, "categoria", None))
+    offer_filter = models.Q(producto=product)
+    if category_ids:
+        offer_filter |= models.Q(categoria_id__in=category_ids)
+    offers = Offer.objects.filter(activo=True).filter(offer_filter)
     offers = offers.filter(
         models.Q(empieza__isnull=True) | models.Q(empieza__lte=now),
         models.Q(termina__isnull=True) | models.Q(termina__gte=now),
-    ).order_by("-porcentaje")
+    ).order_by("-producto_id", "-porcentaje")
     offer = offers.first()
     if not offer:
         return None

@@ -4,7 +4,7 @@ Backend en Django/DRF que expone las rutas esperadas por el frontend React (logi
 
 ## Stack
 - Django 5 + DRF + SimpleJWT (tokens `Bearer ...`) + DRF Token (endpoints legacy)
-- SQLite por defecto (puede apuntarse a cualquier SQL)
+- SQLite por defecto con soporte para PostgreSQL via `DATABASE_URL`
 - Bootstrap 5 para vistas server-side
 - WhiteNoise para estaticos
 - React 18 (Create React App) en `/frontend` consumiendo `/api/...` del backend
@@ -44,3 +44,4 @@ npm start
 ## Notas
 - Se anadio un importador `import_frontend_products` que lee el JSON de la SPA y carga categorias/productos en Django.
 - El campo `avatar` en usuarios permite subir imagenes desde la SPA (se guarda en `/media/avatars/`).
+- Para migrar de SQLite a PostgreSQL sin romper datos, ver `docs/postgresql-migration.md`.

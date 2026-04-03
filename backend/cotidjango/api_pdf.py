@@ -13,6 +13,8 @@ def _invoice_logo_path():
     if explicit_logo:
         candidates.append(Path(explicit_logo))
     candidates.extend([
+        Path(r"C:\Users\facun\OneDrive\Escritorio\logo-coti-optimized.webp"),
+        Path(r"C:\Users\facun\OneDrive\Escritorio\logo-coti-optimized"),
         base_dir / "static" / "logo-coti.png",
         base_dir / "static" / "logo.png",
         base_dir.parent / "DjangoFrontCoti" / "src" / "assets" / "logo-coti.png",
@@ -26,11 +28,11 @@ def build_invoice_pdf(order) -> bytes:
     from io import BytesIO
     from decimal import Decimal
 
-    from reportlab.pdfgen import canvas
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.utils import ImageReader
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.pdfgen import canvas
 
     def _money(value):
         try:
@@ -44,7 +46,7 @@ def build_invoice_pdf(order) -> bytes:
         return order_item_attrs_label(attrs, prefix=" - ", separator=" | ", suffix="")
 
     def _safe(txt, fallback="-"):
-        s = (str(txt or "")).strip()
+        s = str(txt or "").strip()
         return s if s else fallback
 
     buffer = BytesIO()
@@ -53,15 +55,20 @@ def build_invoice_pdf(order) -> bytes:
 
     font_regular = "Helvetica"
     font_bold = "Helvetica-Bold"
+    font_notice = "Times-BoldItalic"
     try:
         arial = r"C:\Windows\Fonts\arial.ttf"
         arial_bold = r"C:\Windows\Fonts\arialbd.ttf"
+        georgia_bold_italic = r"C:\Windows\Fonts\georgiaz.ttf"
         if Path(arial).exists():
             pdfmetrics.registerFont(TTFont("Arial", arial))
             font_regular = "Arial"
         if Path(arial_bold).exists():
             pdfmetrics.registerFont(TTFont("Arial-Bold", arial_bold))
             font_bold = "Arial-Bold"
+        if Path(georgia_bold_italic).exists():
+            pdfmetrics.registerFont(TTFont("Georgia-BoldItalic", georgia_bold_italic))
+            font_notice = "Georgia-BoldItalic"
     except Exception:
         pass
 
@@ -76,6 +83,11 @@ def build_invoice_pdf(order) -> bytes:
     margin_r = 36
     x_left = margin_l
     x_right = width - margin_r
+    footer_y = 34
+    footer_reserved_space = 78
+    logo_width = 180
+    logo_height = 58
+    logo_top_margin = 8
 
     date_label = order.creado_en.strftime("%d/%m/%y %H:%M") if order.creado_en else ""
     status_to_pago = {
@@ -92,26 +104,35 @@ def build_invoice_pdf(order) -> bytes:
     address = ", ".join(filter(None, [order.direccion, order.ciudad, order.cp]))
     logo_path = _invoice_logo_path()
 
-    def draw_logo(y_top):
+    def draw_logo():
         if not logo_path:
             return
         try:
             img = ImageReader(str(logo_path))
             canvas_obj.drawImage(
                 img,
-                x_right - 130,
-                y_top - 36,
-                width=120,
-                height=34,
+                x_right - logo_width,
+                height - logo_top_margin - logo_height,
+                width=logo_width,
+                height=logo_height,
                 mask="auto",
                 preserveAspectRatio=True,
             )
         except Exception:
             pass
 
+    def draw_footer():
+        text_dark()
+        canvas_obj.setFont(font_regular, 8)
+        canvas_obj.drawCentredString(
+            width / 2,
+            footer_y,
+            "Los reclamos deberán hacerse dentro de las 48 horas recibido el pedido",
+        )
+
     def header(y):
         text_dark()
-        draw_logo(y)
+        draw_logo()
 
         canvas_obj.setFont(font_bold, 14)
         canvas_obj.drawString(x_left, y, f"Orden: #{order.id}")
@@ -124,12 +145,14 @@ def build_invoice_pdf(order) -> bytes:
         canvas_obj.drawString(x_left, y, f"Pago: {pago_label}")
 
         y -= 14
-        canvas_obj.drawString(x_left, y, "MÃ©todo de envÃ­o: Acordar envÃ­o")
+        canvas_obj.drawString(x_left, y, "Método de envío: Acordar envío")
 
-        y -= 10
+        divider_y = y - 10
+        if logo_path:
+            divider_y = min(divider_y, height - logo_top_margin - logo_height - 12)
         stroke_light()
-        canvas_obj.line(x_left, y, x_right, y)
-        return y - 16
+        canvas_obj.line(x_left, divider_y, x_right, divider_y)
+        return divider_y - 16
 
     def customer(y):
         canvas_obj.setFont(font_bold, 9.5)
@@ -139,7 +162,7 @@ def build_invoice_pdf(order) -> bytes:
 
         y -= 12
         canvas_obj.setFont(font_bold, 9.5)
-        canvas_obj.drawString(x_left, y, "TelÃ©fono:")
+        canvas_obj.drawString(x_left, y, "Teléfono:")
         canvas_obj.setFont(font_regular, 9.5)
         canvas_obj.drawString(x_left + 55, y, _safe(order.telefono))
 
@@ -151,7 +174,7 @@ def build_invoice_pdf(order) -> bytes:
 
         y -= 12
         canvas_obj.setFont(font_bold, 9.5)
-        canvas_obj.drawString(x_left, y, "DirecciÃ³n:")
+        canvas_obj.drawString(x_left, y, "Dirección:")
         canvas_obj.setFont(font_regular, 9.5)
         canvas_obj.drawString(x_left + 55, y, _safe(address))
 
@@ -174,9 +197,9 @@ def build_invoice_pdf(order) -> bytes:
 
         canvas_obj.setFont(font_bold, 9.2)
         text_dark()
-        canvas_obj.drawString(col_code + 2, y - 15, "CÃ³digo")
+        canvas_obj.drawString(col_code + 2, y - 15, "Código")
         canvas_obj.drawString(col_qty + 2, y - 15, "Cantidad")
-        canvas_obj.drawString(col_desc + 2, y - 15, "DescripciÃ³n")
+        canvas_obj.drawString(col_desc + 2, y - 15, "Descripción")
         canvas_obj.drawRightString(v4 - 6, y - 15, "P. unitario")
         canvas_obj.drawRightString(x_right - 6, y - 15, "Total")
         return y - row_h
@@ -194,7 +217,7 @@ def build_invoice_pdf(order) -> bytes:
         canvas_obj.drawString(col_qty + 2, y - 13, str(qty))
 
         if len(desc) > 60:
-            desc = desc[:59] + "â€¦"
+            desc = desc[:57] + "..."
         canvas_obj.drawString(col_desc + 2, y - 13, desc)
 
         canvas_obj.drawRightString(v4 - 6, y - 13, _money(unit))
@@ -207,7 +230,7 @@ def build_invoice_pdf(order) -> bytes:
     y = table_header(y)
 
     for item in order.items.all():
-        if y < 90:
+        if y < footer_reserved_space + 18:
             canvas_obj.showPage()
             y = height - 40
             y = header(y)
@@ -220,6 +243,12 @@ def build_invoice_pdf(order) -> bytes:
     y -= 14
     canvas_obj.setFont(font_bold, 11)
     canvas_obj.drawRightString(x_right, y, f"TOTAL: {_money(order.total)}")
+
+    if y < footer_reserved_space:
+        canvas_obj.showPage()
+        y = height - 40
+        y = header(y)
+    draw_footer()
 
     canvas_obj.save()
     return buffer.getvalue()

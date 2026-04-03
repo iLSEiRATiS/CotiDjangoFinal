@@ -69,6 +69,13 @@ def _env_int(name, default):
     except Exception:
         return default
 
+
+def _env_path(name, default):
+    value = os.getenv(name)
+    if value is None or not str(value).strip():
+        return default
+    return Path(value).expanduser()
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -145,19 +152,23 @@ WSGI_APPLICATION = 'cotidjango.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+DATABASE_CONN_MAX_AGE = _env_int("DATABASE_CONN_MAX_AGE", 600)
+DATABASE_SSL_REQUIRE = _env_bool("DATABASE_SSL_REQUIRE", default=not DEBUG)
+SQLITE_PATH = _env_path("SQLITE_PATH", BASE_DIR / "db.sqlite3")
+
 if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.parse(
             DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=not DEBUG,
+            conn_max_age=DATABASE_CONN_MAX_AGE,
+            ssl_require=DATABASE_SSL_REQUIRE,
         )
     }
 else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+            "NAME": SQLITE_PATH,
         }
     }
 

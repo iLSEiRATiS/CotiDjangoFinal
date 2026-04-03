@@ -50,6 +50,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "descripcion",
             "imagen",
             "image_url",
+            "video_url",
             "images",
             "atributos",
             "atributos_stock",

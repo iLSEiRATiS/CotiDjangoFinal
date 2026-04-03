@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from orders.models import Order, OrderItem
+from products.models import StoreSettings
 from .api_common import build_invoice_pdf, resolve_product, send_admin_order_email, send_invoice_email, serialize_order
 from .api_order_utils import build_order_item_input
 
@@ -57,6 +58,13 @@ class OrderCreateView(APIView):
 
         if not built_items:
             return Response({"error": "Carrito vacio"}, status=status.HTTP_400_BAD_REQUEST)
+        total_amount = sum((item["price"] * item["qty"] for item in built_items), Decimal("0.00"))
+        min_order_amount = StoreSettings.get_solo().min_order_amount
+        if total_amount < min_order_amount:
+            return Response(
+                {"error": f"¡Ya casi terminás tu compra! El mínimo es de ${min_order_amount:,.2f}. Podés agregar algunos productos más para alcanzarlo. ¡Gracias!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         with transaction.atomic():
             order = Order.objects.create(

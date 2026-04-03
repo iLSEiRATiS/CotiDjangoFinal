@@ -212,6 +212,7 @@ class AdminProductsView(APIView):
             precio=Decimal(str(price)),
             descripcion=request.data.get("description") or "",
             categoria=category,
+            video_url=str(request.data.get("videoUrl") or request.data.get("video_url") or "").strip(),
             stock=int(request.data.get("stock") or 0),
             activo=str(request.data.get("active") or "true").lower() in {"1", "true", "yes"},
         )
@@ -242,6 +243,8 @@ class AdminProductDetailView(APIView):
             product.precio = Decimal(str(request.data.get("price")))
         if "description" in request.data:
             product.descripcion = request.data.get("description") or ""
+        if "videoUrl" in request.data or "video_url" in request.data:
+            product.video_url = str(request.data.get("videoUrl") or request.data.get("video_url") or "").strip()
         if "stock" in request.data:
             product.stock = int(request.data.get("stock") or 0)
         if "active" in request.data:

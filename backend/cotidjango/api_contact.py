@@ -7,7 +7,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from products.models import HomeImage, HomeMarquee, SupplierContact
+from products.models import HomeImage, HomeMarquee, StoreSettings, SupplierContact
 from .api_common import _verify_turnstile, serialize_home_image, serialize_home_marquee
 
 
@@ -25,6 +25,16 @@ class HomeImagesView(APIView):
             "byKey": by_key_image,
             "byKeyTarget": by_key_target,
             "marquee": serialize_home_marquee(marquee),
+        })
+
+
+class StoreConfigView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        settings_row = StoreSettings.get_solo()
+        return Response({
+            "minOrderAmount": float(settings_row.min_order_amount),
         })
 
 

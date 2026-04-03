@@ -39,6 +39,7 @@ class Product(models.Model):
     descripcion = models.TextField(blank=True)
     imagen = models.ImageField(upload_to="products/", blank=True, null=True)
     image_url = models.URLField(max_length=500, blank=True, default="")
+    video_url = models.URLField(max_length=500, blank=True, default="")
     atributos = models.JSONField(default=dict, blank=True)
     atributos_stock = models.JSONField(default=dict, blank=True)
     atributos_precio = models.JSONField(default=dict, blank=True)
@@ -154,6 +155,36 @@ class HomeMarquee(models.Model):
 
     def __str__(self):
         return self.text or "Franja Home"
+
+
+class StoreSettings(models.Model):
+    min_order_amount = models.DecimalField(
+        "monto minimo de compra",
+        max_digits=12,
+        decimal_places=2,
+        default=100000,
+        help_text="Monto minimo requerido para permitir compras.",
+    )
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Configuracion de tienda"
+        verbose_name_plural = "Configuracion de tienda"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        return
+
+    @classmethod
+    def get_solo(cls):
+        obj, _ = cls.objects.get_or_create(pk=1, defaults={"min_order_amount": 100000})
+        return obj
+
+    def __str__(self):
+        return "Configuracion de tienda"
 
 
 class SupplierContact(models.Model):
