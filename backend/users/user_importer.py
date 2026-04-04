@@ -1,4 +1,5 @@
 import os
+import unicodedata
 
 import openpyxl
 from django.http import HttpResponse
@@ -46,7 +47,11 @@ HEADER_ALIAS = {
     "clave": "password",
     "contrasena": "password",
     "approval_status": "approval_status",
+    "approval status": "approval_status",
+    "estado_aprobacion": "approval_status",
     "estado de aprobacion": "approval_status",
+    "aprobacion": "approval_status",
+    "approval": "approval_status",
     "phone": "phone",
     "telefono": "phone",
     "address": "address",
@@ -125,7 +130,7 @@ class UserXlsxImporter:
             last_name = str(data.get("apellido") or "").strip()
             email = str(data.get("email") or "").strip().lower()
             password = str(data.get("password") or "").strip()
-            approval_status = str(data.get("approval_status") or "pending").strip().lower() or "pending"
+            approval_status = self._parse_approval_status(data.get("approval_status"))
             phone = str(data.get("phone") or "").strip()
             address = str(data.get("address") or "").strip()
             city = str(data.get("city") or "").strip()
@@ -134,7 +139,7 @@ class UserXlsxImporter:
             if not first_name or not last_name or not email:
                 errors.append(f"Fila {row_number}: nombre, apellido y email son obligatorios.")
                 continue
-            if approval_status not in {"pending", "approved", "rejected"}:
+            if approval_status is None:
                 errors.append(f"Fila {row_number}: estado de aprobacion invalido.")
                 continue
 
@@ -166,4 +171,20 @@ class UserXlsxImporter:
         return created, updated, errors
 
     def _norm_header(self, value):
-        return str(value or "").strip().lower()
+        text = str(value or "").strip().lower()
+        text = unicodedata.normalize("NFKD", text)
+        return "".join(char for char in text if not unicodedata.combining(char))
+
+    def _parse_approval_status(self, value):
+        raw = self._norm_header(value or "pending")
+        if not raw:
+            return "pending"
+        if raw in {"approved", "aprobado", "si", "sí", "yes", "activo", "aprobada"}:
+            return "approved"
+        if raw in {"pending", "pendiente", "en espera"}:
+            return "pending"
+        if raw in {"rejected", "rechazado", "rechazada"}:
+            return "rejected"
+        if raw in {"no", "inactivo"}:
+            return "pending"
+        return None
