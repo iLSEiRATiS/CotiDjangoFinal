@@ -18,6 +18,7 @@ from . import api_bridge
 
 # Cambia el enlace "Ver sitio" del admin para apuntar al frontend React local
 admin.site.site_url = "http://localhost:5173"
+ADMIN_PATH = f"{settings.ADMIN_PATH_PREFIX.strip('/')}/"
 
 
 def health_check(_request):
@@ -31,7 +32,7 @@ urlpatterns = [
     path("orden/nueva/", product_views.StoreOrderView.as_view(), name="order-new"),
     path("panel/admin/", AdminDashboardView.as_view(), name="admin-panel"),
     path("panel/usuario/", UserDashboardView.as_view(), name="user-panel"),
-    path("admin/", admin.site.urls),
+    path(ADMIN_PATH, admin.site.urls),
     path("api/health/", health_check, name="health"),
     path("login/", CustomLoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),

@@ -11,6 +11,7 @@ from django.utils.text import slugify
 from rest_framework import permissions, status
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from users.models import PasswordResetToken
@@ -39,6 +40,8 @@ def _find_auth_candidate(identifier):
 
 class AuthRegisterView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "auth_register"
 
     def post(self, request):
         name = (request.data.get("name") or "").strip()
@@ -73,6 +76,8 @@ class AuthRegisterView(APIView):
 
 class AuthLoginView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "auth_login"
 
     def post(self, request):
         email = (request.data.get("email") or request.data.get("username") or "").strip()
@@ -106,6 +111,8 @@ class AuthMeView(APIView):
 
 class AuthForgotPasswordView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "auth_forgot_password"
 
     def post(self, request):
         email = _normalize_email(request.data.get("email"))
@@ -134,6 +141,8 @@ class AuthForgotPasswordView(APIView):
 
 class AuthResetPasswordView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "auth_reset_password"
 
     def post(self, request):
         raw_token = str(request.data.get("token") or "").strip()
@@ -216,6 +225,8 @@ class AccountProfileView(APIView):
 
 class AccountPasswordView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "account_password"
 
     def patch(self, request):
         current = request.data.get("currentPassword") or request.data.get("old_password")

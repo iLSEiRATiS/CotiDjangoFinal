@@ -124,6 +124,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'cotidjango.middleware.AdminAccessMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -234,6 +235,8 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+ADMIN_ALLOWED_IPS = _env_csv("ADMIN_ALLOWED_IPS", default="")
+ADMIN_PATH_PREFIX = os.getenv("ADMIN_PATH_PREFIX", "admin").strip().strip("/") or "admin"
 
 CORS_ALLOWED_ORIGINS = _env_csv(
     "CORS_ALLOWED_ORIGINS",
@@ -265,6 +268,20 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
+    'DEFAULT_THROTTLE_RATES': {
+        'auth_login': os.getenv('THROTTLE_AUTH_LOGIN', '5/minute'),
+        'auth_register': os.getenv('THROTTLE_AUTH_REGISTER', '5/hour'),
+        'auth_forgot_password': os.getenv('THROTTLE_AUTH_FORGOT_PASSWORD', '5/hour'),
+        'auth_reset_password': os.getenv('THROTTLE_AUTH_RESET_PASSWORD', '10/hour'),
+        'account_password': os.getenv('THROTTLE_ACCOUNT_PASSWORD', '10/hour'),
+    },
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "cotistore-default",
+    }
 }
 
 SIMPLE_JWT = {
