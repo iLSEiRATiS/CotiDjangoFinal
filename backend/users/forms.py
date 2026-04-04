@@ -47,3 +47,49 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.setdefault("class", "form-control")
+
+
+class AdminCustomUserCreationForm(UserCreationForm):
+    first_name = forms.CharField(required=True, label="Nombre")
+    last_name = forms.CharField(required=True, label="Apellido")
+    email = forms.EmailField(required=True, label="Email")
+    approval_status = forms.ChoiceField(
+        required=True,
+        label="Estado de aprobacion",
+        choices=CustomUser.APPROVAL_CHOICES,
+        initial="pending",
+    )
+
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        fields = ("first_name", "last_name", "email", "password1", "password2", "approval_status")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields.pop("username", None)
+        for field in self.fields.values():
+            field.widget.attrs.setdefault("class", "form-control")
+
+    def clean_email(self):
+        email = str(self.cleaned_data.get("email") or "").strip().lower()
+        if not email:
+            raise forms.ValidationError("El email es obligatorio.")
+        if CustomUser.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("Ya existe un usuario con ese email.")
+        return email
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        first_name = str(self.cleaned_data.get("first_name") or "").strip()
+        last_name = str(self.cleaned_data.get("last_name") or "").strip()
+        email = self.cleaned_data["email"]
+        approval_status = self.cleaned_data.get("approval_status") or "pending"
+        user.username = email
+        user.email = email
+        user.first_name = first_name
+        user.last_name = last_name
+        user.name = " ".join(part for part in [first_name, last_name] if part).strip()
+        user.approval_status = approval_status
+        if commit:
+            user.save()
+        return user

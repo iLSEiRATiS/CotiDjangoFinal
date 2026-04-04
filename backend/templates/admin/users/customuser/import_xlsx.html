@@ -1,0 +1,58 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  <div id="content-main">
+    <h1>Importar clientes v&iacute;a XLSX</h1>
+
+    <p>
+      Pod&eacute;s crear o actualizar clientes en lote usando una planilla Excel.
+    </p>
+
+    <h2 style="margin:16px 0 8px; font-size:16px;">Formato requerido</h2>
+    <p style="margin-top:0;">
+      La fila 1 debe contener estos encabezados:<br>
+      <code>{{ headers|join:", " }}</code>
+    </p>
+
+    <h2 style="margin:16px 0 8px; font-size:16px;">Plantillas</h2>
+    <p>
+      <a class="button" href="{{ template_url }}">Descargar plantilla vac&iacute;a</a>
+      <a class="button" href="{{ example_url }}">Descargar ejemplo</a>
+    </p>
+
+    <h2 style="margin:16px 0 8px; font-size:16px;">Notas</h2>
+    <ul class="help" style="margin-top:0;">
+      <li>Campos obligatorios: <strong>nombre, apellido, email</strong>.</li>
+      <li><strong>password</strong> es opcional. Si queda vac&iacute;o en un cliente nuevo, se crea sin contrase&ntilde;a usable.</li>
+      <li><strong>approval_status</strong> acepta: pending, approved, rejected.</li>
+      <li>Si el email ya existe, se actualiza ese cliente.</li>
+    </ul>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <fieldset class="module aligned">
+        <div class="form-row">
+          <label for="id_file">Archivo XLSX</label>
+          <input type="file" name="file" accept=".xlsx" required id="id_file">
+        </div>
+      </fieldset>
+      <div class="submit-row">
+        <input type="submit" value="Subir e importar">
+        <a class="button cancel-link" href="{% url 'admin:users_customuser_changelist' %}">Volver</a>
+      </div>
+    </form>
+
+    {% if created or updated %}
+      <p class="success">
+        Resultado de importaci&oacute;n: <strong>{{ created }}</strong> nuevos,
+        <strong>{{ updated }}</strong> actualizados.
+      </p>
+    {% endif %}
+
+    {% if errors %}
+      <div class="errornote">
+        {% for e in errors %}<div>{{ e }}</div>{% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
