@@ -1,7 +1,7 @@
 import json
 import os
-from urllib import request as urlrequest
 from urllib import error as urlerror
+from urllib import request as urlrequest
 
 from django.conf import settings
 from django.core.mail import EmailMessage
@@ -24,8 +24,6 @@ def send_resend_email(to_emails, subject, text_body, html_body=None, reply_to=No
         payload["text"] = text_body
     if html_body:
         payload["html"] = html_body
-    # Resend funciona bien con un payload minimo; evitamos campos opcionales
-    # conflictivos hasta tener una necesidad clara de usarlos.
     try:
         req = urlrequest.Request(
             "https://api.resend.com/emails",
@@ -135,18 +133,18 @@ def send_password_reset_email(user, raw_token):
         return {"sent": False, "error": "missing-recipient"}
     frontend = _frontend_base_url()
     reset_link = f"{frontend}/reset-password?token={raw_token}"
-    subject = "Recuperar contraseÃ±a - CotiStore"
+    subject = "Recuperar contraseña - CotiStore"
     body = (
         f"Hola {user.name or user.username},\n\n"
-        "Recibimos una solicitud para cambiar tu contraseÃ±a.\n"
-        f"UsÃ¡ este enlace (vÃ¡lido por 30 minutos):\n{reset_link}\n\n"
-        "Si no fuiste vos, podÃ©s ignorar este correo."
+        "Recibimos una solicitud para cambiar tu contraseña.\n"
+        f"Usá este enlace (válido por 30 minutos):\n{reset_link}\n\n"
+        "Si no fuiste vos, podés ignorar este correo."
     )
     html_body = (
         f"<p>Hola {user.name or user.username},</p>"
-        "<p>Recibimos una solicitud para cambiar tu contraseÃ±a.</p>"
-        f"<p><a href=\"{reset_link}\">Cambiar contraseÃ±a</a> (vÃ¡lido por 30 minutos)</p>"
-        "<p>Si no fuiste vos, podÃ©s ignorar este correo.</p>"
+        "<p>Recibimos una solicitud para cambiar tu contraseña.</p>"
+        f"<p><a href=\"{reset_link}\">Cambiar contraseña</a> (válido por 30 minutos)</p>"
+        "<p>Si no fuiste vos, podés ignorar este correo.</p>"
     )
     reply_to = os.getenv("RESEND_REPLY_TO")
     resend_result = send_resend_email([user.email], subject, body, html_body=html_body, reply_to=reply_to) or {}
@@ -169,13 +167,13 @@ def send_welcome_email(user):
     body = (
         f"Hola {user.name or user.username},\n\n"
         "Tu cuenta fue creada correctamente en CotiStore.\n"
-        "Si tu acceso requiere aprobacion, te avisaremos cuando quede habilitado.\n\n"
-        f"Podes ingresar desde aqui:\n{login_link}\n"
+        "Si tu acceso requiere aprobación, te avisaremos cuando quede habilitado.\n\n"
+        f"Podés ingresar desde aquí:\n{login_link}\n"
     )
     html_body = (
         f"<p>Hola {user.name or user.username},</p>"
         "<p>Tu cuenta fue creada correctamente en CotiStore.</p>"
-        "<p>Si tu acceso requiere aprobacion, te avisaremos cuando quede habilitado.</p>"
+        "<p>Si tu acceso requiere aprobación, te avisaremos cuando quede habilitado.</p>"
         f"<p><a href=\"{login_link}\">Ingresar</a></p>"
     )
     reply_to = os.getenv("RESEND_REPLY_TO")
@@ -195,16 +193,16 @@ def send_password_changed_email(user):
         return {"sent": False, "error": "missing-recipient"}
     frontend = _frontend_base_url()
     login_link = f"{frontend}/login"
-    subject = "Tu contrasena fue actualizada"
+    subject = "Tu contraseña fue actualizada"
     body = (
         f"Hola {user.name or user.username},\n\n"
-        "Te avisamos que tu contrasena fue cambiada correctamente.\n"
-        f"Si fuiste vos, podes volver a ingresar desde:\n{login_link}\n\n"
+        "Te avisamos que tu contraseña fue cambiada correctamente.\n"
+        f"Si fuiste vos, podés volver a ingresar desde:\n{login_link}\n\n"
         "Si no reconoces este cambio, contactanos de inmediato."
     )
     html_body = (
         f"<p>Hola {user.name or user.username},</p>"
-        "<p>Te avisamos que tu contrasena fue cambiada correctamente.</p>"
+        "<p>Te avisamos que tu contraseña fue cambiada correctamente.</p>"
         f"<p><a href=\"{login_link}\">Volver a ingresar</a></p>"
         "<p>Si no reconoces este cambio, contactanos de inmediato.</p>"
     )
