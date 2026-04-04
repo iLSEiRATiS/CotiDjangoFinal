@@ -23,6 +23,14 @@ def _normalize_email(value):
     return str(value or "").strip().lower()
 
 
+def _normalize_person_name(value):
+    return " ".join(str(value or "").strip().split())
+
+
+def _build_full_name(first_name, last_name):
+    return " ".join(part for part in [_normalize_person_name(first_name), _normalize_person_name(last_name)] if part).strip()
+
+
 def _user_exists_for_email(email, exclude_pk=None):
     queryset = User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email))
     if exclude_pk is not None:
@@ -44,10 +52,12 @@ class AuthRegisterView(APIView):
     throttle_scope = "auth_register"
 
     def post(self, request):
-        name = (request.data.get("name") or "").strip()
+        first_name = _normalize_person_name(request.data.get("firstName") or request.data.get("first_name"))
+        last_name = _normalize_person_name(request.data.get("lastName") or request.data.get("last_name"))
+        name = _build_full_name(first_name, last_name) or _normalize_person_name(request.data.get("name"))
         email = _normalize_email(request.data.get("email"))
         password = (request.data.get("password") or "").strip()
-        if not name or not email or not password:
+        if not first_name or not last_name or not email or not password:
             return Response({"error": "Faltan campos"}, status=status.HTTP_400_BAD_REQUEST)
         if _user_exists_for_email(email):
             return Response({"error": "Email ya registrado"}, status=status.HTTP_409_CONFLICT)
@@ -57,6 +67,8 @@ class AuthRegisterView(APIView):
             email=email,
             password=password,
             name=name,
+            first_name=first_name,
+            last_name=last_name,
             approval_status="pending",
             is_active=False,
         )
@@ -178,6 +190,8 @@ class AccountProfileView(APIView):
     def patch(self, request):
         user = request.user
         name = request.data.get("name")
+        first_name = request.data.get("firstName") if "firstName" in request.data else request.data.get("first_name")
+        last_name = request.data.get("lastName") if "lastName" in request.data else request.data.get("last_name")
         email = request.data.get("email")
         profile = request.data.get("profile") if isinstance(request.data.get("profile"), dict) else {}
         shipping = request.data.get("shipping") if isinstance(request.data.get("shipping"), dict) else {}
@@ -193,7 +207,17 @@ class AccountProfileView(APIView):
             user.username = user.username or normalized_email
 
         if name is not None:
-            user.name = name
+            user.name = _normalize_person_name(name)
+
+        if first_name is not None:
+            user.first_name = _normalize_person_name(first_name)
+
+        if last_name is not None:
+            user.last_name = _normalize_person_name(last_name)
+
+        full_name = _build_full_name(user.first_name, user.last_name)
+        if full_name:
+            user.name = full_name
 
         phone_val = profile.get("phone") if profile else None
         if profile_phone is not None:
@@ -203,7 +227,9 @@ class AccountProfileView(APIView):
 
         if shipping:
             if "name" in shipping:
-                user.name = shipping.get("name") or user.name
+                shipping_name = _normalize_person_name(shipping.get("name"))
+                if shipping_name and not full_name:
+                    user.name = shipping_name
             if "address" in shipping:
                 user.address = shipping.get("address") or ""
             if "city" in shipping:

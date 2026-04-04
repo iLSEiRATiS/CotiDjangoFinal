@@ -40,6 +40,26 @@ class CustomUser(AbstractUser):
         verbose_name = "Usuario"
         verbose_name_plural = "Usuarios"
 
+    def get_full_name_parts(self):
+        first = str(self.first_name or "").strip()
+        last = str(self.last_name or "").strip()
+        return first, last
+
+    def get_display_name(self):
+        first, last = self.get_full_name_parts()
+        full = " ".join(part for part in [first, last] if part).strip()
+        if full:
+            return full
+        return str(self.name or self.username or self.email or "user").strip()
+
+    def get_missing_profile_fields(self):
+        missing = []
+        if not str(self.first_name or "").strip():
+            missing.append("first_name")
+        if not str(self.last_name or "").strip():
+            missing.append("last_name")
+        return missing
+
     def _should_be_admin(self):
         return self.is_superuser or self.is_staff or self.role == "admin"
 

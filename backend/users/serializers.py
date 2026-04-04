@@ -7,7 +7,7 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "name", "phone", "address", "city", "zip_code", "role", "approval_status"]
+        fields = ["id", "username", "email", "name", "first_name", "last_name", "phone", "address", "city", "zip_code", "role", "approval_status"]
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -15,7 +15,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "password", "name", "phone", "address", "city", "zip_code"]
+        fields = ["id", "username", "email", "password", "name", "first_name", "last_name", "phone", "address", "city", "zip_code"]
         extra_kwargs = {"username": {"required": False, "allow_blank": True}}
 
     def validate(self, attrs):
@@ -33,6 +33,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=validated_data.get("email", ""),
             password=validated_data["password"],
             name=validated_data.get("name", ""),
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", ""),
             approval_status="pending",
             is_active=False,
         )

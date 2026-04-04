@@ -117,18 +117,24 @@ def _collect_product_images(prod, request=None):
 
 
 def serialize_user(user, request=None):
+    display_name = user.get_display_name() if hasattr(user, "get_display_name") else (user.name or user.username)
+    missing_profile_fields = user.get_missing_profile_fields() if hasattr(user, "get_missing_profile_fields") else []
     return {
         "_id": str(user.id),
         "id": user.id,
-        "name": user.name or user.username,
+        "name": display_name,
+        "firstName": str(user.first_name or "").strip(),
+        "lastName": str(user.last_name or "").strip(),
         "email": user.email,
         "role": user.role,
+        "missingProfileFields": missing_profile_fields,
+        "profileCompletionRequired": bool(missing_profile_fields),
         "profile": {
             "phone": user.phone or "",
             "avatar": _abs_media(request, user.avatar.url) if (request and user.avatar) else None,
         },
         "shipping": {
-            "name": user.name or "",
+            "name": display_name,
             "address": user.address or "",
             "city": user.city or "",
             "zip": user.zip_code or "",

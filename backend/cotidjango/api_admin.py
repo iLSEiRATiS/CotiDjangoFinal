@@ -33,6 +33,14 @@ from .api_common import (
 from .api_order_utils import build_order_item_input
 
 
+def _normalize_person_name(value):
+    return " ".join(str(value or "").strip().split())
+
+
+def _build_full_name(first_name, last_name):
+    return " ".join(part for part in [_normalize_person_name(first_name), _normalize_person_name(last_name)] if part).strip()
+
+
 def _get_order_or_404(pk):
     return Order.objects.prefetch_related("items__product").select_related("user").filter(pk=pk).first()
 
@@ -66,24 +74,38 @@ class AdminUsersView(APIView):
         limit = max(1, min(100, int(request.query_params.get("limit") or 20)))
         qs = User.objects.all().order_by("-date_joined")
         if q:
-            qs = qs.filter(Q(name__icontains=q) | Q(email__icontains=q))
+            qs = qs.filter(
+                Q(name__icontains=q)
+                | Q(first_name__icontains=q)
+                | Q(last_name__icontains=q)
+                | Q(email__icontains=q)
+            )
         total = qs.count()
         items = qs[(page - 1) * limit:(page - 1) * limit + limit]
         return Response({"items": [serialize_user(u, request) for u in items], "total": total, "page": page, "pages": ceil(total / limit) if total else 1})
 
     def post(self, request):
-        name = (request.data.get("name") or "").strip()
+        first_name = _normalize_person_name(request.data.get("firstName") or request.data.get("first_name"))
+        last_name = _normalize_person_name(request.data.get("lastName") or request.data.get("last_name"))
+        name = _build_full_name(first_name, last_name) or _normalize_person_name(request.data.get("name"))
         email = (request.data.get("email") or "").strip().lower()
         password = (request.data.get("password") or "").strip()
-        if not name or not email or not password:
-            return Response({"error": "Nombre, email y password requeridos"}, status=status.HTTP_400_BAD_REQUEST)
+        if not first_name or not last_name or not email or not password:
+            return Response({"error": "Nombre, apellido, email y password requeridos"}, status=status.HTTP_400_BAD_REQUEST)
         if User.objects.filter(email__iexact=email).exists():
             return Response({"error": "Email ya registrado"}, status=status.HTTP_409_CONFLICT)
         try:
             validate_password(password)
         except ValidationError as exc:
             return Response({"error": exc.messages}, status=status.HTTP_400_BAD_REQUEST)
-        user = User.objects.create_user(username=email, email=email, password=password, name=name)
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            name=name,
+            first_name=first_name,
+            last_name=last_name,
+        )
         return Response(serialize_user(user, request), status=status.HTTP_201_CREATED)
 
 
@@ -95,7 +117,14 @@ class AdminUserDetailView(APIView):
         if not user:
             return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
         if "name" in request.data:
-            user.name = request.data.get("name") or user.name
+            user.name = _normalize_person_name(request.data.get("name")) or user.name
+        if "firstName" in request.data or "first_name" in request.data:
+            user.first_name = _normalize_person_name(request.data.get("firstName") or request.data.get("first_name"))
+        if "lastName" in request.data or "last_name" in request.data:
+            user.last_name = _normalize_person_name(request.data.get("lastName") or request.data.get("last_name"))
+        full_name = _build_full_name(user.first_name, user.last_name)
+        if full_name:
+            user.name = full_name
         if "email" in request.data:
             candidate = str(request.data.get("email") or "").strip().lower()
             if candidate and User.objects.filter(email__iexact=candidate).exclude(pk=user.pk).exists():
