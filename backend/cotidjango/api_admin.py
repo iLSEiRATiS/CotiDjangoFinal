@@ -41,6 +41,22 @@ def _build_full_name(first_name, last_name):
     return " ".join(part for part in [_normalize_person_name(first_name), _normalize_person_name(last_name)] if part).strip()
 
 
+def _parse_shipping_quote_payload(data):
+    if not isinstance(data, dict):
+        return None
+    amount_raw = data.get("amount")
+    note = str(data.get("note") or "").strip()
+    amount = None
+    if amount_raw not in (None, ""):
+        try:
+            amount = Decimal(str(amount_raw))
+        except Exception:
+            raise ValidationError("Monto de envio invalido")
+        if amount < 0:
+            raise ValidationError("El monto de envio no puede ser negativo")
+    return {"amount": amount, "note": note}
+
+
 def _get_order_or_404(pk):
     return Order.objects.prefetch_related("items__product").select_related("user").filter(pk=pk).first()
 
@@ -139,6 +155,15 @@ class AdminUserDetailView(APIView):
             except ValidationError as exc:
                 return Response({"error": exc.messages}, status=status.HTTP_400_BAD_REQUEST)
             user.set_password(candidate_pwd)
+        if "shippingQuote" in request.data:
+            try:
+                shipping_quote = _parse_shipping_quote_payload(request.data.get("shippingQuote"))
+            except ValidationError as exc:
+                return Response({"error": exc.messages if hasattr(exc, "messages") else str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+            if shipping_quote is not None:
+                user.shipping_quote_amount = shipping_quote["amount"]
+                user.shipping_quote_note = shipping_quote["note"]
+                user.shipping_quote_updated_at = timezone.now() if (shipping_quote["amount"] is not None or shipping_quote["note"]) else None
         user.save()
         return Response(serialize_user(user, request))
 

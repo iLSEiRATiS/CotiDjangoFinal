@@ -119,6 +119,9 @@ def _collect_product_images(prod, request=None):
 def serialize_user(user, request=None):
     display_name = user.get_display_name() if hasattr(user, "get_display_name") else (user.name or user.username)
     missing_profile_fields = user.get_missing_profile_fields() if hasattr(user, "get_missing_profile_fields") else []
+    shipping_quote_amount = getattr(user, "shipping_quote_amount", None)
+    shipping_quote_note = str(getattr(user, "shipping_quote_note", "") or "").strip()
+    shipping_quote_updated_at = getattr(user, "shipping_quote_updated_at", None)
     return {
         "_id": str(user.id),
         "id": user.id,
@@ -139,6 +142,12 @@ def serialize_user(user, request=None):
             "city": user.city or "",
             "zip": user.zip_code or "",
             "phone": user.phone or "",
+        },
+        "shippingQuote": {
+            "amount": float(shipping_quote_amount) if shipping_quote_amount is not None else None,
+            "note": shipping_quote_note,
+            "updatedAt": shipping_quote_updated_at.isoformat() if shipping_quote_updated_at else None,
+            "available": shipping_quote_amount is not None or bool(shipping_quote_note),
         },
         "createdAt": user.date_joined.isoformat() if user.date_joined else None,
         "updatedAt": user.last_login.isoformat() if user.last_login else None,
