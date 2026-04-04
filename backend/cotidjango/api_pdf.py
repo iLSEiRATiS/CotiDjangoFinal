@@ -13,10 +13,13 @@ def _invoice_logo_path():
     if explicit_logo:
         candidates.append(Path(explicit_logo))
     candidates.extend([
-        Path(r"C:\Users\facun\OneDrive\Escritorio\logo-coti-optimized.webp"),
-        Path(r"C:\Users\facun\OneDrive\Escritorio\logo-coti-optimized"),
+        base_dir / "media" / "avatars" / "logo-coti.png",
+        base_dir / "media" / "avatars" / "logo-coti.webp",
+        base_dir / "static" / "logo-coti.png",
+        base_dir / "static" / "logo-coti.webp",
         base_dir / "static" / "logo-coti.png",
         base_dir / "static" / "logo.png",
+        base_dir.parent / "DjangoFrontCoti" / "src" / "assets" / "logo-coti-optimized.webp",
         base_dir.parent / "DjangoFrontCoti" / "src" / "assets" / "logo-coti.png",
         base_dir.parent / "DjangoFrontCoti" / "public" / "logo-coti.png",
         base_dir.parent / "frontend" / "src" / "assets" / "logo-coti.png",
