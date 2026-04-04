@@ -34,10 +34,11 @@ class CustomUserAdmin(UserAdmin):
         ("Datos personales", {"fields": ("first_name", "last_name", "email", "name", "phone", "address", "city", "zip_code", "avatar")}),
         ("Estado de aprobacion", {"fields": ("approval_status",)}),
         ("Presupuesto de envio", {"fields": ("shipping_quote_amount", "shipping_quote_note", "shipping_quote_updated_at")}),
-        ("Permisos", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        ("Permisos", {"fields": ("is_active", "is_staff", "is_superuser")}),
         ("Fechas importantes", {"fields": ("last_login", "date_joined", "welcome_email_sent_at", "last_password_changed_at")}),
     )
     readonly_fields = ("shipping_quote_updated_at", "welcome_email_sent_at", "last_password_changed_at", "last_login", "date_joined")
+    filter_horizontal = ()
     add_fieldsets = (
         (
             None,
