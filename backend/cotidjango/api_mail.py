@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 from urllib import error as urlerror
@@ -10,7 +11,33 @@ from .api_order_utils import order_item_attrs_label, order_item_name
 from .api_pdf import build_invoice_pdf
 
 
-def send_resend_email(to_emails, subject, text_body, html_body=None, reply_to=None):
+def _normalize_resend_attachments(attachments=None):
+    items = []
+    for attachment in attachments or []:
+        if not isinstance(attachment, dict):
+            continue
+        filename = str(attachment.get("filename") or "").strip()
+        content = attachment.get("content")
+        content_type = str(attachment.get("content_type") or attachment.get("contentType") or "").strip()
+        if not filename or content in (None, ""):
+            continue
+        if isinstance(content, bytes):
+            encoded = base64.b64encode(content).decode("ascii")
+        else:
+            encoded = str(content).strip()
+        if not encoded:
+            continue
+        item = {
+            "filename": filename,
+            "content": encoded,
+        }
+        if content_type:
+            item["content_type"] = content_type
+        items.append(item)
+    return items
+
+
+def send_resend_email(to_emails, subject, text_body, html_body=None, reply_to=None, attachments=None):
     api_key = os.getenv("RESEND_API_KEY", "").strip()
     from_email = os.getenv("RESEND_FROM_EMAIL", "").strip() or "onboarding@resend.dev"
     if not api_key or not to_emails:
@@ -24,6 +51,11 @@ def send_resend_email(to_emails, subject, text_body, html_body=None, reply_to=No
         payload["text"] = text_body
     if html_body:
         payload["html"] = html_body
+    if reply_to:
+        payload["reply_to"] = [str(reply_to).strip()]
+    normalized_attachments = _normalize_resend_attachments(attachments)
+    if normalized_attachments:
+        payload["attachments"] = normalized_attachments
     try:
         req = urlrequest.Request(
             "https://api.resend.com/emails",
@@ -71,7 +103,20 @@ def send_invoice_email(order, request=None):
     )
     reply_to = os.getenv("RESEND_REPLY_TO")
     html_body = body.replace("\n", "<br>")
-    resend_result = send_resend_email([order.email], subject, body, html_body=html_body, reply_to=reply_to) or {}
+    resend_result = send_resend_email(
+        [order.email],
+        subject,
+        body,
+        html_body=html_body,
+        reply_to=reply_to,
+        attachments=[
+            {
+                "filename": f"pedido-{order.id}.pdf",
+                "content": pdf_bytes,
+                "content_type": "application/pdf",
+            }
+        ],
+    ) or {}
     if resend_result.get("sent"):
         return
     email = EmailMessage(subject, body, to=[order.email])
