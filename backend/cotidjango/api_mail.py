@@ -1,6 +1,7 @@
 import json
 import os
 from urllib import request as urlrequest
+from urllib import error as urlerror
 
 from django.conf import settings
 from django.core.mail import EmailMessage
@@ -13,17 +14,18 @@ def send_resend_email(to_emails, subject, text_body, html_body=None, reply_to=No
     api_key = os.getenv("RESEND_API_KEY", "").strip()
     from_email = os.getenv("RESEND_FROM_EMAIL", "").strip() or "onboarding@resend.dev"
     if not api_key or not to_emails:
-        return False
+        return {"sent": False, "error": "missing-api-key-or-recipient"}
     payload = {
         "from": from_email,
         "to": to_emails,
         "subject": subject or "",
-        "text": text_body or "",
     }
+    if text_body:
+        payload["text"] = text_body
     if html_body:
         payload["html"] = html_body
-    if reply_to:
-        payload["reply_to"] = reply_to
+    # Resend funciona bien con un payload minimo; evitamos campos opcionales
+    # conflictivos hasta tener una necesidad clara de usarlos.
     try:
         req = urlrequest.Request(
             "https://api.resend.com/emails",
@@ -31,14 +33,30 @@ def send_resend_email(to_emails, subject, text_body, html_body=None, reply_to=No
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
+                "User-Agent": "cotistore-backend/1.0",
             },
             method="POST",
         )
         with urlrequest.urlopen(req, timeout=15) as resp:
             status_code = getattr(resp, "status", 0) or 0
-            return 200 <= status_code < 300
-    except Exception:
-        return False
+            body = resp.read().decode("utf-8", errors="replace")
+            return {
+                "sent": 200 <= status_code < 300,
+                "status_code": status_code,
+                "body": body,
+            }
+    except urlerror.HTTPError as exc:
+        try:
+            body = exc.read().decode("utf-8", errors="replace")
+        except Exception:
+            body = ""
+        return {
+            "sent": False,
+            "status_code": getattr(exc, "code", None),
+            "error": body or repr(exc),
+        }
+    except Exception as exc:
+        return {"sent": False, "error": repr(exc)}
 
 
 def send_invoice_email(order, request=None):
@@ -55,7 +73,8 @@ def send_invoice_email(order, request=None):
     )
     reply_to = os.getenv("RESEND_REPLY_TO")
     html_body = body.replace("\n", "<br>")
-    if send_resend_email([order.email], subject, body, html_body=html_body, reply_to=reply_to):
+    resend_result = send_resend_email([order.email], subject, body, html_body=html_body, reply_to=reply_to) or {}
+    if resend_result.get("sent"):
         return
     email = EmailMessage(subject, body, to=[order.email])
     email.attach(f"pedido-{order.id}.pdf", pdf_bytes, "application/pdf")
@@ -92,7 +111,8 @@ def send_admin_order_email(order, request=None):
     html_body = body.replace("\n", "<br>")
     reply_to = os.getenv("RESEND_REPLY_TO")
 
-    if send_resend_email([admin_email], subject, body, html_body=html_body, reply_to=reply_to):
+    resend_result = send_resend_email([admin_email], subject, body, html_body=html_body, reply_to=reply_to) or {}
+    if resend_result.get("sent"):
         return
 
     email = EmailMessage(subject, body, to=[admin_email])
@@ -129,14 +149,15 @@ def send_password_reset_email(user, raw_token):
         "<p>Si no fuiste vos, podÃ©s ignorar este correo.</p>"
     )
     reply_to = os.getenv("RESEND_REPLY_TO")
-    if send_resend_email([user.email], subject, body, html_body=html_body, reply_to=reply_to):
+    resend_result = send_resend_email([user.email], subject, body, html_body=html_body, reply_to=reply_to) or {}
+    if resend_result.get("sent"):
         return {"sent": True, "provider": "resend", "reset_link": reset_link}
     email = EmailMessage(subject, body, to=[user.email])
     try:
         email.send(fail_silently=False)
         return {"sent": True, "provider": "smtp", "reset_link": reset_link}
     except Exception as exc:
-        return {"sent": False, "error": str(exc), "reset_link": reset_link}
+        return {"sent": False, "error": resend_result.get("error") or str(exc), "reset_link": reset_link}
 
 
 def send_welcome_email(user):
@@ -158,14 +179,15 @@ def send_welcome_email(user):
         f"<p><a href=\"{login_link}\">Ingresar</a></p>"
     )
     reply_to = os.getenv("RESEND_REPLY_TO")
-    if send_resend_email([user.email], subject, body, html_body=html_body, reply_to=reply_to):
+    resend_result = send_resend_email([user.email], subject, body, html_body=html_body, reply_to=reply_to) or {}
+    if resend_result.get("sent"):
         return {"sent": True, "provider": "resend"}
     email = EmailMessage(subject, body, to=[user.email])
     try:
         email.send(fail_silently=False)
         return {"sent": True, "provider": "smtp"}
     except Exception as exc:
-        return {"sent": False, "error": str(exc)}
+        return {"sent": False, "error": resend_result.get("error") or str(exc)}
 
 
 def send_password_changed_email(user):
@@ -187,11 +209,12 @@ def send_password_changed_email(user):
         "<p>Si no reconoces este cambio, contactanos de inmediato.</p>"
     )
     reply_to = os.getenv("RESEND_REPLY_TO")
-    if send_resend_email([user.email], subject, body, html_body=html_body, reply_to=reply_to):
+    resend_result = send_resend_email([user.email], subject, body, html_body=html_body, reply_to=reply_to) or {}
+    if resend_result.get("sent"):
         return {"sent": True, "provider": "resend"}
     email = EmailMessage(subject, body, to=[user.email])
     try:
         email.send(fail_silently=False)
         return {"sent": True, "provider": "smtp"}
     except Exception as exc:
-        return {"sent": False, "error": str(exc)}
+        return {"sent": False, "error": resend_result.get("error") or str(exc)}
