@@ -23,6 +23,7 @@ from .api_auth import (
 from .api_contact import HomeImagesView, StoreConfigView, SupplierContactCreateView
 from .api_orders import MyOrdersView, OrderCreateView, OrderDetailView, OrderMarkPaidView, OrderPdfView
 from .api_products import OffersListView, ProductDetailView, ProductListView
+from .api_products import CategoriesListView
 
 __all__ = [
     "AccountPasswordView",
@@ -43,6 +44,7 @@ __all__ = [
     "AuthMeView",
     "AuthRegisterView",
     "AuthResetPasswordView",
+    "CategoriesListView",
     "HomeImagesView",
     "MyOrdersView",
     "OffersListView",

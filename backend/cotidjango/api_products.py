@@ -19,6 +19,21 @@ from .api_common import (
 )
 
 
+class CategoriesListView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        items = Category.objects.select_related("parent").all().order_by("nombre", "id")
+        data = [{
+            "id": cat.id,
+            "nombre": cat.nombre,
+            "slug": cat.slug,
+            "descripcion": cat.descripcion or "",
+            "parent": cat.parent_id,
+        } for cat in items]
+        return Response({"items": data})
+
+
 class ProductListView(APIView):
     permission_classes = [permissions.AllowAny]
 

@@ -58,6 +58,7 @@ urlpatterns += [
     re_path(r"^api/account/password/?$", api_bridge.AccountPasswordView.as_view(), name="api-bridge-password"),
     re_path(r"^api/home-images/?$", api_bridge.HomeImagesView.as_view(), name="api-bridge-home-images"),
     re_path(r"^api/store-config/?$", api_bridge.StoreConfigView.as_view(), name="api-bridge-store-config"),
+    re_path(r"^api/categories-list/?$", api_bridge.CategoriesListView.as_view(), name="api-bridge-categories"),
     re_path(r"^api/supplier-contacts/?$", api_bridge.SupplierContactCreateView.as_view(), name="api-bridge-supplier-contacts"),
     re_path(r"^api/products/?$", api_bridge.ProductListView.as_view(), name="api-bridge-products"),
     re_path(r"^api/products/(?P<pk>[^/]+)/?$", api_bridge.ProductDetailView.as_view(), name="api-bridge-product-detail"),
