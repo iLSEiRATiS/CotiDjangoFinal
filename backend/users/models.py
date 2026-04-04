@@ -21,6 +21,8 @@ class CustomUser(AbstractUser):
     avatar = models.ImageField("avatar", upload_to="avatars/", blank=True, null=True)
     role = models.CharField("rol", max_length=10, choices=ROLE_CHOICES, default="user")
     approval_status = models.CharField("estado de aprobacion", max_length=10, choices=APPROVAL_CHOICES, default="pending")
+    welcome_email_sent_at = models.DateTimeField("bienvenida enviada el", null=True, blank=True)
+    last_password_changed_at = models.DateTimeField("ultima clave cambiada el", null=True, blank=True)
     groups = models.ManyToManyField(
         "auth.Group",
         related_name="customuser_set",

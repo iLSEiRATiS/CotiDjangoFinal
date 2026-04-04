@@ -14,7 +14,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.models import PasswordResetToken
-from .api_common import User, _reset_token_hash, build_token, send_password_reset_email, serialize_user
+from .api_common import User, _reset_token_hash, build_token, serialize_user
+from .api_mail import send_password_changed_email, send_password_reset_email, send_welcome_email
 
 
 def _normalize_email(value):
@@ -56,6 +57,10 @@ class AuthRegisterView(APIView):
             approval_status="pending",
             is_active=False,
         )
+        welcome_result = send_welcome_email(user) or {}
+        if welcome_result.get("sent"):
+            user.welcome_email_sent_at = timezone.now()
+            user.save(update_fields=["welcome_email_sent_at"])
         return Response(
             {
                 "pending": True,
@@ -144,10 +149,13 @@ class AuthResetPasswordView(APIView):
             validate_password(new_password, user=user)
         except ValidationError as exc:
             return Response({"error": exc.messages}, status=status.HTTP_400_BAD_REQUEST)
+        changed_at = timezone.now()
         user.set_password(new_password)
-        user.save(update_fields=["password"])
+        user.last_password_changed_at = changed_at
+        user.save(update_fields=["password", "last_password_changed_at"])
         row.used_at = timezone.now()
         row.save(update_fields=["used_at"])
+        send_password_changed_email(user)
         return Response({"ok": True, "detail": "Contrasena actualizada correctamente"})
 
 
@@ -220,6 +228,9 @@ class AccountPasswordView(APIView):
             validate_password(new, user=request.user)
         except ValidationError as exc:
             return Response({"error": exc.messages}, status=status.HTTP_400_BAD_REQUEST)
+        changed_at = timezone.now()
         request.user.set_password(new)
-        request.user.save()
+        request.user.last_password_changed_at = changed_at
+        request.user.save(update_fields=["password", "last_password_changed_at"])
+        send_password_changed_email(request.user)
         return Response({"detail": "Contrasena actualizada"})

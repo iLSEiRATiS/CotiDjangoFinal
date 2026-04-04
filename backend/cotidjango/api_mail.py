@@ -137,3 +137,61 @@ def send_password_reset_email(user, raw_token):
         return {"sent": True, "provider": "smtp", "reset_link": reset_link}
     except Exception as exc:
         return {"sent": False, "error": str(exc), "reset_link": reset_link}
+
+
+def send_welcome_email(user):
+    if not user or not user.email:
+        return {"sent": False, "error": "missing-recipient"}
+    frontend = _frontend_base_url()
+    login_link = f"{frontend}/login"
+    subject = "Bienvenido a CotiStore"
+    body = (
+        f"Hola {user.name or user.username},\n\n"
+        "Tu cuenta fue creada correctamente en CotiStore.\n"
+        "Si tu acceso requiere aprobacion, te avisaremos cuando quede habilitado.\n\n"
+        f"Podes ingresar desde aqui:\n{login_link}\n"
+    )
+    html_body = (
+        f"<p>Hola {user.name or user.username},</p>"
+        "<p>Tu cuenta fue creada correctamente en CotiStore.</p>"
+        "<p>Si tu acceso requiere aprobacion, te avisaremos cuando quede habilitado.</p>"
+        f"<p><a href=\"{login_link}\">Ingresar</a></p>"
+    )
+    reply_to = os.getenv("RESEND_REPLY_TO")
+    if send_resend_email([user.email], subject, body, html_body=html_body, reply_to=reply_to):
+        return {"sent": True, "provider": "resend"}
+    email = EmailMessage(subject, body, to=[user.email])
+    try:
+        email.send(fail_silently=False)
+        return {"sent": True, "provider": "smtp"}
+    except Exception as exc:
+        return {"sent": False, "error": str(exc)}
+
+
+def send_password_changed_email(user):
+    if not user or not user.email:
+        return {"sent": False, "error": "missing-recipient"}
+    frontend = _frontend_base_url()
+    login_link = f"{frontend}/login"
+    subject = "Tu contrasena fue actualizada"
+    body = (
+        f"Hola {user.name or user.username},\n\n"
+        "Te avisamos que tu contrasena fue cambiada correctamente.\n"
+        f"Si fuiste vos, podes volver a ingresar desde:\n{login_link}\n\n"
+        "Si no reconoces este cambio, contactanos de inmediato."
+    )
+    html_body = (
+        f"<p>Hola {user.name or user.username},</p>"
+        "<p>Te avisamos que tu contrasena fue cambiada correctamente.</p>"
+        f"<p><a href=\"{login_link}\">Volver a ingresar</a></p>"
+        "<p>Si no reconoces este cambio, contactanos de inmediato.</p>"
+    )
+    reply_to = os.getenv("RESEND_REPLY_TO")
+    if send_resend_email([user.email], subject, body, html_body=html_body, reply_to=reply_to):
+        return {"sent": True, "provider": "resend"}
+    email = EmailMessage(subject, body, to=[user.email])
+    try:
+        email.send(fail_silently=False)
+        return {"sent": True, "provider": "smtp"}
+    except Exception as exc:
+        return {"sent": False, "error": str(exc)}
