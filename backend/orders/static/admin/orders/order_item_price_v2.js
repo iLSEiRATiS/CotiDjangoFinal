@@ -69,6 +69,7 @@
     const quantityInput = findQuantityInput(priceInput);
     const deleteInput = findDeleteInput(priceInput);
     const deleted = deleteInput?.checked;
+    if (row && deleteInput) row.style.display = deleted ? 'none' : '';
     const subtotal = deleted
       ? 0
       : parseDecimal(priceInput.value) * Math.max(0, parseDecimal(quantityInput?.value || '1'));
@@ -106,10 +107,18 @@
     document.querySelectorAll('input[name$="-precio_unitario"]').forEach((priceInput) => {
       total += setRowSubtotal(priceInput);
     });
+    syncDeletedItemRows();
     total += parseDecimal(document.querySelector('[name="envio"]')?.value || '0');
     const box = ensureLiveTotalBox();
     const value = box?.querySelector('#order-live-total-value');
     if (value) value.textContent = formatMoney(total);
+  }
+
+  function syncDeletedItemRows() {
+    document.querySelectorAll('input[name$="-DELETE"]').forEach((deleteInput) => {
+      const row = findRowFromInput(deleteInput);
+      if (row) row.style.display = deleteInput.checked ? 'none' : '';
+    });
   }
 
   function getInlinePrefix(row) {
@@ -328,6 +337,7 @@
       input.dataset.liveTotalBound = '1';
       input.addEventListener('input', recalcOrderTotal);
       input.addEventListener('change', recalcOrderTotal);
+      input.addEventListener('click', () => window.setTimeout(recalcOrderTotal, 0));
     });
     recalcOrderTotal();
   }
