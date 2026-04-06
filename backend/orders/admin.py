@@ -1,5 +1,9 @@
 from django import forms
 from django.contrib import admin
+from django.http import JsonResponse
+from django.urls import path
+
+from products.models import Product
 
 from .models import Order, OrderItem
 
@@ -16,7 +20,7 @@ class OrderItemAdminForm(forms.ModelForm):
         if "precio_unitario" in self.fields:
             self.fields["precio_unitario"].required = False
             self.fields["precio_unitario"].help_text = (
-                "Podés modificar este valor. Si lo dejás vacío, se usa el precio actual del producto."
+                "Podes modificar este valor. Si lo dejas vacio, se usa el precio actual del producto."
             )
 
     def clean(self):
@@ -70,6 +74,33 @@ class OrderAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+    class Media:
+        js = ("admin/orders/order_item_price.js",)
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom = [
+            path(
+                "product-price/<int:product_id>/",
+                self.admin_site.admin_view(self.product_price_view),
+                name="orders_order_product_price",
+            ),
+        ]
+        return custom + urls
+
+    def product_price_view(self, request, product_id):
+        product = Product.objects.select_related("categoria").filter(pk=product_id).first()
+        if not product:
+            return JsonResponse({"error": "Producto no encontrado"}, status=404)
+        return JsonResponse(
+            {
+                "id": product.id,
+                "name": product.nombre,
+                "category": product.categoria.nombre if product.categoria_id else "",
+                "price": str(product.precio),
+            }
+        )
 
     @admin.action(description="Aprobar pedidos seleccionados")
     def aprobar(self, request, queryset):
