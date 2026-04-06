@@ -35,7 +35,7 @@ class OrderItemAdminForm(forms.ModelForm):
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     form = OrderItemAdminForm
-    extra = 1
+    extra = 0
     fields = ("product", "cantidad", "precio_unitario", "subtotal")
     readonly_fields = ("subtotal",)
     autocomplete_fields = ("product",)

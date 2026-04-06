@@ -90,10 +90,12 @@
     box.id = 'order-live-total-box';
     box.style.margin = '12px 0';
     box.style.padding = '12px 14px';
-    box.style.border = '1px solid #d0d7de';
+    box.style.border = '2px solid #1f7a4d';
     box.style.borderRadius = '8px';
-    box.style.background = '#f6f8fa';
+    box.style.background = '#ffffff';
+    box.style.color = '#102a1f';
     box.style.fontWeight = '700';
+    box.style.boxShadow = '0 2px 8px rgba(16, 42, 31, 0.08)';
     box.innerHTML = 'Total del pedido: <span id="order-live-total-value">0,00</span>';
     inlineGroup.appendChild(box);
     return box;
