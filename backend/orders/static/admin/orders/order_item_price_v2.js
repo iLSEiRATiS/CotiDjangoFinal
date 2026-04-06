@@ -135,7 +135,8 @@
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'order-remove-item';
-    button.textContent = 'Quitar';
+    button.textContent = 'Quitar producto';
+    button.title = 'Quita este producto del pedido. No elimina el producto del catalogo.';
     button.addEventListener('click', function () {
       deleteInput.checked = true;
       deleteInput.dispatchEvent(new Event('change', { bubbles: true }));
@@ -147,7 +148,8 @@
   function simplifyInlineControls() {
     document.querySelectorAll('input[name$="-DELETE"]').forEach(ensureSavedItemRemoveButton);
     document.querySelectorAll('.inline-deletelink').forEach((link) => {
-      link.textContent = 'Quitar';
+      link.textContent = 'Quitar producto';
+      link.title = 'Quita este producto del pedido. No elimina el producto del catalogo.';
       link.classList.add('order-remove-item');
     });
     document.querySelectorAll('.inline-group .add-row a.addlink').forEach((link) => {
