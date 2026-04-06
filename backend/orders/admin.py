@@ -102,6 +102,10 @@ class OrderAdmin(admin.ModelAdmin):
             }
         )
 
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        form.instance.recalc_total()
+
     @admin.action(description="Aprobar pedidos seleccionados")
     def aprobar(self, request, queryset):
         queryset.update(status="approved")

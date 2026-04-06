@@ -17,6 +17,87 @@
     return document.querySelector(`[name="${priceName}"]`);
   }
 
+  function parseDecimal(value) {
+    let normalized = String(value || '').trim().replace(/[^\d,.-]/g, '');
+    if (normalized.includes(',') && normalized.includes('.')) {
+      normalized = normalized.lastIndexOf(',') > normalized.lastIndexOf('.')
+        ? normalized.replace(/\./g, '').replace(',', '.')
+        : normalized.replace(/,/g, '');
+    } else if (normalized.includes(',')) {
+      normalized = normalized.replace(',', '.');
+    }
+    const number = Number(normalized);
+    return Number.isFinite(number) ? number : 0;
+  }
+
+  function formatMoney(value) {
+    return new Intl.NumberFormat('es-AR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value || 0);
+  }
+
+  function findRowFromInput(input) {
+    return input?.closest?.('tr.form-row') || input?.closest?.('.dynamic-items') || input?.closest?.('tr');
+  }
+
+  function findQuantityInput(priceInput) {
+    const name = priceInput.getAttribute('name') || '';
+    const quantityName = name.replace(/-precio_unitario$/, '-cantidad');
+    return document.querySelector(`[name="${quantityName}"]`);
+  }
+
+  function findDeleteInput(priceInput) {
+    const name = priceInput.getAttribute('name') || '';
+    const deleteName = name.replace(/-precio_unitario$/, '-DELETE');
+    return document.querySelector(`[name="${deleteName}"]`);
+  }
+
+  function setRowSubtotal(priceInput) {
+    const row = findRowFromInput(priceInput);
+    const quantityInput = findQuantityInput(priceInput);
+    const deleteInput = findDeleteInput(priceInput);
+    const deleted = deleteInput?.checked;
+    const subtotal = deleted
+      ? 0
+      : parseDecimal(priceInput.value) * Math.max(0, parseDecimal(quantityInput?.value || '1'));
+    if (row) row.dataset.liveSubtotal = String(subtotal);
+
+    const subtotalCell = row?.querySelector('.field-subtotal .readonly, .field-subtotal p, .field-subtotal');
+    if (subtotalCell) subtotalCell.textContent = formatMoney(subtotal);
+    return subtotal;
+  }
+
+  function ensureLiveTotalBox() {
+    let box = document.getElementById('order-live-total-box');
+    if (box) return box;
+
+    const inlineGroup = document.querySelector('.inline-group');
+    if (!inlineGroup) return null;
+
+    box = document.createElement('div');
+    box.id = 'order-live-total-box';
+    box.style.margin = '12px 0';
+    box.style.padding = '12px 14px';
+    box.style.border = '1px solid #d0d7de';
+    box.style.borderRadius = '8px';
+    box.style.background = '#f6f8fa';
+    box.style.fontWeight = '700';
+    box.innerHTML = 'Total del pedido: <span id="order-live-total-value">0,00</span>';
+    inlineGroup.appendChild(box);
+    return box;
+  }
+
+  function recalcOrderTotal() {
+    let total = 0;
+    document.querySelectorAll('input[name$="-precio_unitario"]').forEach((priceInput) => {
+      total += setRowSubtotal(priceInput);
+    });
+    const box = ensureLiveTotalBox();
+    const value = box?.querySelector('#order-live-total-value');
+    if (value) value.textContent = formatMoney(total);
+  }
+
   function bindPriceInput(priceInput) {
     if (!priceInput || priceInput.dataset.priceManualBound === '1') return;
     priceInput.dataset.priceManualBound = '1';
@@ -25,6 +106,10 @@
       if (String(priceInput.value || '') !== String(lastAutofilled || '')) {
         userEditedPriceInputs.add(priceInput);
       }
+      recalcOrderTotal();
+    });
+    priceInput.addEventListener('change', function () {
+      recalcOrderTotal();
     });
   }
 
@@ -62,6 +147,7 @@
       userEditedPriceInputs.delete(priceInput);
       priceInput.dispatchEvent(new Event('input', { bubbles: true }));
       priceInput.dispatchEvent(new Event('change', { bubbles: true }));
+      recalcOrderTotal();
     } catch (_) {
       // Si falla la consulta, el admin mantiene el precio editable manualmente.
     }
@@ -90,6 +176,14 @@
 
   function bindAll() {
     document.querySelectorAll('select[name$="-product"]').forEach(bindSelect);
+    document.querySelectorAll('input[name$="-precio_unitario"]').forEach(bindPriceInput);
+    document.querySelectorAll('input[name$="-cantidad"], input[name$="-DELETE"]').forEach((input) => {
+      if (input.dataset.liveTotalBound === '1') return;
+      input.dataset.liveTotalBound = '1';
+      input.addEventListener('input', recalcOrderTotal);
+      input.addEventListener('change', recalcOrderTotal);
+    });
+    recalcOrderTotal();
   }
 
   document.addEventListener('DOMContentLoaded', bindAll);
