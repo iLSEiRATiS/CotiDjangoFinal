@@ -30,7 +30,7 @@ class ProductImageInline(admin.TabularInline):
 class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
     list_display = ("nombre", "slug", "precio", "user", "categoria", "has_video", "stock", "activo", "creado_en")
-    search_fields = ("nombre", "descripcion", "slug")
+    search_fields = ("nombre", "descripcion", "slug", "categoria__nombre")
     list_filter = ("creado_en", "activo", "categoria")
     list_editable = ("precio", "stock", "activo")
     search_help_text = "Buscar producto por nombre, slug o descripcion"
@@ -44,6 +44,9 @@ class ProductAdmin(admin.ModelAdmin):
     @admin.display(description="Video")
     def has_video(self, obj):
         return bool(obj.video_url)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("user", "categoria")
 
     def get_urls(self):
         urls = super().get_urls()

@@ -1,10 +1,36 @@
+from django import forms
 from django.contrib import admin
 
 from .models import Order, OrderItem
 
 
+class OrderItemAdminForm(forms.ModelForm):
+    class Meta:
+        model = OrderItem
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "product" in self.fields:
+            self.fields["product"].help_text = "Busca por nombre o categoria. El resultado muestra categoria y precio."
+        if "precio_unitario" in self.fields:
+            self.fields["precio_unitario"].required = False
+            self.fields["precio_unitario"].help_text = (
+                "Podés modificar este valor. Si lo dejás vacío, se usa el precio actual del producto."
+            )
+
+    def clean(self):
+        cleaned = super().clean()
+        product = cleaned.get("product")
+        price = cleaned.get("precio_unitario")
+        if product and price in (None, ""):
+            cleaned["precio_unitario"] = product.precio
+        return cleaned
+
+
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
+    form = OrderItemAdminForm
     extra = 1
     fields = ("product", "cantidad", "precio_unitario", "subtotal")
     readonly_fields = ("subtotal",)

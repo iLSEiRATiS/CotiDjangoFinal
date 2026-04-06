@@ -53,7 +53,12 @@ class Product(models.Model):
         verbose_name_plural = "Productos"
 
     def __str__(self) -> str:
-        return self.nombre
+        details = []
+        if self.categoria_id:
+            details.append(str(self.categoria))
+        if self.precio is not None:
+            details.append(f"${self.precio}")
+        return f"{self.nombre} - {' - '.join(details)}" if details else self.nombre
 
     def save(self, *args, **kwargs):
         if not self.slug and self.nombre:
