@@ -97,6 +97,7 @@ def send_invoice_email(order, request=None):
     body = (
         f"Hola {order.nombre},\n\n"
         f"Adjuntamos el presupuesto de tu pedido #{order.id}.\n"
+        f"Envio: ${order.envio}\n"
         f"Total: ${order.total}\n"
         f"Estado: {order.status}\n\n"
         "Gracias por tu compra."
@@ -140,6 +141,7 @@ def send_admin_order_email(order, request=None):
     lines = [
         f"Pedido #{order.id}",
         f"Cliente: {order.nombre} - {order.email}",
+        f"Envio: ${order.envio}",
         f"Total: ${order.total}",
         f"Estado: {order.status}",
         "",

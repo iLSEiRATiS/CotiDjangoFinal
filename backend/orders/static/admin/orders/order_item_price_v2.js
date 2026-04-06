@@ -1,7 +1,10 @@
 (function () {
   const lastAutofilledByInput = new WeakMap();
   const lastSeenProductBySelect = new WeakMap();
+  const lastSeenUserBySelect = new WeakMap();
   const userEditedPriceInputs = new WeakSet();
+  let shippingAutofilledValue = '';
+  let shippingManuallyEdited = false;
 
   function getPriceUrl(productId) {
     const path = window.location.pathname;
@@ -9,6 +12,14 @@
       .replace(/add\/?$/, '')
       .replace(/\d+\/change\/?$/, '');
     return `${base}product-price/${productId}/`;
+  }
+
+  function getUserShippingUrl(userId) {
+    const path = window.location.pathname;
+    const base = path
+      .replace(/add\/?$/, '')
+      .replace(/\d+\/change\/?$/, '');
+    return `${base}user-shipping/${userId}/`;
   }
 
   function findPriceInput(select) {
@@ -93,9 +104,88 @@
     document.querySelectorAll('input[name$="-precio_unitario"]').forEach((priceInput) => {
       total += setRowSubtotal(priceInput);
     });
+    total += parseDecimal(document.querySelector('[name="envio"]')?.value || '0');
     const box = ensureLiveTotalBox();
     const value = box?.querySelector('#order-live-total-value');
     if (value) value.textContent = formatMoney(total);
+  }
+
+  function bindShippingInput() {
+    const shippingInput = document.querySelector('[name="envio"]');
+    if (!shippingInput || shippingInput.dataset.shippingBound === '1') return;
+    shippingInput.dataset.shippingBound = '1';
+    shippingInput.addEventListener('input', function () {
+      if (String(shippingInput.value || '') !== String(shippingAutofilledValue || '')) {
+        shippingManuallyEdited = true;
+      }
+      recalcOrderTotal();
+    });
+    shippingInput.addEventListener('change', recalcOrderTotal);
+  }
+
+  function setShippingHelp(message) {
+    const shippingInput = document.querySelector('[name="envio"]');
+    if (!shippingInput) return;
+    let help = document.getElementById('order-shipping-help');
+    if (!help) {
+      help = document.createElement('div');
+      help.id = 'order-shipping-help';
+      help.className = 'help';
+      help.style.marginTop = '6px';
+      shippingInput.insertAdjacentElement('afterend', help);
+    }
+    help.textContent = message;
+  }
+
+  function shouldAutofillShipping(userChanged) {
+    const shippingInput = document.querySelector('[name="envio"]');
+    if (!shippingInput) return false;
+    const current = String(shippingInput.value || '').trim();
+    if (userChanged) return true;
+    if (!current || current === '0' || current === '0.0' || current === '0.00') return true;
+    return !shippingManuallyEdited;
+  }
+
+  async function updateShippingFromUser(select, forcedUserId) {
+    const userId = String(forcedUserId || select.value || '').trim();
+    const shippingInput = document.querySelector('[name="envio"]');
+    if (!userId || !shippingInput) return;
+
+    bindShippingInput();
+
+    const previousUserId = lastSeenUserBySelect.get(select);
+    const userChanged = previousUserId !== userId;
+
+    try {
+      const response = await fetch(getUserShippingUrl(userId), {
+        credentials: 'same-origin',
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) return;
+      const data = await response.json();
+      lastSeenUserBySelect.set(select, userId);
+      if (!data.available || data.amount === '' || data.amount === null || data.amount === undefined) {
+        if (userChanged && (!shippingInput.value || shippingInput.value === '0' || shippingInput.value === '0.00')) {
+          shippingInput.value = '0.00';
+          shippingAutofilledValue = '0.00';
+          shippingManuallyEdited = false;
+        }
+        setShippingHelp('Este cliente no tiene presupuesto de envio cargado. Podes editar el envio manualmente.');
+        recalcOrderTotal();
+        return;
+      }
+      if (!shouldAutofillShipping(userChanged)) return;
+      const nextAmount = String(data.amount);
+      shippingInput.value = nextAmount;
+      shippingAutofilledValue = nextAmount;
+      shippingManuallyEdited = false;
+      setShippingHelp(data.note ? `Envio del cliente: ${data.note}` : 'Envio cargado desde el presupuesto del cliente.');
+      shippingInput.dispatchEvent(new Event('input', { bubbles: true }));
+      shippingInput.dispatchEvent(new Event('change', { bubbles: true }));
+      recalcOrderTotal();
+    } catch (_) {
+      setShippingHelp('No se pudo cargar el envio del cliente. Podes editarlo manualmente.');
+    }
   }
 
   function bindPriceInput(priceInput) {
@@ -176,6 +266,17 @@
 
   function bindAll() {
     document.querySelectorAll('select[name$="-product"]').forEach(bindSelect);
+    bindShippingInput();
+    document.querySelectorAll('select[name="user"]').forEach((select) => {
+      if (select.dataset.shippingAutofillBound !== '1') {
+        select.dataset.shippingAutofillBound = '1';
+        select.addEventListener('change', () => updateShippingFromUser(select));
+        select.addEventListener('input', () => updateShippingFromUser(select));
+      }
+      if (select.value && lastSeenUserBySelect.get(select) !== String(select.value)) {
+        updateShippingFromUser(select);
+      }
+    });
     document.querySelectorAll('input[name$="-precio_unitario"]').forEach(bindPriceInput);
     document.querySelectorAll('input[name$="-cantidad"], input[name$="-DELETE"]').forEach((input) => {
       if (input.dataset.liveTotalBound === '1') return;
@@ -193,6 +294,9 @@
       bindSelect(event.target);
       updatePrice(event.target);
     }
+    if (event.target?.matches?.('select[name="user"]')) {
+      updateShippingFromUser(event.target);
+    }
   });
 
   if (window.django && window.django.jQuery) {
@@ -204,6 +308,13 @@
     window.django.jQuery(document).on('select2:close change', 'select[name$="-product"]', function () {
       bindSelect(this);
       window.setTimeout(() => updatePrice(this), 0);
+    });
+    window.django.jQuery(document).on('select2:select', 'select[name="user"]', function (event) {
+      const userId = event?.params?.data?.id || this.value;
+      window.setTimeout(() => updateShippingFromUser(this, userId), 0);
+    });
+    window.django.jQuery(document).on('select2:close change', 'select[name="user"]', function () {
+      window.setTimeout(() => updateShippingFromUser(this), 0);
     });
   }
 

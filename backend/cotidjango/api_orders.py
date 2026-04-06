@@ -78,6 +78,7 @@ class OrderCreateView(APIView):
                 telefono=phone,
                 nota=note,
                 status="created",
+                envio=request.user.shipping_quote_amount or Decimal("0.00"),
                 total=Decimal("0.00"),
             )
             for item in built_items:

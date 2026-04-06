@@ -34,6 +34,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "telefono",
             "nota",
             "status",
+            "envio",
             "total",
             "creado_en",
             "items",

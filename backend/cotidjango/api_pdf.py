@@ -245,6 +245,9 @@ def build_invoice_pdf(order) -> bytes:
 
     y -= 14
     canvas_obj.setFont(font_bold, 11)
+    if getattr(order, "envio", None):
+        canvas_obj.drawRightString(x_right, y, f"ENVIO: {_money(order.envio)}")
+        y -= 14
     canvas_obj.drawRightString(x_right, y, f"TOTAL: {_money(order.total)}")
 
     if y < footer_reserved_space:

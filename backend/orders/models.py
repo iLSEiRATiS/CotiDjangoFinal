@@ -28,6 +28,7 @@ class Order(models.Model):
     telefono = models.CharField(max_length=50, blank=True)
     nota = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="created")
+    envio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     creado_en = models.DateTimeField(default=timezone.now)
 
@@ -40,7 +41,7 @@ class Order(models.Model):
         return f"Pedido #{self.id or ''} - {self.nombre}"
 
     def recalc_total(self):
-        total = sum(item.subtotal for item in self.items.all())
+        total = sum(item.subtotal for item in self.items.all()) + (self.envio or Decimal("0.00"))
         self.total = total
         self.save(update_fields=["total"])
 

@@ -70,7 +70,7 @@ class OrderAdmin(admin.ModelAdmin):
         (
             "Pedido",
             {
-                "fields": ("status", "nota", "total"),
+                "fields": ("status", "nota", "envio", "total"),
             },
         ),
     )
@@ -86,8 +86,29 @@ class OrderAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.product_price_view),
                 name="orders_order_product_price",
             ),
+            path(
+                "user-shipping/<int:user_id>/",
+                self.admin_site.admin_view(self.user_shipping_view),
+                name="orders_order_user_shipping",
+            ),
         ]
         return custom + urls
+
+    def user_shipping_view(self, request, user_id):
+        user_model = Order._meta.get_field("user").remote_field.model
+        user = user_model.objects.filter(pk=user_id).first()
+        if not user:
+            return JsonResponse({"error": "Usuario no encontrado"}, status=404)
+        amount = getattr(user, "shipping_quote_amount", None)
+        note = str(getattr(user, "shipping_quote_note", "") or "").strip()
+        return JsonResponse(
+            {
+                "id": user.id,
+                "amount": str(amount) if amount is not None else "",
+                "note": note,
+                "available": amount is not None or bool(note),
+            }
+        )
 
     def product_price_view(self, request, product_id):
         product = Product.objects.select_related("categoria").filter(pk=product_id).first()

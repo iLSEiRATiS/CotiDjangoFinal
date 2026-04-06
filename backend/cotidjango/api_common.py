@@ -212,6 +212,7 @@ def serialize_order(order, request=None):
         })
     totals = {
         "items": sum(it["qty"] for it in items),
+        "shipping": float(getattr(order, "envio", 0) or 0),
         "amount": float(order.total or 0),
     }
     return {
