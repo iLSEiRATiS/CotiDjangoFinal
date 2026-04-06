@@ -112,6 +112,49 @@
     if (value) value.textContent = formatMoney(total);
   }
 
+  function getInlinePrefix(row) {
+    const field = row?.querySelector?.('[name*="-"]');
+    const match = field?.getAttribute('name')?.match(/^(.+)-(\d+)-/);
+    return match ? match[1] : '';
+  }
+
+  function reindexInlineRows(prefix) {
+    if (!prefix) return;
+    const totalForms = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
+    const rows = Array.from(document.querySelectorAll(`.dynamic-${prefix}:not(.empty-row)`));
+    if (totalForms) totalForms.value = String(rows.length);
+
+    rows.forEach((row, index) => {
+      const idPattern = new RegExp(`${prefix}-(\\d+|__prefix__)`, 'g');
+      const replacement = `${prefix}-${index}`;
+      if (row.id) row.id = row.id.replace(idPattern, replacement);
+      row.querySelectorAll('[id], [name], [for]').forEach((field) => {
+        if (field.id) field.id = field.id.replace(idPattern, replacement);
+        if (field.name) field.name = field.name.replace(idPattern, replacement);
+        if (field.htmlFor) field.htmlFor = field.htmlFor.replace(idPattern, replacement);
+      });
+    });
+  }
+
+  function fallbackRemoveInlineRow(deleteLink) {
+    const row = deleteLink?.closest?.('tr.form-row');
+    if (!row || row.classList.contains('has_original')) return;
+
+    window.setTimeout(() => {
+      if (!row.isConnected) {
+        recalcOrderTotal();
+        return;
+      }
+      const prefix = getInlinePrefix(row);
+      row.remove();
+      reindexInlineRows(prefix);
+      recalcOrderTotal();
+      document.dispatchEvent(new CustomEvent('formset:removed', {
+        detail: { formsetName: prefix },
+      }));
+    }, 80);
+  }
+
   function bindShippingInput() {
     const shippingInput = document.querySelector('[name="envio"]');
     if (!shippingInput || shippingInput.dataset.shippingBound === '1') return;
@@ -291,6 +334,11 @@
 
   document.addEventListener('DOMContentLoaded', bindAll);
   document.addEventListener('formset:added', bindAll);
+  document.addEventListener('formset:removed', () => window.setTimeout(recalcOrderTotal, 0));
+  document.addEventListener('click', function (event) {
+    const deleteLink = event.target?.closest?.('.inline-deletelink');
+    if (deleteLink) fallbackRemoveInlineRow(deleteLink);
+  });
   document.addEventListener('change', function (event) {
     if (event.target?.matches?.('select[name$="-product"]')) {
       bindSelect(event.target);
