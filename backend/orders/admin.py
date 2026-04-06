@@ -76,7 +76,7 @@ class OrderAdmin(admin.ModelAdmin):
     )
 
     class Media:
-        js = ("admin/orders/order_item_price.js",)
+        js = ("admin/orders/order_item_price_v2.js",)
 
     def get_urls(self):
         urls = super().get_urls()
