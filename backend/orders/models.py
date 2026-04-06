@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from decimal import Decimal
 
 from products.models import Product
 
@@ -58,7 +59,9 @@ class OrderItem(models.Model):
 
     @property
     def subtotal(self):
-        return self.precio_unitario * self.cantidad
+        if self.precio_unitario is None:
+            return Decimal("0.00")
+        return self.precio_unitario * (self.cantidad or 0)
 
     def __str__(self):
         return f"{self.product} x{self.cantidad}"
