@@ -121,6 +121,40 @@
     });
   }
 
+  function ensureSavedItemRemoveButton(deleteInput) {
+    if (!deleteInput || deleteInput.dataset.orderRemoveBound === '1') return;
+    deleteInput.dataset.orderRemoveBound = '1';
+    deleteInput.style.display = 'none';
+    const label = deleteInput.closest('label');
+    if (label) {
+      Array.from(label.childNodes).forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE) node.textContent = '';
+      });
+    }
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'order-remove-item';
+    button.textContent = 'Quitar';
+    button.addEventListener('click', function () {
+      deleteInput.checked = true;
+      deleteInput.dispatchEvent(new Event('change', { bubbles: true }));
+      recalcOrderTotal();
+    });
+    deleteInput.insertAdjacentElement('afterend', button);
+  }
+
+  function simplifyInlineControls() {
+    document.querySelectorAll('input[name$="-DELETE"]').forEach(ensureSavedItemRemoveButton);
+    document.querySelectorAll('.inline-deletelink').forEach((link) => {
+      link.textContent = 'Quitar';
+      link.classList.add('order-remove-item');
+    });
+    document.querySelectorAll('.inline-group .add-row a.addlink').forEach((link) => {
+      link.textContent = '+ Agregar producto';
+    });
+  }
+
   function getInlinePrefix(row) {
     const field = row?.querySelector?.('[name*="-"]');
     const match = field?.getAttribute('name')?.match(/^(.+)-(\d+)-/);
@@ -319,6 +353,7 @@
   }
 
   function bindAll() {
+    simplifyInlineControls();
     document.querySelectorAll('select[name$="-product"]').forEach(bindSelect);
     bindShippingInput();
     document.querySelectorAll('select[name="user"]').forEach((select) => {

@@ -16,12 +16,14 @@ class OrderItemAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if "product" in self.fields:
-            self.fields["product"].help_text = "Busca por nombre o categoria. El resultado muestra categoria y precio."
+            self.fields["product"].label = "Producto"
+            self.fields["product"].help_text = ""
+        if "cantidad" in self.fields:
+            self.fields["cantidad"].label = "Cantidad"
         if "precio_unitario" in self.fields:
+            self.fields["precio_unitario"].label = "Precio unitario"
             self.fields["precio_unitario"].required = False
-            self.fields["precio_unitario"].help_text = (
-                "Podes modificar este valor. Si lo dejas vacio, se usa el precio actual del producto."
-            )
+            self.fields["precio_unitario"].help_text = ""
 
     def clean(self):
         cleaned = super().clean()
@@ -39,9 +41,18 @@ class OrderItemInline(admin.TabularInline):
     fields = ("product", "cantidad", "precio_unitario", "subtotal")
     readonly_fields = ("subtotal",)
     autocomplete_fields = ("product",)
-    show_change_link = True
+    show_change_link = False
     verbose_name = "Producto del pedido"
     verbose_name_plural = "Productos del pedido"
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name == "product" and formfield is not None:
+            widget = formfield.widget
+            for attr in ("can_add_related", "can_change_related", "can_delete_related", "can_view_related"):
+                if hasattr(widget, attr):
+                    setattr(widget, attr, False)
+        return formfield
 
 
 @admin.register(Order)
@@ -76,6 +87,7 @@ class OrderAdmin(admin.ModelAdmin):
     )
 
     class Media:
+        css = {"all": ("admin/orders/order_admin.css",)}
         js = ("admin/orders/order_item_price_v2.js",)
 
     def get_urls(self):

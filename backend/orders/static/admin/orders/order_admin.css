@@ -1,0 +1,60 @@
+.inline-group .tabular tr.dynamic-items td.original,
+.inline-group .tabular tr.dynamic-items th.original {
+  display: none;
+}
+
+.inline-group .tabular tr.dynamic-items .help {
+  display: none;
+}
+
+.inline-group .tabular tr.dynamic-items .related-widget-wrapper-link {
+  display: none !important;
+}
+
+.inline-group .tabular tr.dynamic-items .select2-container {
+  min-width: 320px;
+  width: 100% !important;
+}
+
+.inline-group .tabular tr.dynamic-items input[name$="-cantidad"] {
+  max-width: 78px;
+}
+
+.inline-group .tabular tr.dynamic-items input[name$="-precio_unitario"] {
+  max-width: 120px;
+}
+
+.inline-group .tabular tr.dynamic-items .field-subtotal {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.inline-group .tabular .add-row td {
+  padding-top: 14px;
+}
+
+.inline-group .tabular .add-row a.addlink {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #14532d;
+  color: #fff !important;
+  font-weight: 700;
+  padding: 8px 14px;
+  text-decoration: none;
+}
+
+.order-remove-item {
+  border: 1px solid #b91c1c;
+  border-radius: 999px;
+  background: #fff;
+  color: #991b1b;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 6px 12px;
+}
+
+.order-remove-item:hover,
+.order-remove-item:focus {
+  background: #fee2e2;
+}
