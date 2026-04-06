@@ -1,5 +1,6 @@
 (function () {
   const lastAutofilledByInput = new WeakMap();
+  const lastProductBySelect = new WeakMap();
 
   function getPriceUrl(productId) {
     const path = window.location.pathname;
@@ -15,17 +16,20 @@
     return document.querySelector(`[name="${priceName}"]`);
   }
 
-  function shouldAutofillPrice(priceInput) {
+  function shouldAutofillPrice(priceInput, productChanged) {
+    if (productChanged) return true;
     const current = String(priceInput.value || '').trim();
     if (!current) return true;
     if (current === '0' || current === '0.0' || current === '0.00') return true;
     return lastAutofilledByInput.get(priceInput) === current;
   }
 
-  async function updatePrice(select) {
-    const productId = select.value;
+  async function updatePrice(select, forcedProductId) {
+    const productId = String(forcedProductId || select.value || '').trim();
     const priceInput = findPriceInput(select);
     if (!productId || !priceInput) return;
+    const previousProductId = lastProductBySelect.get(select);
+    const productChanged = previousProductId !== productId;
 
     try {
       const response = await fetch(getPriceUrl(productId), {
@@ -35,10 +39,11 @@
       if (!response.ok) return;
       const data = await response.json();
       if (data.price !== undefined && data.price !== null) {
-        if (!shouldAutofillPrice(priceInput)) return;
+        if (!shouldAutofillPrice(priceInput, productChanged)) return;
         const nextPrice = String(data.price);
         priceInput.value = nextPrice;
         lastAutofilledByInput.set(priceInput, nextPrice);
+        lastProductBySelect.set(select, productId);
         priceInput.dispatchEvent(new Event('change', { bubbles: true }));
         priceInput.dispatchEvent(new Event('input', { bubbles: true }));
       }
@@ -53,6 +58,7 @@
     select.dataset.priceAutofillBound = '1';
     select.addEventListener('change', () => updatePrice(select));
     select.addEventListener('input', () => updatePrice(select));
+    if (select.value) lastProductBySelect.set(select, String(select.value));
   }
 
   function bindAll() {
@@ -70,9 +76,14 @@
   });
 
   if (window.django && window.django.jQuery) {
-    window.django.jQuery(document).on('select2:select select2:close', 'select[name$="-product"]', function () {
+    window.django.jQuery(document).on('select2:select', 'select[name$="-product"]', function (event) {
       bindSelect(this);
-      updatePrice(this);
+      const productId = event?.params?.data?.id || this.value;
+      window.setTimeout(() => updatePrice(this, productId), 0);
+    });
+    window.django.jQuery(document).on('select2:close', 'select[name$="-product"]', function () {
+      bindSelect(this);
+      window.setTimeout(() => updatePrice(this), 0);
     });
   }
 })();
