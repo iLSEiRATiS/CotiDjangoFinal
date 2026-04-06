@@ -245,16 +245,20 @@ class ProductXlsxImporter:
             else:
                 sku_upper = str(sku_raw).strip().upper()
                 effective_sku = "" if (sku_upper and sku_upper in multi_name_skus) else sku_raw
-                slug = self._build_identity_slug(
-                    sku_raw=effective_sku,
-                    slug_raw=slug_raw,
-                    nombre=nombre,
-                    path_parts=path_parts,
-                    precio=precio,
-                    parent_sku_raw=parent_sku_raw or sku_raw,
+                existing = self._find_existing_product_by_name(nombre=nombre, categoria_obj=categoria_obj)
+                slug = (
+                    existing.slug
+                    if existing
+                    else self._build_identity_slug(
+                        sku_raw=effective_sku,
+                        slug_raw=slug_raw,
+                        nombre=nombre,
+                        path_parts=path_parts,
+                        parent_sku_raw=parent_sku_raw or sku_raw,
+                    )
                 )
 
-            existing = existing if has_declared_attrs else Product.objects.filter(slug=slug).first()
+            existing = existing if has_declared_attrs else (existing or Product.objects.filter(slug=slug).first())
             is_new = existing is None
             product = existing or Product(slug=slug, user=self.request_user)
             product.nombre = nombre
@@ -353,6 +357,7 @@ class ProductXlsxImporter:
                 created += 1
             else:
                 updated += 1
+            self._deactivate_same_name_duplicates(product=product)
 
         wb.close()
         return created, updated, errors
@@ -495,22 +500,32 @@ class ProductXlsxImporter:
                 return category
         return Category.objects.create(nombre=name, parent=parent)
 
-    def _build_identity_slug(self, *, sku_raw, slug_raw, nombre, path_parts, precio, parent_sku_raw):
+    def _build_identity_slug(self, *, sku_raw, slug_raw, nombre, path_parts, parent_sku_raw):
         sku_text = str(sku_raw or "").strip()
         if sku_text:
             return slugify(sku_text)[:110] or self._build_slug(nombre)
 
         base_slug = slugify(slug_raw or nombre or "")[:70] or "producto"
         path_key = "|".join(self._norm_header(part) for part in (path_parts or []))
-        price_key = str(precio if precio is not None else "")
         raw = "|".join([
             self._norm_header(nombre),
             path_key,
             self._norm_header(parent_sku_raw),
-            price_key,
         ])
         digest = hashlib.md5(raw.encode("utf-8")).hexdigest()[:12]
         return f"{base_slug}-{digest}"[:110]
+
+    def _find_existing_product_by_name(self, *, nombre, categoria_obj):
+        target = self._norm_header(nombre)
+        queryset = Product.objects.all()
+        if categoria_obj is None:
+            queryset = queryset.filter(categoria__isnull=True)
+        else:
+            queryset = queryset.filter(categoria=categoria_obj)
+        for product in queryset.order_by("id"):
+            if self._norm_header(product.nombre) == target:
+                return product
+        return None
 
     def _find_existing_group_product(self, *, nombre, categoria_obj):
         queryset = Product.objects.filter(nombre=nombre)
@@ -519,6 +534,21 @@ class ProductXlsxImporter:
         else:
             queryset = queryset.filter(categoria=categoria_obj)
         return queryset.order_by("id").first()
+
+    def _deactivate_same_name_duplicates(self, *, product):
+        target = self._norm_header(product.nombre)
+        queryset = Product.objects.exclude(pk=product.pk)
+        if product.categoria_id:
+            queryset = queryset.filter(categoria_id=product.categoria_id)
+        else:
+            queryset = queryset.filter(categoria__isnull=True)
+        duplicate_ids = [
+            candidate.pk
+            for candidate in queryset.only("id", "nombre").iterator()
+            if self._norm_header(candidate.nombre) == target
+        ]
+        if duplicate_ids:
+            Product.objects.filter(pk__in=duplicate_ids).update(activo=False)
 
     def _resolve_base_price(self, product, fallback):
         attrs = product.atributos if isinstance(product.atributos, dict) else {}
