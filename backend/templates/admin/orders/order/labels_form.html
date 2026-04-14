@@ -1,0 +1,221 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .labels-card {
+    max-width: 880px;
+    margin: 24px auto 0;
+    background: rgba(23, 23, 23, 0.96);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+  }
+  .labels-card__header {
+    padding: 22px 26px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .labels-card__title {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  .labels-card__intro {
+    margin: 10px 0 0;
+    color: var(--body-quiet-color);
+    line-height: 1.6;
+    max-width: 72ch;
+  }
+  .labels-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+    gap: 26px;
+    padding: 26px;
+  }
+  .labels-panel {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .labels-panel h2 {
+    margin-top: 0;
+    margin-bottom: 14px;
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .labels-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 18px;
+  }
+  .labels-summary dt {
+    color: var(--body-quiet-color);
+    font-weight: 700;
+    margin: 0 0 4px;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .labels-summary dd {
+    margin: 0;
+    line-height: 1.45;
+  }
+  .labels-size-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .labels-size-item {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .labels-size-item strong {
+    display: block;
+    margin-bottom: 4px;
+  }
+  .labels-form .form-row {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .labels-form .submit-row {
+    margin-top: 18px;
+    border-radius: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .labels-form .submit-row input[type="submit"] {
+    margin: 0;
+    min-height: 44px;
+    padding: 10px 20px;
+    border-radius: 999px;
+  }
+  .labels-form .cancel-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+    margin: 0;
+  }
+  @media (max-width: 900px) {
+    .labels-grid {
+      grid-template-columns: 1fr;
+    }
+    .labels-summary {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .labels-form .submit-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .labels-form .submit-row input[type="submit"],
+    .labels-form .cancel-link {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Inicio</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; <a href="{% url 'admin:orders_order_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; <a href="{% url 'admin:orders_order_change' order.pk %}">{{ order }}</a>
+  &rsaquo; Imprimir rótulos
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <div class="labels-card">
+    <div class="labels-card__header">
+      <h1 class="labels-card__title">Imprimir rótulos del pedido #{{ order.id }}</h1>
+      <p class="labels-card__intro">
+        Generá un PDF listo para impresión con formato térmico, courier o A4. Cada hoja incluye los datos del destinatario,
+        del remitente y la secuencia de bultos del pedido.
+      </p>
+    </div>
+    <div class="labels-grid">
+      <section class="labels-panel">
+        <h2>Resumen del pedido</h2>
+        <dl class="labels-summary">
+          <div>
+            <dt>Cliente</dt>
+            <dd>{{ order.nombre|default:"-" }}</dd>
+          </div>
+          <div>
+            <dt>Documento</dt>
+            <dd>{{ order.destinatario_documento|default:"-" }}</dd>
+          </div>
+          <div>
+            <dt>Destino</dt>
+            <dd>{{ order.ciudad|default:"-" }}{% if order.estado %}, {{ order.estado }}{% endif %}</dd>
+          </div>
+          <div>
+            <dt>Código postal</dt>
+            <dd>{{ order.cp|default:"-" }}</dd>
+          </div>
+          <div>
+            <dt>Dirección</dt>
+            <dd>{{ order.direccion|default:"-" }}</dd>
+          </div>
+          <div>
+            <dt>Teléfono</dt>
+            <dd>{{ order.telefono|default:"-" }}</dd>
+          </div>
+          <div>
+            <dt>Remitente</dt>
+            <dd>{{ order.remitente_nombre|default:"Configuración general" }}</dd>
+          </div>
+          <div>
+            <dt>Pedido</dt>
+            <dd>#{{ order.id }}</dd>
+          </div>
+        </dl>
+        <div class="labels-size-list">
+          <div class="labels-size-item">
+            <strong>100 × 150 mm</strong>
+            Estándar térmico para Zebra, Phomemo, HPRT, Munbyn y uso general.
+          </div>
+          <div class="labels-size-item">
+            <strong>100 × 190 mm</strong>
+            Espacio extra para transporte tipo Via Cargo / Andreani / Correo.
+          </div>
+          <div class="labels-size-item">
+            <strong>A4 cuarto de hoja</strong>
+            Opción cómoda para impresora láser o inkjet en oficina.
+          </div>
+        </div>
+      </section>
+
+      <section class="labels-panel labels-form">
+        <h2>Configuración de impresión</h2>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form.as_p }}
+          <div class="submit-row">
+            <input type="submit" value="Generar PDF de rótulos" class="default">
+            <a href="{% url 'admin:orders_order_change' order.pk %}" class="button cancel-link">Volver al pedido</a>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

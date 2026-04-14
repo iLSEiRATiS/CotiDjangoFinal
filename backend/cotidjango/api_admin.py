@@ -21,6 +21,7 @@ from .api_common import (
     User,
     _abs_media,
     build_invoice_pdf,
+    build_shipping_label_pdf,
     parse_image_urls_payload,
     resolve_category,
     resolve_product,
@@ -246,6 +247,23 @@ class AdminOrderPdfView(APIView):
         resp["Content-Disposition"] = f'attachment; filename="pedido-{order.id}.pdf"'
         return resp
 
+
+class AdminOrderLabelsView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, pk):
+        order = _get_order_or_404(pk)
+        if not order:
+            return Response({"error": "Pedido no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+        label_size = request.query_params.get("size", "thermal")
+        try:
+            num_bultos = max(1, min(99, int(request.query_params.get("bultos", 1))))
+        except (ValueError, TypeError):
+            num_bultos = 1
+        pdf_bytes = build_shipping_label_pdf(order, label_size=label_size, num_bultos=num_bultos)
+        resp = HttpResponse(pdf_bytes, content_type="application/pdf")
+        resp["Content-Disposition"] = f'attachment; filename="rotulo-pedido-{order.id}.pdf"'
+        return resp
 
 class AdminProductsView(APIView):
     permission_classes = [permissions.IsAdminUser]

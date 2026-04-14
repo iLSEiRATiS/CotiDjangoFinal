@@ -1,0 +1,28 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block after_field_sets %}
+{{ block.super }}
+{% if change and original and labels_url %}
+<fieldset class="module aligned">
+  <h2>Rótulos de envío</h2>
+  <div class="form-row">
+    <div>
+      <p style="margin:0 0 12px; line-height:1.6;">
+        Generá el PDF del rótulo para este pedido con tamaño y cantidad de bultos.
+      </p>
+      <a href="{{ labels_url }}" class="button default">Imprimir rótulos</a>
+    </div>
+  </div>
+</fieldset>
+{% endif %}
+{% endblock %}
+
+{% block object-tools-items %}
+{{ block.super }}
+{% if change and original and labels_url %}
+<li>
+  <a href="{{ labels_url }}" class="historylink">Imprimir rótulos</a>
+</li>
+{% endif %}
+{% endblock %}

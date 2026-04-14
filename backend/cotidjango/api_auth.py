@@ -31,6 +31,10 @@ def _build_full_name(first_name, last_name):
     return " ".join(part for part in [_normalize_person_name(first_name), _normalize_person_name(last_name)] if part).strip()
 
 
+def _normalize_document(value):
+    return " ".join(str(value or "").strip().split())
+
+
 def _user_exists_for_email(email, exclude_pk=None):
     queryset = User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email))
     if exclude_pk is not None:
@@ -54,10 +58,11 @@ class AuthRegisterView(APIView):
     def post(self, request):
         first_name = _normalize_person_name(request.data.get("firstName") or request.data.get("first_name"))
         last_name = _normalize_person_name(request.data.get("lastName") or request.data.get("last_name"))
+        document_number = _normalize_document(request.data.get("documentNumber") or request.data.get("document_number"))
         name = _build_full_name(first_name, last_name) or _normalize_person_name(request.data.get("name"))
         email = _normalize_email(request.data.get("email"))
         password = (request.data.get("password") or "").strip()
-        if not first_name or not last_name or not email or not password:
+        if not first_name or not last_name or not document_number or not email or not password:
             return Response({"error": "Faltan campos"}, status=status.HTTP_400_BAD_REQUEST)
         if _user_exists_for_email(email):
             return Response({"error": "Email ya registrado"}, status=status.HTTP_409_CONFLICT)
@@ -69,6 +74,7 @@ class AuthRegisterView(APIView):
             name=name,
             first_name=first_name,
             last_name=last_name,
+            document_number=document_number,
             approval_status="pending",
             is_active=False,
         )
@@ -196,6 +202,7 @@ class AccountProfileView(APIView):
         profile = request.data.get("profile") if isinstance(request.data.get("profile"), dict) else {}
         shipping = request.data.get("shipping") if isinstance(request.data.get("shipping"), dict) else {}
         profile_phone = request.data.get("profilePhone")
+        document_number = request.data.get("documentNumber") if "documentNumber" in request.data else request.data.get("document_number")
         remove_avatar = str(request.data.get("removeAvatar") or "").lower() in {"1", "true", "yes"}
         avatar_file = request.FILES.get("avatar")
 
@@ -224,6 +231,9 @@ class AccountProfileView(APIView):
             phone_val = profile_phone
         if phone_val is not None:
             user.phone = phone_val
+
+        if document_number is not None:
+            user.document_number = _normalize_document(document_number)
 
         if shipping:
             if "name" in shipping:

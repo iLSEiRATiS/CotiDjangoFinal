@@ -31,7 +31,7 @@ from users.models import PasswordResetToken
 from .api_mail import send_admin_order_email, send_invoice_email, send_password_reset_email, send_resend_email
 from .api_order_utils import order_item_attrs_label as _order_item_attrs_label
 from .api_order_utils import order_item_name as _order_item_name
-from .api_pdf import build_invoice_pdf
+from .api_pdf import build_invoice_pdf, build_shipping_label_pdf
 
 User = get_user_model()
 
@@ -128,12 +128,14 @@ def serialize_user(user, request=None):
         "name": display_name,
         "firstName": str(user.first_name or "").strip(),
         "lastName": str(user.last_name or "").strip(),
+        "documentNumber": str(getattr(user, "document_number", "") or "").strip(),
         "email": user.email,
         "role": user.role,
         "missingProfileFields": missing_profile_fields,
         "profileCompletionRequired": bool(missing_profile_fields),
         "profile": {
             "phone": user.phone or "",
+            "documentNumber": str(getattr(user, "document_number", "") or "").strip(),
             "avatar": _abs_media(request, user.avatar.url) if (request and user.avatar) else None,
         },
         "shipping": {

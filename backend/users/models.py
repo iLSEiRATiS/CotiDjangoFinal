@@ -15,6 +15,7 @@ class CustomUser(AbstractUser):
     )
     name = models.CharField("nombre", max_length=150, blank=True, default="")
     phone = models.CharField("telefono", max_length=50, blank=True, default="")
+    document_number = models.CharField("dni/cuil", max_length=40, blank=True, default="")
     address = models.CharField("direccion", max_length=255, blank=True, default="")
     city = models.CharField("ciudad", max_length=120, blank=True, default="")
     zip_code = models.CharField("codigo postal", max_length=20, blank=True, default="")
@@ -61,6 +62,8 @@ class CustomUser(AbstractUser):
             missing.append("first_name")
         if not str(self.last_name or "").strip():
             missing.append("last_name")
+        if not str(self.document_number or "").strip():
+            missing.append("document_number")
         return missing
 
     def _should_be_admin(self):
