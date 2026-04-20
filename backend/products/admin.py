@@ -71,6 +71,9 @@ class ProductAdmin(admin.ModelAdmin):
         if request.method == "GET" and request.GET.get("template"):
             return importer.export_template_response()
 
+        if request.method == "GET" and request.GET.get("export"):
+            return importer.export_products_response()
+
         created = 0
         updated = 0
         errors = []
@@ -100,6 +103,7 @@ class ProductAdmin(admin.ModelAdmin):
             "headers": self.product_headers,
             "example_url": f"{reverse('admin:products_product_import_xlsx')}?sample=1",
             "template_url": f"{reverse('admin:products_product_import_xlsx')}?template=1",
+            "export_url": f"{reverse('admin:products_product_import_xlsx')}?export=1",
             "created": created,
             "updated": updated,
             "errors": errors,

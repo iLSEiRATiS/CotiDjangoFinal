@@ -147,6 +147,45 @@ class ProductXlsxImporter:
         empty_row = {header: "" for header in PRODUCT_HEADERS}
         return self.export_workbook([empty_row], "plantilla_productos.xlsx")
 
+    def export_products_response(self):
+        products = Product.objects.all().select_related("categoria", "categoria__parent").prefetch_related("extra_images")
+        rows = []
+        for p in products:
+            row = {header: "" for header in PRODUCT_HEADERS}
+            row["sku"] = p.slug  # Usamos slug como SKU por defecto si no hay campo SKU
+            row["nombre"] = p.nombre
+            row["slug"] = p.slug
+            row["descripcion"] = p.descripcion
+            row["precio"] = p.precio
+            row["stock"] = p.stock
+            row["activo"] = "SI" if p.activo else "NO"
+
+            if p.categoria:
+                if p.categoria.parent:
+                    row["categoria"] = p.categoria.parent.nombre
+                    row["subcategoria"] = p.categoria.nombre
+                else:
+                    row["categoria"] = p.categoria.nombre
+
+            row["imagen_1"] = p.image_url
+            extra_images = list(p.extra_images.all().order_by("order"))
+            for i, img in enumerate(extra_images[:4], start=2):
+                row[f"imagen_{i}"] = img.image_url
+
+            if isinstance(p.atributos, dict):
+                for i, (name, values) in enumerate(p.atributos.items(), start=1):
+                    if i > 2:
+                        break
+                    row[f"opcion_{i}_nombre"] = name
+                    if isinstance(values, list):
+                        row[f"opcion_{i}_valor"] = ", ".join(map(str, values))
+                    else:
+                        row[f"opcion_{i}_valor"] = str(values)
+
+            rows.append(row)
+
+        return self.export_workbook(rows, "productos_existentes.xlsx")
+
     def import_upload(self, upload):
         created = 0
         updated = 0
