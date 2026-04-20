@@ -4,30 +4,50 @@
   <div id="content-main">
     <h1>Importar productos v&iacute;a XLSX</h1>
 
-    <p>
-      Esta pantalla est&aacute; preparada para importar el archivo
+    <div style="background:#f8f8f8; border:1px solid #ddd; border-radius:8px; padding:16px 18px; margin:16px 0 20px;">
+      <p style="margin:0 0 10px;">
+        Esta pantalla trabaja con el formato real de la planilla de productos de Coti.
+        La descarga de <strong>productos existentes</strong> respeta la misma estructura del archivo base y agrega al final
+        los productos nuevos que todav&iacute;a no est&eacute;n en esa lista.
+      </p>
+      <p style="margin:0;">
+        Recomendaci&oacute;n: primero descarg&aacute; el archivo actual, edit&aacute; esa misma planilla y luego volv&eacute; a importarla.
+      </p>
+    </div>
+
+    <h2 style="margin:16px 0 8px; font-size:16px;">Archivo de referencia</h2>
+    <p style="margin-top:0;">
+      La importaci&oacute;n y la exportaci&oacute;n est&aacute;n alineadas con el archivo
       <strong>Exportacion-productos-03-02-26.fixed.xlsx</strong>.
     </p>
 
     <h2 style="margin:16px 0 8px; font-size:16px;">Formato requerido</h2>
-    <p style="margin-top:0;">
-      La fila 1 debe contener exactamente estos encabezados:<br>
-      <code>{{ headers|join:", " }}</code>
+    <p style="margin:0 0 8px;">
+      La fila 1 debe mantener estos encabezados y este mismo orden:
+    </p>
+    <div style="background:#fff; border:1px solid #ddd; border-radius:6px; padding:12px; margin-bottom:10px;">
+      <code style="white-space:pre-wrap; line-height:1.7;">{{ export_headers|join:", " }}</code>
+    </div>
+    <p class="help" style="margin-top:0;">
+      El archivo esperado tiene <strong>20 columnas</strong>, con categor&iacute;as en una sola columna como
+      <strong>Categoria &gt; Subcategoria &gt; Seccion</strong> y las im&aacute;genes en <strong>URL IMAGENES</strong>.
     </p>
 
-    <h2 style="margin:16px 0 8px; font-size:16px;">Plantillas y Datos</h2>
-    <p>
-      <a class="button" href="{{ export_url }}" style="background: #28a745; color: white;">Descargar productos existentes</a>
-      <a class="button" href="{{ template_url }}">Descargar plantilla vac&iacute;a</a>
-      <a class="button" href="{{ example_url }}">Descargar ejemplo</a>
+    <h2 style="margin:16px 0 8px; font-size:16px;">Descarga recomendada</h2>
+    <p style="margin-top:0;">
+      <a class="button" href="{{ export_url }}" style="background:#28a745; color:white;">Descargar productos existentes</a>
+    </p>
+    <p class="help" style="margin-top:0;">
+      Us&aacute; esta descarga como base para editar precios, stock, nombres, categor&iacute;as, atributos o im&aacute;genes sin romper el formato.
     </p>
 
     <h2 style="margin:16px 0 8px; font-size:16px;">C&oacute;mo procesa la importaci&oacute;n</h2>
     <ul class="help" style="margin-top:0;">
-      <li>Campos usados hoy: <strong>nombre, slug/sku, descripcion, categoria, precio, stock, activo</strong>.</li>
-      <li>Las dem&aacute;s columnas se conservan para compatibilidad de plantilla.</li>
-      <li>Si una categor&iacute;a no existe, se crea autom&aacute;ticamente.</li>
+      <li>Se toman como referencia principal campos como <strong>Nombre, Precio, Categor&iacute;as, Stock, Mostrar en tienda y URL IMAGENES</strong>.</li>
+      <li>Los atributos se leen desde <strong>Nombre atributo 1/2/3</strong> y <strong>Valor atributo 1/2/3</strong> cuando existan.</li>
+      <li>Si una categor&iacute;a no existe, se crea autom&aacute;ticamente siguiendo la ruta indicada en la columna <strong>Categor&iacute;as</strong>.</li>
       <li><strong>Nuevos</strong>: productos creados. <strong>Actualizados</strong>: productos existentes modificados.</li>
+      <li>Para evitar errores de formato, no conviene subir planillas vac&iacute;as ni archivos armados desde cero.</li>
     </ul>
 
     <form method="post" enctype="multipart/form-data" novalidate>

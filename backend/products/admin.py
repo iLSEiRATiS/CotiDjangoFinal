@@ -5,7 +5,7 @@ from django.urls import path, reverse
 
 from .forms import HomeMarqueeAdminForm, ProductAdminForm
 from .models import Category, HomeImage, HomeMarquee, Offer, Product, ProductImage, StoreSettings
-from .product_importer import PRODUCT_HEADERS, SAMPLE_ROWS, ProductXlsxImporter
+from .product_importer import EXPORT_HEADERS, PRODUCT_HEADERS, SAMPLE_ROWS, ProductXlsxImporter
 
 admin.site.site_header = "Admin Coti"
 admin.site.site_title = "Admin Coti"
@@ -39,6 +39,7 @@ class ProductAdmin(admin.ModelAdmin):
 
     template_xlsx_path = r"C:\Users\facun\OneDrive\Escritorio\CotiWeb\Exportacion-productos-03-02-26.fixed.xlsx"
     product_headers = PRODUCT_HEADERS
+    export_headers = EXPORT_HEADERS
     sample_rows = SAMPLE_ROWS
 
     @admin.display(description="Video")
@@ -101,8 +102,7 @@ class ProductAdmin(admin.ModelAdmin):
             "opts": self.model._meta,
             "title": "Importar productos via XLSX",
             "headers": self.product_headers,
-            "example_url": f"{reverse('admin:products_product_import_xlsx')}?sample=1",
-            "template_url": f"{reverse('admin:products_product_import_xlsx')}?template=1",
+            "export_headers": self.export_headers,
             "export_url": f"{reverse('admin:products_product_import_xlsx')}?export=1",
             "created": created,
             "updated": updated,

@@ -19,6 +19,35 @@ PRODUCT_HEADERS = [
     "gestion_stock",
 ]
 
+EXPORT_HEADERS = [
+    "Nombre", "Stock", "SKU", "Precio", "Precio oferta", "Nombre atributo 1", "Valor atributo 1",
+    "Nombre atributo 2", "Valor atributo 2", "Nombre atributo 3", "Valor atributo 3", "Categorías",
+    "Peso", "Alto", "Ancho", "Profundidad", "Mostrar en tienda", "IDProduct", "IDStock", "URL IMAGENES",
+]
+
+EXPORT_COLUMN_WIDTHS = {
+    "A": 13.0,
+    "B": 54.75,
+    "C": 13.0,
+    "D": 13.0,
+    "E": 13.0,
+    "F": 13.0,
+    "G": 13.0,
+    "H": 13.0,
+    "I": 13.0,
+    "J": 13.0,
+    "K": 13.0,
+    "L": 13.0,
+    "M": 13.0,
+    "N": 13.0,
+    "O": 13.0,
+    "P": 13.0,
+    "Q": 13.0,
+    "R": 13.0,
+    "S": 13.0,
+    "T": 13.0,
+}
+
 
 SAMPLE_ROWS = [
     {
@@ -149,42 +178,31 @@ class ProductXlsxImporter:
 
     def export_products_response(self):
         products = Product.objects.all().select_related("categoria", "categoria__parent").prefetch_related("extra_images")
-        rows = []
-        for p in products:
-            row = {header: "" for header in PRODUCT_HEADERS}
-            row["sku"] = p.slug  # Usamos slug como SKU por defecto si no hay campo SKU
-            row["nombre"] = p.nombre
-            row["slug"] = p.slug
-            row["descripcion"] = p.descripcion
-            row["precio"] = p.precio
-            row["stock"] = p.stock
-            row["activo"] = "SI" if p.activo else "NO"
+        workbook = self._load_export_base_workbook()
+        if workbook is None:
+            workbook = self._build_export_workbook()
+        ws = workbook.active
 
-            if p.categoria:
-                if p.categoria.parent:
-                    row["categoria"] = p.categoria.parent.nombre
-                    row["subcategoria"] = p.categoria.nombre
-                else:
-                    row["categoria"] = p.categoria.nombre
+        existing_signatures = set()
+        for raw in ws.iter_rows(min_row=2, max_col=len(EXPORT_HEADERS), values_only=True):
+            if not any(value not in (None, "") for value in raw):
+                continue
+            existing_signatures.update(self._row_export_signatures(raw))
 
-            row["imagen_1"] = p.image_url
-            extra_images = list(p.extra_images.all().order_by("order"))
-            for i, img in enumerate(extra_images[:4], start=2):
-                row[f"imagen_{i}"] = img.image_url
+        for product in products:
+            row = self._serialize_product_for_export(product)
+            signatures = self._export_row_signatures(row)
+            if signatures & existing_signatures:
+                continue
+            ws.append([row.get(header, "") for header in EXPORT_HEADERS])
+            existing_signatures.update(signatures)
 
-            if isinstance(p.atributos, dict):
-                for i, (name, values) in enumerate(p.atributos.items(), start=1):
-                    if i > 2:
-                        break
-                    row[f"opcion_{i}_nombre"] = name
-                    if isinstance(values, list):
-                        row[f"opcion_{i}_valor"] = ", ".join(map(str, values))
-                    else:
-                        row[f"opcion_{i}_valor"] = str(values)
-
-            rows.append(row)
-
-        return self.export_workbook(rows, "productos_existentes.xlsx")
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = 'attachment; filename="productos_existentes.xlsx"'
+        workbook.save(response)
+        return response
 
     def import_upload(self, upload):
         created = 0
@@ -612,3 +630,111 @@ class ProductXlsxImporter:
         ])
         digest = hashlib.md5(raw.encode("utf-8")).hexdigest()[:12]
         return f"{base_slug}-{digest}"[:110]
+
+    def _build_export_workbook(self):
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Productos"
+        ws.append(EXPORT_HEADERS)
+        for column_letter, width in EXPORT_COLUMN_WIDTHS.items():
+            ws.column_dimensions[column_letter].width = width
+        return wb
+
+    def _load_export_base_workbook(self):
+        if self.template_xlsx_path and os.path.isfile(self.template_xlsx_path):
+            workbook = openpyxl.load_workbook(self.template_xlsx_path)
+            ws = workbook.active
+            headers = [ws.cell(row=1, column=index).value for index in range(1, len(EXPORT_HEADERS) + 1)]
+            if headers == EXPORT_HEADERS:
+                return workbook
+        return None
+
+    def _serialize_product_for_export(self, product):
+        row = {header: "" for header in EXPORT_HEADERS}
+        row["Nombre"] = product.nombre or ""
+        row["Stock"] = product.stock if product.stock not in (None, 0) else ""
+        row["SKU"] = ""
+        row["Precio"] = self._format_export_number(product.precio)
+        row["Precio oferta"] = ""
+        row["Categorías"] = self._build_export_category_path(product.categoria)
+        row["Peso"] = "1"
+        row["Alto"] = "1"
+        row["Ancho"] = "1"
+        row["Profundidad"] = "1"
+        row["Mostrar en tienda"] = "Si" if product.activo else "No"
+        row["IDProduct"] = product.pk or ""
+        row["IDStock"] = ""
+
+        image_urls = []
+        if product.image_url:
+            image_urls.append(product.image_url)
+        for image in product.extra_images.all().order_by("order", "id"):
+            if image.image_url and image.image_url not in image_urls:
+                image_urls.append(image.image_url)
+        row["URL IMAGENES"] = " | ".join(image_urls)
+
+        attrs = product.atributos if isinstance(product.atributos, dict) else {}
+        for index, (name, values) in enumerate(attrs.items(), start=1):
+            if index > 3:
+                break
+            row[f"Nombre atributo {index}"] = name
+            if isinstance(values, list):
+                row[f"Valor atributo {index}"] = ", ".join(str(value) for value in values if value not in (None, ""))
+            elif values not in (None, ""):
+                row[f"Valor atributo {index}"] = str(values)
+
+        return row
+
+    def _build_export_category_path(self, category):
+        if not category:
+            return ""
+        parts = []
+        current = category
+        while current:
+            parts.append(current.nombre)
+            current = current.parent
+        return " > ".join(reversed(parts))
+
+    def _format_export_number(self, value):
+        if value in (None, ""):
+            return ""
+        decimal_value = self._parse_decimal(value)
+        if decimal_value is None:
+            return str(value)
+        normalized = decimal_value.quantize(Decimal("0.01"))
+        if normalized == normalized.to_integral():
+            return str(int(normalized))
+        return format(normalized.normalize(), "f")
+
+    def _export_signature_parts(self, *, nombre="", categoria="", sku="", image_url=""):
+        normalized_name = self._norm_header(nombre)
+        normalized_category = self._norm_header(categoria)
+        normalized_sku = self._norm_header(sku)
+        normalized_url = self._norm_header(image_url)
+        signatures = set()
+        if normalized_name:
+            signatures.add(("name", normalized_name))
+        if normalized_name and normalized_category:
+            signatures.add(("name_category", normalized_name, normalized_category))
+        if normalized_name and normalized_category and normalized_url:
+            signatures.add(("name_category_url", normalized_name, normalized_category, normalized_url))
+        if normalized_sku:
+            signatures.add(("sku", normalized_sku))
+        if normalized_name and normalized_sku:
+            signatures.add(("name_sku", normalized_name, normalized_sku))
+        return signatures
+
+    def _export_row_signatures(self, row):
+        return self._export_signature_parts(
+            nombre=row.get("Nombre", ""),
+            categoria=row.get("Categorías", ""),
+            sku=row.get("SKU", ""),
+            image_url=row.get("URL IMAGENES", ""),
+        )
+
+    def _row_export_signatures(self, raw):
+        row = {
+            header: raw[index] if index < len(raw) else ""
+            for index, header in enumerate(EXPORT_HEADERS)
+        }
+        return self._export_row_signatures(row)
