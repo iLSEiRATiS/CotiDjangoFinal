@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from django.contrib import admin, messages
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -37,7 +39,7 @@ class ProductAdmin(admin.ModelAdmin):
     change_list_template = "admin/products/product/change_list.html"
     inlines = [ProductImageInline]
 
-    template_xlsx_path = r"C:\Users\facun\OneDrive\Escritorio\CotiWeb\Exportacion-productos-03-02-26.fixed.xlsx"
+    template_xlsx_path = str(Path(__file__).resolve().parent / "resources" / "ProductosCoti_base.xlsx")
     product_headers = PRODUCT_HEADERS
     export_headers = EXPORT_HEADERS
     sample_rows = SAMPLE_ROWS

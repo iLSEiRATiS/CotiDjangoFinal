@@ -1,4 +1,4 @@
-from decimal import Decimal
+﻿from decimal import Decimal
 import hashlib
 import os
 import unicodedata
@@ -425,7 +425,7 @@ class ProductXlsxImporter:
         if isinstance(value, bool):
             return value
         text = str(value).strip().lower()
-        return text in {"true", "1", "si", "sÃ­", "yes", "y"}
+        return text in {"true", "1", "si", "sÃƒÂ­", "yes", "y"}
 
     def _parse_decimal(self, value):
         if value is None or value == "":
@@ -527,7 +527,7 @@ class ProductXlsxImporter:
         text = str(raw).strip()
         if not text:
             return []
-        for sep in (" > ", ">", " / ", "/", " | ", "|", " - ", " â€“ "):
+        for sep in (" > ", ">", " / ", "/", " | ", "|", " - ", " Ã¢â‚¬â€œ "):
             if sep in text:
                 parts = [part.strip() for part in text.split(sep)]
                 return [part for part in parts if part]
@@ -645,7 +645,9 @@ class ProductXlsxImporter:
             workbook = openpyxl.load_workbook(self.template_xlsx_path)
             ws = workbook.active
             headers = [ws.cell(row=1, column=index).value for index in range(1, len(EXPORT_HEADERS) + 1)]
-            if headers == EXPORT_HEADERS:
+            normalized_headers = [self._norm_header(header) for header in headers]
+            normalized_export_headers = [self._norm_header(header) for header in EXPORT_HEADERS]
+            if normalized_headers == normalized_export_headers:
                 return workbook
         return None
 
@@ -738,3 +740,4 @@ class ProductXlsxImporter:
             for index, header in enumerate(EXPORT_HEADERS)
         }
         return self._export_row_signatures(row)
+
