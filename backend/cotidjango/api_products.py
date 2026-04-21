@@ -4,15 +4,17 @@ from django.db import models
 from django.db.models import Q, Sum
 from django.db.models.functions import Coalesce
 from django.utils import timezone
-from django.utils.text import slugify
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from products.models import Category, Offer, Product
 from .api_common import (
+    build_category_path_name,
+    build_category_path_slug,
     _norm_text,
     get_descendant_ids,
+    resolve_category_reference,
     resolve_product,
     serialize_category,
     serialize_product,
@@ -28,6 +30,8 @@ class CategoriesListView(APIView):
             "id": cat.id,
             "nombre": cat.nombre,
             "slug": cat.slug,
+            "path_name": build_category_path_name(cat),
+            "path_slug": build_category_path_slug(cat),
             "descripcion": cat.descripcion or "",
             "parent": cat.parent_id,
         } for cat in items]
@@ -77,17 +81,7 @@ class ProductListView(APIView):
             if root_id:
                 qs = qs.filter(categoria_id__in=get_descendant_ids(root_id))
         elif category:
-            root = Category.objects.filter(slug=category).first()
-            if not root:
-                wanted = _norm_text(category)
-                wanted_slug = _norm_text(slugify(category))
-                wanted_space = wanted.replace("-", " ")
-                for c in Category.objects.all().only("id", "nombre", "slug"):
-                    name_norm = _norm_text(c.nombre)
-                    slug_norm = _norm_text(c.slug)
-                    if wanted == name_norm or wanted_slug == slug_norm or wanted_space == slug_norm.replace("-", " ") or wanted in name_norm or wanted in slug_norm:
-                        root = c
-                        break
+            root = resolve_category_reference(category)
             if root:
                 qs = qs.filter(categoria_id__in=get_descendant_ids(root.id))
 

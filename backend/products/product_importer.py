@@ -142,6 +142,11 @@ HEADER_ALIAS = {
     "valor atributo 3": "opcion_3_valor",
     "nombre atributo3": "opcion_3_nombre",
     "valor atributo3": "opcion_3_valor",
+    "idproduct": "idproduct",
+    "id product": "idproduct",
+    "id_producto": "idproduct",
+    "idstock": "idstock",
+    "id stock": "idstock",
 }
 
 
@@ -287,6 +292,7 @@ class ProductXlsxImporter:
             slug_raw = row_data.get("slug") or ""
             categoria_raw = row_data.get("categoria") or ""
             subcategoria_raw = row_data.get("subcategoria") or ""
+            product_id_raw = row_data.get("idproduct") or ""
 
             categoria_obj = None
             path_parts = self._compose_category_path(categoria_raw, subcategoria_raw)
@@ -298,11 +304,15 @@ class ProductXlsxImporter:
 
             if has_declared_attrs:
                 existing = self._find_existing_group_product(nombre=nombre, categoria_obj=categoria_obj)
+                if not existing:
+                    existing = self._find_existing_product_by_id(product_id_raw)
                 slug = existing.slug if existing else self._build_group_slug(nombre=nombre, path_parts=path_parts)
             else:
                 sku_upper = str(sku_raw).strip().upper()
                 effective_sku = "" if (sku_upper and sku_upper in multi_name_skus) else sku_raw
                 existing = self._find_existing_product_by_name(nombre=nombre, categoria_obj=categoria_obj)
+                if not existing:
+                    existing = self._find_existing_product_by_id(product_id_raw)
                 slug = (
                     existing.slug
                     if existing
@@ -315,7 +325,7 @@ class ProductXlsxImporter:
                     )
                 )
 
-            existing = existing if has_declared_attrs else (existing or Product.objects.filter(slug=slug).first())
+            existing = existing or Product.objects.filter(slug=slug).first()
             is_new = existing is None
             product = existing or Product(slug=slug, user=self.request_user)
             product.nombre = nombre
@@ -591,6 +601,14 @@ class ProductXlsxImporter:
         else:
             queryset = queryset.filter(categoria=categoria_obj)
         return queryset.order_by("id").first()
+
+    def _find_existing_product_by_id(self, raw_id):
+        if raw_id in (None, ""):
+            return None
+        try:
+            return Product.objects.filter(pk=int(str(raw_id).strip())).first()
+        except Exception:
+            return None
 
     def _deactivate_same_name_duplicates(self, *, product):
         target = self._norm_header(product.nombre)

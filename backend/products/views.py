@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from rest_framework import viewsets, permissions, filters
 
+from cotidjango.api_common import build_category_path_name, build_category_path_slug, get_descendant_ids, resolve_category_reference
 from .forms import ProductForm
 from .models import Product, Category, Offer
 from .serializers import ProductSerializer, CategorySerializer, OfferSerializer
@@ -52,7 +53,11 @@ class ProductViewSet(viewsets.ModelViewSet):
                 | models.Q(categoria__nombre__icontains=q)
             )
         if categoria:
-            qs = qs.filter(categoria__slug=categoria)
+            resolved = resolve_category_reference(categoria)
+            if resolved:
+                qs = qs.filter(categoria_id__in=get_descendant_ids(resolved.id))
+            else:
+                qs = qs.none()
         if activo is not None:
             qs = qs.filter(activo=str(activo).lower() in ["true", "1", "yes"])
         return qs
@@ -78,8 +83,18 @@ class StoreHomeView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["destacados"] = Product.objects.filter(activo=True).select_related("categoria")[:6]
-        ctx["categorias"] = Category.objects.all()
+        ctx["categorias"] = [self._serialize_category(cat) for cat in Category.objects.all()]
         return ctx
+
+    def _serialize_category(self, cat):
+        return {
+            "id": cat.id,
+            "nombre": cat.nombre,
+            "slug": cat.slug,
+            "path_slug": build_category_path_slug(cat),
+            "path_name": build_category_path_name(cat),
+            "products_count": cat.products.count(),
+        }
 
 
 class StoreListView(generic.ListView):
@@ -92,14 +107,18 @@ class StoreListView(generic.ListView):
         cat = self.request.GET.get("categoria")
         q = self.request.GET.get("q")
         if cat:
-            qs = qs.filter(categoria__slug=cat)
+            resolved = resolve_category_reference(cat)
+            if resolved:
+                qs = qs.filter(categoria_id__in=get_descendant_ids(resolved.id))
+            else:
+                qs = qs.none()
         if q:
             qs = qs.filter(nombre__icontains=q)
         return qs
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["categorias"] = Category.objects.all()
+        ctx["categorias"] = [self._serialize_category(cat) for cat in Category.objects.all()]
         ctx["current_cat"] = self.request.GET.get("categoria") or ""
         ctx["q"] = self.request.GET.get("q") or ""
         ctx["static_categories"] = [
@@ -123,6 +142,15 @@ class StoreListView(generic.ListView):
             "ARTÍCULOS PARA COMUNIÓN",
         ]
         return ctx
+
+    def _serialize_category(self, cat):
+        return {
+            "id": cat.id,
+            "nombre": cat.nombre,
+            "slug": cat.slug,
+            "path_slug": build_category_path_slug(cat),
+            "path_name": build_category_path_name(cat),
+        }
 
 
 class StoreDetailView(generic.DetailView):

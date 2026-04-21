@@ -6,7 +6,7 @@
     <div id="heroCarousel" class="carousel slide shadow-sm rounded-4 overflow-hidden">
       <div class="carousel-inner">
         <div class="carousel-item active">
-          <img src="https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80" class="d-block w-100" alt="Decoración de fiesta" style="object-fit:cover; max-height:360px;">
+          <img src="https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80" class="d-block w-100" alt="Decoracion de fiesta" style="object-fit:cover; max-height:360px;">
           <div class="carousel-caption d-none d-md-block">
             <h5>Globos y guirnaldas</h5>
             <p>Define tu paleta y nosotros la armamos.</p>
@@ -15,15 +15,15 @@
         <div class="carousel-item">
           <img src="https://images.unsplash.com/photo-1529634892933-8da6215c278a?auto=format&fit=crop&w=1200&q=80" class="d-block w-100" alt="Torta decorada" style="object-fit:cover; max-height:360px;">
           <div class="carousel-caption d-none d-md-block">
-            <h5>Repostería creativa</h5>
+            <h5>Reposteria creativa</h5>
             <p>Toppers, velas y accesorios listos para usar.</p>
           </div>
         </div>
         <div class="carousel-item">
-          <img src="https://images.unsplash.com/photo-1598214886806-c87b84b7078a?auto=format&fit=crop&w=1200&q=80" class="d-block w-100" alt="Cotillón luminoso" style="object-fit:cover; max-height:360px;">
+          <img src="https://images.unsplash.com/photo-1598214886806-c87b84b7078a?auto=format&fit=crop&w=1200&q=80" class="d-block w-100" alt="Cotillon luminoso" style="object-fit:cover; max-height:360px;">
           <div class="carousel-caption d-none d-md-block">
-            <h5>Luces y ambientación</h5>
-            <p>LED, neón y props para fotos inolvidables.</p>
+            <h5>Luces y ambientacion</h5>
+            <p>LED, neon y props para fotos inolvidables.</p>
           </div>
         </div>
       </div>
@@ -44,12 +44,12 @@
     <div class="col-6 col-md-4 col-lg-2">
       <div class="p-3 text-center section-light rounded-3 shadow-sm h-100">
         <div class="fw-bold">{{ cat.nombre }}</div>
-        <div class="text-muted small">{{ cat.products.count }} ítems</div>
-        <a class="small d-block mt-2" href="{% url 'catalogo' %}?categoria={{ cat.slug }}">Explorar</a>
+        <div class="text-muted small">{{ cat.products_count }} items</div>
+        <a class="small d-block mt-2" href="{% url 'catalogo' %}?categoria={{ cat.path_slug }}">Explorar</a>
       </div>
     </div>
   {% empty %}
-    <p class="text-muted">Agrega categorías desde el admin para mostrarlas aquí.</p>
+    <p class="text-muted">Agrega categorias desde el admin para mostrarlas aqui.</p>
   {% endfor %}
 </div>
 
@@ -74,7 +74,7 @@
                 {% if user.is_authenticated %}
                   <p class="fw-bold mb-0">${{ p.precio }}</p>
                 {% else %}
-                  <p class="text-muted mb-0">Inicia sesión para ver el precio</p>
+                  <p class="text-muted mb-0">Inicia sesion para ver el precio</p>
                 {% endif %}
               </div>
               <div class="card-footer bg-transparent border-0 pt-0">
@@ -91,21 +91,21 @@
                     data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasScrolling"
                   >
-                    Añadir
+                    Anadir
                   </button>
                 </div>
               </div>
             </div>
           </div>
         {% empty %}
-          <p class="text-muted">Aún no hay productos.</p>
+          <p class="text-muted">Aun no hay productos.</p>
         {% endfor %}
       </div>
     </div>
   </div>
   <div class="col-lg-4">
     <div class="p-4 section-light rounded-4 shadow-sm h-100">
-      <h5 class="mb-3">Combos rápidos</h5>
+      <h5 class="mb-3">Combos rapidos</h5>
       <ul class="list-unstyled mb-0 small">
         <li class="mb-3 d-flex gap-2">
           <div class="badge bg-accent text-dark mt-1">Cumple Pop</div>
@@ -117,7 +117,7 @@
         </li>
         <li class="d-flex gap-2">
           <div class="badge bg-accent text-dark mt-1">Kids Pack</div>
-          <div>Piñatas, stickers y descartables temáticos.</div>
+          <div>Pinatas, stickers y descartables tematicos.</div>
         </li>
       </ul>
     </div>
@@ -127,8 +127,8 @@
 <div class="p-4 section-light rounded-4 shadow-sm mb-4">
   <div class="row g-3 align-items-center">
     <div class="col-md-8">
-      <h5 class="mb-1">¿Buscas una paleta personalizada?</h5>
-      <p class="text-muted mb-0">Cuéntanos tu evento y armamos el set de productos con los colores exactos.</p>
+      <h5 class="mb-1">Buscas una paleta personalizada?</h5>
+      <p class="text-muted mb-0">Cuentanos tu evento y armamos el set de productos con los colores exactos.</p>
     </div>
     <div class="col-md-4 text-md-end">
       <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling">Abrir carrito</button>

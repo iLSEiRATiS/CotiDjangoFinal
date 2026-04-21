@@ -159,7 +159,15 @@ def serialize_user(user, request=None):
 def serialize_category(cat):
     if not cat:
         return None
-    return {"_id": cat.id, "id": cat.id, "name": cat.nombre, "slug": cat.slug}
+    return {
+        "_id": cat.id,
+        "id": cat.id,
+        "name": cat.nombre,
+        "slug": cat.slug,
+        "path": build_category_path(cat),
+        "pathName": build_category_path_name(cat),
+        "pathSlug": build_category_path_slug(cat),
+    }
 
 
 def serialize_product(prod, request=None):
@@ -272,6 +280,73 @@ def resolve_category(value):
     slug = slugify(str(value))
     cat, _ = Category.objects.get_or_create(slug=slug, defaults={"nombre": value})
     return cat
+
+
+def build_category_path(category):
+    path = []
+    current = category
+    seen = set()
+    while current and getattr(current, "id", None) and current.id not in seen:
+        seen.add(current.id)
+        path.append(current)
+        current = getattr(current, "parent", None)
+    return list(reversed(path))
+
+
+def build_category_path_name(category):
+    return " > ".join(cat.nombre for cat in build_category_path(category))
+
+
+def build_category_path_slug(category):
+    return "/".join((cat.slug or slugify(cat.nombre or "")).strip("/") for cat in build_category_path(category) if cat)
+
+
+def _category_matches_segment(category, segment):
+    wanted = _norm_text(segment)
+    if not wanted:
+        return False
+    return (
+        wanted == _norm_text(category.slug)
+        or wanted == _norm_text(category.nombre)
+        or wanted == _norm_text(slugify(category.nombre or ""))
+    )
+
+
+def resolve_category_reference(value):
+    raw = str(value or "").strip().strip("/")
+    if not raw:
+        return None
+
+    segments = [segment.strip() for segment in raw.split("/") if segment.strip()]
+    if len(segments) > 1:
+        current = None
+        for segment in segments:
+            queryset = Category.objects.filter(parent=current)
+            matches = [cat for cat in queryset if _category_matches_segment(cat, segment)]
+            if len(matches) != 1:
+                current = None
+                break
+            current = matches[0]
+        if current:
+            return current
+
+    exact_slug_matches = [cat for cat in Category.objects.all().only("id", "nombre", "slug", "parent_id") if _norm_text(cat.slug) == _norm_text(raw)]
+    if len(exact_slug_matches) == 1:
+        return exact_slug_matches[0]
+
+    exact_name_matches = [cat for cat in Category.objects.all().only("id", "nombre", "slug", "parent_id") if _norm_text(cat.nombre) == _norm_text(raw)]
+    if len(exact_name_matches) == 1:
+        return exact_name_matches[0]
+
+    exact_slugified_name_matches = [
+        cat
+        for cat in Category.objects.all().only("id", "nombre", "slug", "parent_id")
+        if _norm_text(slugify(cat.nombre or "")) == _norm_text(raw)
+    ]
+    if len(exact_slugified_name_matches) == 1:
+        return exact_slugified_name_matches[0]
+
+    return None
 
 
 def get_descendant_ids(root_id):
