@@ -71,10 +71,36 @@
       </p>
     {% endif %}
 
-    {% if errors %}
-      <div class="errornote">
-        {% for e in errors %}<div>{{ e }}</div>{% endfor %}
+    {% if error_summary %}
+      <div style="background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; padding:14px 16px; margin:18px 0; color:#7c2d12;">
+        <h2 style="font-size:16px; margin:0 0 8px; color:#7c2d12;">Resumen de advertencias</h2>
+        {% for item in error_summary %}
+          <p style="margin:0 0 8px;">
+            <strong>{{ item.count }}</strong> - {{ item.message }}
+            {% if item.preview %}
+              <br><span style="color:#9a3412;">Ejemplos: {{ item.preview }}</span>
+            {% endif %}
+          </p>
+        {% endfor %}
       </div>
+    {% endif %}
+
+    {% if errors %}
+      <details style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:12px 14px; margin:18px 0; color:#7f1d1d;">
+        <summary style="cursor:pointer; font-weight:700;">
+          Ver detalle de errores{% if hidden_error_count %} (primeros {{ visible_errors|length }} de {{ errors|length }}){% endif %}
+        </summary>
+        <div style="margin-top:12px;">
+          {% for e in visible_errors %}
+            <div style="padding:6px 0; border-top:1px solid #fecaca;">{{ e }}</div>
+          {% endfor %}
+          {% if hidden_error_count %}
+            <p style="margin:10px 0 0; color:#991b1b;">
+              Hay {{ hidden_error_count }} errores repetidos adicionales ocultos para que la pantalla siga siendo legible.
+            </p>
+          {% endif %}
+        </div>
+      </details>
     {% endif %}
   </div>
 {% endblock %}

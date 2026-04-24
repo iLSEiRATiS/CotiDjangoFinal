@@ -7,7 +7,7 @@ import openpyxl
 from django.http import HttpResponse
 from django.utils.text import slugify
 
-from .models import Category, Product, ProductImage
+from .models import Category, Offer, Product, ProductImage
 
 
 PRODUCT_HEADERS = [
@@ -130,6 +130,12 @@ HEADER_ALIAS = {
     "imagen 4": "imagen_4",
     "imagen 5": "imagen_5",
     "mostrar en tienda": "activo",
+    "idproduct": "idproduct",
+    "id product": "idproduct",
+    "id_product": "idproduct",
+    "idstock": "idstock",
+    "id stock": "idstock",
+    "id_stock": "idstock",
     "nombre atributo 1": "opcion_1_nombre",
     "valor atributo 1": "opcion_1_valor",
     "nombre atributo1": "opcion_1_nombre",
@@ -142,11 +148,6 @@ HEADER_ALIAS = {
     "valor atributo 3": "opcion_3_valor",
     "nombre atributo3": "opcion_3_nombre",
     "valor atributo3": "opcion_3_valor",
-    "idproduct": "idproduct",
-    "id product": "idproduct",
-    "id_producto": "idproduct",
-    "idstock": "idstock",
-    "id stock": "idstock",
 }
 
 
@@ -182,25 +183,20 @@ class ProductXlsxImporter:
         return self.export_workbook([empty_row], "plantilla_productos.xlsx")
 
     def export_products_response(self):
-        products = Product.objects.all().select_related("categoria", "categoria__parent").prefetch_related("extra_images")
-        workbook = self._load_export_base_workbook()
-        if workbook is None:
-            workbook = self._build_export_workbook()
+        products = (
+            Product.objects.all()
+            .select_related("categoria", "categoria__parent")
+            .prefetch_related("extra_images")
+            .order_by("id")
+        )
+        # Exportar siempre desde cero evita omisiones provocadas por plantillas base
+        # o deduplicaciones heurísticas. La planilla debe reflejar exactamente la DB.
+        workbook = self._build_export_workbook()
         ws = workbook.active
-
-        existing_signatures = set()
-        for raw in ws.iter_rows(min_row=2, max_col=len(EXPORT_HEADERS), values_only=True):
-            if not any(value not in (None, "") for value in raw):
-                continue
-            existing_signatures.update(self._row_export_signatures(raw))
 
         for product in products:
             row = self._serialize_product_for_export(product)
-            signatures = self._export_row_signatures(row)
-            if signatures & existing_signatures:
-                continue
             ws.append([row.get(header, "") for header in EXPORT_HEADERS])
-            existing_signatures.update(signatures)
 
         response = HttpResponse(
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -290,9 +286,9 @@ class ProductXlsxImporter:
             sku_raw = row_data.get("sku") or ""
             parent_sku_raw = row_data.get("parent_sku") or ""
             slug_raw = row_data.get("slug") or ""
+            idproduct_raw = row_data.get("idproduct") or ""
             categoria_raw = row_data.get("categoria") or ""
             subcategoria_raw = row_data.get("subcategoria") or ""
-            product_id_raw = row_data.get("idproduct") or ""
 
             categoria_obj = None
             path_parts = self._compose_category_path(categoria_raw, subcategoria_raw)
@@ -302,17 +298,22 @@ class ProductXlsxImporter:
                     parent = self._get_or_create_category_normalized(part, parent=parent)
                 categoria_obj = parent
 
+            existing, identity_error = self._find_existing_product_identity(
+                idproduct_raw=idproduct_raw,
+                slug_raw=slug_raw,
+                nombre=nombre,
+                categoria_obj=categoria_obj,
+                grouped=has_declared_attrs,
+            )
+            if identity_error:
+                errors.append(f"Fila {idx}: {identity_error}")
+                continue
+
             if has_declared_attrs:
-                existing = self._find_existing_group_product(nombre=nombre, categoria_obj=categoria_obj)
-                if not existing:
-                    existing = self._find_existing_product_by_id(product_id_raw)
                 slug = existing.slug if existing else self._build_group_slug(nombre=nombre, path_parts=path_parts)
             else:
                 sku_upper = str(sku_raw).strip().upper()
                 effective_sku = "" if (sku_upper and sku_upper in multi_name_skus) else sku_raw
-                existing = self._find_existing_product_by_name(nombre=nombre, categoria_obj=categoria_obj)
-                if not existing:
-                    existing = self._find_existing_product_by_id(product_id_raw)
                 slug = (
                     existing.slug
                     if existing
@@ -417,14 +418,15 @@ class ProductXlsxImporter:
                             activo=True,
                         )
                 existing_qs.exclude(image_url__in=keep).delete()
-            else:
-                ProductImage.objects.filter(product=product).delete()
 
             if is_new:
                 created += 1
             else:
                 updated += 1
-            self._deactivate_same_name_duplicates(product=product)
+            product = self._merge_same_name_duplicates(
+                product=product,
+                category_scoped=bool(categoria_obj),
+            )
 
         wb.close()
         return created, updated, errors
@@ -506,12 +508,17 @@ class ProductXlsxImporter:
                     parts = [part.strip() for part in text.split(sep)]
                     break
             for part in parts:
-                if not part or not part.startswith(("http://", "https://")):
+                if not part:
                     continue
-                if part in seen:
+                normalized_part = str(part).strip()
+                if normalized_part.startswith("media/"):
+                    normalized_part = f"/{normalized_part}"
+                if not normalized_part.startswith(("http://", "https://", "/media/")):
                     continue
-                seen.add(part)
-                output.append(part)
+                if normalized_part in seen:
+                    continue
+                seen.add(normalized_part)
+                output.append(normalized_part)
         return output
 
     def _build_slug(self, base):
@@ -530,6 +537,11 @@ class ProductXlsxImporter:
         text = unicodedata.normalize("NFKD", text)
         text = "".join(char for char in text if not unicodedata.combining(char))
         return text
+
+    def _norm_compare_text(self, value):
+        text = self._norm_header(value)
+        text = "".join(char if char.isalnum() else " " for char in text)
+        return " ".join(text.split())
 
     def _parse_category_path(self, raw):
         if not raw:
@@ -583,47 +595,211 @@ class ProductXlsxImporter:
         return f"{base_slug}-{digest}"[:110]
 
     def _find_existing_product_by_name(self, *, nombre, categoria_obj):
-        target = self._norm_header(nombre)
+        target = self._norm_compare_text(nombre)
         queryset = Product.objects.all()
         if categoria_obj is None:
             queryset = queryset.filter(categoria__isnull=True)
         else:
             queryset = queryset.filter(categoria=categoria_obj)
         for product in queryset.order_by("id"):
-            if self._norm_header(product.nombre) == target:
+            if self._norm_compare_text(product.nombre) == target:
                 return product
         return None
 
+    def _find_products_by_normalized_name(self, *, nombre):
+        target = self._norm_compare_text(nombre)
+        if not target:
+            return []
+        matches = []
+        for product in Product.objects.all().order_by("id"):
+            if self._norm_compare_text(product.nombre) == target:
+                matches.append(product)
+        return matches
+
     def _find_existing_group_product(self, *, nombre, categoria_obj):
-        queryset = Product.objects.filter(nombre=nombre)
-        if categoria_obj is None:
-            queryset = queryset.filter(categoria__isnull=True)
-        else:
-            queryset = queryset.filter(categoria=categoria_obj)
-        return queryset.order_by("id").first()
+        return self._find_existing_product_by_name(nombre=nombre, categoria_obj=categoria_obj)
 
-    def _find_existing_product_by_id(self, raw_id):
-        if raw_id in (None, ""):
-            return None
-        try:
-            return Product.objects.filter(pk=int(str(raw_id).strip())).first()
-        except Exception:
-            return None
+    def _find_existing_product_identity(self, *, idproduct_raw, slug_raw, nombre, categoria_obj, grouped):
+        pk = self._parse_int(idproduct_raw)
+        if pk:
+            product = Product.objects.filter(pk=pk).first()
+            if product:
+                return product, None
+            return None, f"IDProduct {pk} no existe. Para evitar duplicados, esa fila no se importó."
 
-    def _deactivate_same_name_duplicates(self, *, product):
-        target = self._norm_header(product.nombre)
-        queryset = Product.objects.exclude(pk=product.pk)
-        if product.categoria_id:
-            queryset = queryset.filter(categoria_id=product.categoria_id)
-        else:
-            queryset = queryset.filter(categoria__isnull=True)
-        duplicate_ids = [
-            candidate.pk
-            for candidate in queryset.only("id", "nombre").iterator()
-            if self._norm_header(candidate.nombre) == target
+        slug_text = str(slug_raw or "").strip()
+        if slug_text:
+            product = Product.objects.filter(slug=slug_text).first()
+            if product:
+                return product, None
+
+        name_matches = self._find_products_by_normalized_name(nombre=nombre)
+        if categoria_obj is not None:
+            category_matches = [product for product in name_matches if product.categoria_id == categoria_obj.id]
+            if len(category_matches) == 1:
+                return category_matches[0], None
+            if len(category_matches) > 1:
+                return self._select_best_duplicate_candidate(
+                    category_matches,
+                    preferred_category_id=categoria_obj.id,
+                ), None
+
+        if len(name_matches) == 1:
+            return name_matches[0], None
+        if len(name_matches) > 1:
+            return self._select_best_duplicate_candidate(
+                name_matches,
+                preferred_category_id=categoria_obj.id if categoria_obj else None,
+            ), None
+
+        if grouped:
+            return self._find_existing_group_product(nombre=nombre, categoria_obj=categoria_obj), None
+        return self._find_existing_product_by_name(nombre=nombre, categoria_obj=categoria_obj), None
+
+    def _select_best_duplicate_candidate(self, candidates, preferred_category_id=None):
+        def score(product):
+            has_primary_image = bool(str(product.image_url or "").strip()) or bool(getattr(product, "imagen", None))
+            has_gallery = product.extra_images.exists()
+            has_description = bool(str(product.descripcion or "").strip())
+            has_video = bool(str(product.video_url or "").strip())
+            has_stock = int(product.stock or 0) > 0
+            has_price = self._parse_decimal(product.precio) not in (None, Decimal("0"))
+            has_orders = product.order_items.exists()
+            has_offers = product.ofertas.exists()
+            return (
+                1 if preferred_category_id and product.categoria_id == preferred_category_id else 0,
+                1 if has_orders else 0,
+                1 if has_offers else 0,
+                1 if product.activo else 0,
+                1 if has_primary_image else 0,
+                1 if has_gallery else 0,
+                1 if has_description else 0,
+                1 if has_video else 0,
+                1 if has_stock else 0,
+                1 if has_price else 0,
+                product.creado_en,
+                product.pk,
+            )
+
+        return max(candidates, key=score)
+
+    def _merge_same_name_duplicates(self, *, product, category_scoped=True):
+        target = self._norm_compare_text(product.nombre)
+        if not target:
+            return product
+
+        queryset = (
+            Product.objects.exclude(pk=product.pk)
+            .select_related("categoria")
+            .prefetch_related("extra_images", "order_items", "ofertas")
+        )
+        if category_scoped:
+            if product.categoria_id:
+                queryset = queryset.filter(categoria_id=product.categoria_id)
+            else:
+                queryset = queryset.filter(categoria__isnull=True)
+
+        duplicates = [
+            candidate
+            for candidate in queryset
+            if self._norm_compare_text(candidate.nombre) == target
         ]
+        if not duplicates:
+            return product
+
+        product = self._merge_products(
+            survivor=product,
+            duplicates=duplicates,
+        )
+        return product
+
+    def _merge_products(self, *, survivor, duplicates):
+        attrs = survivor.atributos if isinstance(survivor.atributos, dict) else {}
+        attrs_stock = survivor.atributos_stock if isinstance(survivor.atributos_stock, dict) else {}
+        attrs_price = survivor.atributos_precio if isinstance(survivor.atributos_precio, dict) else {}
+        def gallery_key(image):
+            if image.image_url:
+                return ("url", image.image_url.strip())
+            if image.image:
+                return ("file", str(image.image))
+            return ("id", image.pk)
+
+        for current in sorted(duplicates, key=lambda item: (item.creado_en, item.pk)):
+            ProductImage.objects.filter(product=current).update(product=survivor)
+            Offer.objects.filter(producto=current).update(producto=survivor)
+            current.order_items.update(product=survivor)
+
+            is_newer = (current.creado_en, current.pk) > (survivor.creado_en, survivor.pk)
+
+            if current.nombre and (is_newer or not survivor.nombre):
+                survivor.nombre = current.nombre
+            if current.descripcion and (is_newer or not survivor.descripcion):
+                survivor.descripcion = current.descripcion
+            if current.categoria_id and (is_newer or not survivor.categoria_id):
+                survivor.categoria = current.categoria
+            if current.image_url and (is_newer or not survivor.image_url):
+                survivor.image_url = current.image_url
+            elif getattr(current, "imagen", None) and not getattr(survivor, "imagen", None):
+                survivor.imagen = current.imagen
+            if current.video_url and (is_newer or not survivor.video_url):
+                survivor.video_url = current.video_url
+            if current.precio not in (None, "") and is_newer:
+                survivor.precio = current.precio
+            if current.stock is not None and is_newer:
+                survivor.stock = current.stock
+            survivor.activo = survivor.activo or current.activo
+
+            current_attrs = current.atributos if isinstance(current.atributos, dict) else {}
+            for key, values in current_attrs.items():
+                existing = attrs.get(key, [])
+                if not isinstance(existing, list):
+                    existing = [existing] if existing else []
+                incoming_values = values if isinstance(values, list) else [values]
+                for value in incoming_values:
+                    if value not in existing:
+                        existing.append(value)
+                attrs[key] = existing
+
+            current_stock = current.atributos_stock if isinstance(current.atributos_stock, dict) else {}
+            for key, value_map in current_stock.items():
+                existing_map = attrs_stock.get(key, {}) if isinstance(attrs_stock.get(key), dict) else {}
+                if isinstance(value_map, dict):
+                    for value, stock_value in value_map.items():
+                        existing_map[value] = max(int(existing_map.get(value, 0)), int(stock_value or 0))
+                attrs_stock[key] = existing_map
+
+            current_prices = current.atributos_precio if isinstance(current.atributos_precio, dict) else {}
+            for key, value_map in current_prices.items():
+                existing_map = attrs_price.get(key, {}) if isinstance(attrs_price.get(key), dict) else {}
+                if isinstance(value_map, dict):
+                    for value, price_value in value_map.items():
+                        existing_map[value] = price_value
+                attrs_price[key] = existing_map
+
+        survivor.atributos = attrs if attrs else {}
+        survivor.atributos_stock = attrs_stock if attrs_stock else {}
+        survivor.atributos_precio = attrs_price if attrs_price else {}
+        survivor.precio = self._resolve_base_price(survivor, fallback=survivor.precio)
+        survivor.save()
+
+        ordered_images = list(ProductImage.objects.filter(product=survivor).order_by("order", "id"))
+        seen = set()
+        next_order = 1
+        for image in ordered_images:
+            key = gallery_key(image)
+            if key in seen:
+                image.delete()
+                continue
+            seen.add(key)
+            if image.order != next_order:
+                image.order = next_order
+                image.save(update_fields=["order"])
+            next_order += 1
+
+        duplicate_ids = [candidate.pk for candidate in duplicates]
         if duplicate_ids:
-            Product.objects.filter(pk__in=duplicate_ids).update(activo=False)
+            Product.objects.filter(pk__in=duplicate_ids).delete()
+        return survivor
 
     def _resolve_base_price(self, product, fallback):
         attrs = product.atributos if isinstance(product.atributos, dict) else {}
@@ -672,25 +848,27 @@ class ProductXlsxImporter:
     def _serialize_product_for_export(self, product):
         row = {header: "" for header in EXPORT_HEADERS}
         row["Nombre"] = product.nombre or ""
-        row["Stock"] = product.stock if product.stock not in (None, 0) else ""
+        row["Stock"] = product.stock if product.stock is not None else ""
         row["SKU"] = ""
         row["Precio"] = self._format_export_number(product.precio)
         row["Precio oferta"] = ""
         row["Categorías"] = self._build_export_category_path(product.categoria)
-        row["Peso"] = "1"
-        row["Alto"] = "1"
-        row["Ancho"] = "1"
-        row["Profundidad"] = "1"
+        row["Peso"] = ""
+        row["Alto"] = ""
+        row["Ancho"] = ""
+        row["Profundidad"] = ""
         row["Mostrar en tienda"] = "Si" if product.activo else "No"
         row["IDProduct"] = product.pk or ""
         row["IDStock"] = ""
 
         image_urls = []
-        if product.image_url:
-            image_urls.append(product.image_url)
+        primary_image = self._get_export_image_value(product.image_url, getattr(product, "imagen", None))
+        if primary_image:
+            image_urls.append(primary_image)
         for image in product.extra_images.all().order_by("order", "id"):
-            if image.image_url and image.image_url not in image_urls:
-                image_urls.append(image.image_url)
+            image_value = self._get_export_image_value(image.image_url, getattr(image, "image", None))
+            if image_value and image_value not in image_urls:
+                image_urls.append(image_value)
         row["URL IMAGENES"] = " | ".join(image_urls)
 
         attrs = product.atributos if isinstance(product.atributos, dict) else {}
@@ -704,6 +882,16 @@ class ProductXlsxImporter:
                 row[f"Valor atributo {index}"] = str(values)
 
         return row
+
+    def _get_export_image_value(self, url_value, file_field):
+        if url_value:
+            return str(url_value).strip()
+        if file_field:
+            try:
+                return file_field.url
+            except Exception:
+                return str(file_field)
+        return ""
 
     def _build_export_category_path(self, category):
         if not category:
