@@ -609,11 +609,15 @@ class ProductXlsxImporter:
 
     def _find_existing_product_by_name(self, *, nombre, categoria_obj):
         target = self._norm_compare_text(nombre)
+        raw_name = str(nombre or "").strip()
+        if not raw_name:
+            return None
         queryset = Product.objects.all()
         if categoria_obj is None:
             queryset = queryset.filter(categoria__isnull=True)
         else:
             queryset = queryset.filter(categoria=categoria_obj)
+        queryset = queryset.filter(nombre__iexact=raw_name)
         for product in queryset.order_by("id"):
             if self._norm_compare_text(product.nombre) == target:
                 return product
@@ -623,8 +627,11 @@ class ProductXlsxImporter:
         target = self._norm_compare_text(nombre)
         if not target:
             return []
+        raw_name = str(nombre or "").strip()
+        if not raw_name:
+            return []
         matches = []
-        for product in Product.objects.all().order_by("id"):
+        for product in Product.objects.filter(nombre__iexact=raw_name).order_by("id"):
             if self._norm_compare_text(product.nombre) == target:
                 matches.append(product)
         return matches
@@ -700,17 +707,17 @@ class ProductXlsxImporter:
         target = self._norm_compare_text(product.nombre)
         if not target:
             return product
+        raw_name = str(product.nombre or "").strip()
+        if not raw_name:
+            return product
 
-        queryset = (
-            Product.objects.exclude(pk=product.pk)
-            .select_related("categoria")
-            .prefetch_related("extra_images", "order_items", "ofertas")
-        )
+        queryset = Product.objects.exclude(pk=product.pk).select_related("categoria")
         if category_scoped:
             if product.categoria_id:
                 queryset = queryset.filter(categoria_id=product.categoria_id)
             else:
                 queryset = queryset.filter(categoria__isnull=True)
+        queryset = queryset.filter(nombre__iexact=raw_name)
 
         duplicates = [
             candidate
