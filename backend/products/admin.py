@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 from django.contrib import admin, messages
 from django.shortcuts import redirect
@@ -12,6 +13,47 @@ from .product_importer import EXPORT_HEADERS, PRODUCT_HEADERS, SAMPLE_ROWS, Prod
 admin.site.site_header = "Admin Coti"
 admin.site.site_title = "Admin Coti"
 admin.site.index_title = "Panel de administracion"
+
+
+MISSING_IDPRODUCT_RE = re.compile(r"^Fila (?P<row>\d+): IDProduct (?P<id>\d+) no existe\.")
+
+
+def summarize_import_errors(errors):
+    missing_id_rows = []
+    other_errors = []
+
+    for error in errors:
+        match = MISSING_IDPRODUCT_RE.match(str(error))
+        if match:
+            missing_id_rows.append((match.group("row"), match.group("id")))
+        else:
+            other_errors.append(str(error))
+
+    summary = []
+    if missing_id_rows:
+        preview = ", ".join(f"fila {row} (ID {pk})" for row, pk in missing_id_rows[:12])
+        extra = len(missing_id_rows) - 12
+        if extra > 0:
+            preview = f"{preview} y {extra} mas"
+        summary.append({
+            "kind": "missing_idproduct",
+            "count": len(missing_id_rows),
+            "message": (
+                f"{len(missing_id_rows)} filas traian IDProduct que no existe en esta base. "
+                "No se importaron para evitar duplicados."
+            ),
+            "preview": preview,
+        })
+
+    if other_errors:
+        summary.append({
+            "kind": "other",
+            "count": len(other_errors),
+            "message": f"{len(other_errors)} errores adicionales durante la importacion.",
+            "preview": " | ".join(other_errors[:8]),
+        })
+
+    return summary
 
 
 @admin.register(Category)
@@ -80,6 +122,7 @@ class ProductAdmin(admin.ModelAdmin):
         created = 0
         updated = 0
         errors = []
+        error_summary = []
 
         if request.method == "POST":
             upload = request.FILES.get("file")
@@ -91,10 +134,19 @@ class ProductAdmin(admin.ModelAdmin):
                 if created or updated:
                     messages.success(
                         request,
-                        f"Importaci?n completada. Nuevos: {created} | Actualizados: {updated}",
+                        f"Importacion completada. Nuevos: {created} | Actualizados: {updated}",
                     )
-                for err in errors:
+                error_summary = summarize_import_errors(errors)
+                for item in error_summary:
+                    messages.warning(request, item["message"])
+                for err in errors[:8]:
                     messages.error(request, err)
+                if len(errors) > 8:
+                    messages.info(
+                        request,
+                        f"Se omitieron {len(errors) - 8} errores repetidos en las alertas. "
+                        "Podes ver el detalle completo en el resumen de esta pantalla.",
+                    )
             except Exception as exc:  # pragma: no cover
                 messages.error(request, f"No se pudo procesar el XLSX: {exc}")
                 return redirect(reverse("admin:products_product_import_xlsx"))
@@ -109,6 +161,9 @@ class ProductAdmin(admin.ModelAdmin):
             "created": created,
             "updated": updated,
             "errors": errors,
+            "error_summary": error_summary,
+            "visible_errors": errors[:20],
+            "hidden_error_count": max(len(errors) - 20, 0),
         }
         return TemplateResponse(request, "admin/products/product/import_xlsx.html", context)
 
