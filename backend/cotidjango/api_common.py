@@ -159,12 +159,13 @@ def serialize_user(user, request=None):
 def serialize_category(cat):
     if not cat:
         return None
+    path = build_category_path(cat)
     return {
         "_id": cat.id,
         "id": cat.id,
         "name": cat.nombre,
         "slug": cat.slug,
-        "path": build_category_path(cat),
+        "path": [node.nombre for node in path],
         "pathName": build_category_path_name(cat),
         "pathSlug": build_category_path_slug(cat),
     }
