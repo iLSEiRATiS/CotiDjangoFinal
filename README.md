@@ -1,54 +1,58 @@
-﻿# Coti_NodeDjango
+# Coti_NodeDjango
 
 Arquitectura: backend Django/DRF (API), frontend React + Vite, microservicio Node opcional (Express + WebSocket), DB PostgreSQL/SQLite.
 
+## Estado actual
+- Frontend oficial en uso: `..\DjangoFrontCoti`
+- Backend oficial en uso: `backend/`
+- `frontend/` dentro de este repo se conserva como copia legacy/alternativa. No se usa como fuente principal para cambios ni deploy por ahora.
+
 ## Estructura
-- `backend/`: copia del backend Django (api_bridge incluido) listo para API REST.
-- `frontend/`: React + Vite con el mismo look & feel del Frontend original (categorías, cards, textos, colores).
-- `microservice/`: stub Express + WebSocket para tareas rápidas/notificaciones.
+- `backend/`: backend Django listo para API REST y admin.
+- `frontend/`: SPA React + Vite legacy/alternativa conservada para referencia.
+- `microservice/`: stub Express + WebSocket para tareas rapidas/notificaciones.
 
 ## Backend (Django)
 ```bash
 cd backend
 python -m venv .venv
-.venv\\Scripts\\activate
+.venv\Scripts\activate
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
 ```
+
 - Salud: `http://localhost:8000/api/health/`
 - Admin: `http://localhost:8000/admin/`
 
-## Frontend (React + Vite)
+## Frontend oficial actual (`..\DjangoFrontCoti`)
 ```bash
-cd frontend
+cd ..\DjangoFrontCoti
 npm install
-npm run dev   # http://localhost:5173 (apunta al API en http://localhost:8000)
+npm run dev -- --host 127.0.0.1 --port 4173
 ```
-Variables en `.env.local` (ya creado): `VITE_API_URL`, `VITE_GOOGLE_CLIENT_ID`, `PLACEHOLDER_HOST`, `PRODUCTS_PER_LEAF`.
+
+Variables clave:
+- `VITE_API_URL`
+- `VITE_GOOGLE_CLIENT_ID`
+- `PLACEHOLDER_HOST`
+- `PRODUCTS_PER_LEAF`
+
+## Frontend legacy (`frontend/`)
+Se conserva por compatibilidad y referencia historica. No se recomienda usarlo como base principal de trabajo mientras `DjangoFrontCoti` siga siendo la SPA oficial.
 
 ## Microservicio Node (Express + WebSocket)
 ```bash
 cd microservice
 npm install
-npm run dev   # puerto 4001 por defecto, /health y WS de broadcast
+npm run dev
 ```
 
-## Comunicación
-- API REST: Django (`/api/...`).
-- WebSockets: microservice (`ws://localhost:4001`).
-- DB: SQLite por defecto; ajustar `backend/cotidjango/settings.py` para PostgreSQL.
+## Comunicacion
+- API REST: Django (`/api/...`)
+- WebSockets: microservice (`ws://localhost:4001`)
+- DB: SQLite por defecto o PostgreSQL via `DATABASE_URL`
 
 ## Notas
-- El frontend conserva categorías, cards, textos y estilos del proyecto original (se copió `src/` y `public/`).
 - El backend sigue incluyendo el `api_bridge` que mapea las rutas que consume la SPA.
-- Puedes borrar la carpeta `C:\Users\facun\OneDrive\Escritorio\Coti_NodeDjango` (fuera de CotiDJRC) si no la usas; la activa está en `CotiDJRC/Coti_NodeDjango`.
-
-
-
-.ENV local de Frontend
-
-VITE_API_URL=http://localhost:8000
-PLACEHOLDER_HOST=https://placehold.co
-PRODUCTS_PER_LEAF=6
-
+- La carpeta `frontend/` no se borra por ahora para evitar romper referencias historicas o futuras comparaciones.
