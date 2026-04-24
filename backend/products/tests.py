@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 
-from products.models import Category, Product, ProductImage
+from products.models import Category, Offer, Product, ProductImage
 from products.product_importer import ProductXlsxImporter
 from users.models import CustomUser
 
@@ -408,4 +408,56 @@ class SanitizeCategoryMovesCommandTests(TestCase):
         self.assertEqual(Product.objects.filter(categoria=self.manualidades_source).count(), 0)
         self.assertEqual(Product.objects.filter(categoria=self.manualidades_target).count(), 1)
         self.assertFalse(Category.objects.filter(pk=self.manualidades_source.pk).exists())
+        self.assertIn("estado=applied", out.getvalue())
+
+
+class DedupeCategoriesCommandTests(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="dedupetester",
+            password="secret123",
+            email="dedupetester@example.com",
+            approval_status="approved",
+        )
+        self.velas = Category.objects.create(nombre="Velas")
+        self.canonical = Category.objects.create(nombre="Velas con Luz", parent=self.velas)
+        self.duplicate = Category.objects.create(nombre="Velas con Luz", parent=self.velas)
+        self.child = Category.objects.create(nombre="Subcategoria", parent=self.duplicate)
+        Product.objects.create(
+            user=self.user,
+            categoria=self.duplicate,
+            nombre="Producto Duplicado",
+            slug="producto-duplicado-velas",
+            precio="100.00",
+            stock=1,
+            activo=True,
+        )
+        self.offer = Offer.objects.create(
+            nombre="Oferta Duplicada",
+            porcentaje="10.00",
+            categoria=self.duplicate,
+            activo=True,
+        )
+
+    def test_dedupe_categories_simulation_does_not_persist_changes(self):
+        out = StringIO()
+
+        call_command("dedupe_categories", stdout=out)
+
+        self.assertTrue(Category.objects.filter(pk=self.duplicate.pk).exists())
+        self.assertEqual(Product.objects.filter(categoria=self.duplicate).count(), 1)
+        self.assertEqual(Offer.objects.filter(categoria=self.duplicate).count(), 1)
+        self.assertEqual(Category.objects.filter(parent=self.duplicate).count(), 1)
+        self.assertIn("MODO SIMULACION", out.getvalue())
+
+    def test_dedupe_categories_apply_merges_duplicates(self):
+        out = StringIO()
+
+        call_command("dedupe_categories", "--apply", stdout=out)
+
+        self.assertFalse(Category.objects.filter(pk=self.duplicate.pk).exists())
+        self.assertEqual(Product.objects.filter(categoria=self.canonical).count(), 1)
+        self.assertEqual(Offer.objects.filter(categoria=self.canonical).count(), 1)
+        self.child.refresh_from_db()
+        self.assertEqual(self.child.parent_id, self.canonical.pk)
         self.assertIn("estado=applied", out.getvalue())
