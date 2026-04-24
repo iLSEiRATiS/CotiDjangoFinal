@@ -418,8 +418,6 @@ class ProductXlsxImporter:
                             activo=True,
                         )
                 existing_qs.exclude(image_url__in=keep).delete()
-            else:
-                ProductImage.objects.filter(product=product).delete()
 
             if is_new:
                 created += 1
@@ -510,12 +508,17 @@ class ProductXlsxImporter:
                     parts = [part.strip() for part in text.split(sep)]
                     break
             for part in parts:
-                if not part or not part.startswith(("http://", "https://")):
+                if not part:
                     continue
-                if part in seen:
+                normalized_part = str(part).strip()
+                if normalized_part.startswith("media/"):
+                    normalized_part = f"/{normalized_part}"
+                if not normalized_part.startswith(("http://", "https://", "/media/")):
                     continue
-                seen.add(part)
-                output.append(part)
+                if normalized_part in seen:
+                    continue
+                seen.add(normalized_part)
+                output.append(normalized_part)
         return output
 
     def _build_slug(self, base):

@@ -143,6 +143,49 @@ class ProductXlsxImporterTests(TestCase):
         self.assertEqual(product.stock, 9)
         self.assertEqual(product.nombre, "Vela Ondulada Metalizada Blister x6 Unidades")
 
+    def test_import_upload_accepts_relative_media_urls_without_dropping_gallery(self):
+        category = Category.objects.create(nombre="Imagenes")
+        product = Product.objects.create(
+            user=self.user,
+            categoria=category,
+            nombre="Producto Con Media",
+            slug="producto-con-media",
+            precio="100.00",
+            stock=5,
+            activo=True,
+            image_url="/media/products/principal.jpg",
+        )
+        ProductImage.objects.create(
+            product=product,
+            image_url="/media/products/gallery/galeria.jpg",
+            order=1,
+            activo=True,
+        )
+
+        upload = self._build_upload(
+            ["Nombre", "Stock", "SKU", "Precio", "Categorias", "Mostrar en tienda", "IDProduct", "URL IMAGENES"],
+            [[
+                "Producto Con Media",
+                8,
+                "",
+                130,
+                "Imagenes",
+                "Si",
+                product.id,
+                "/media/products/principal.jpg | /media/products/gallery/galeria.jpg",
+            ]],
+        )
+
+        created, updated, errors = self.importer.import_upload(upload)
+        product.refresh_from_db()
+
+        self.assertEqual(created, 0)
+        self.assertEqual(updated, 1)
+        self.assertEqual(errors, [])
+        self.assertEqual(product.image_url, "/media/products/principal.jpg")
+        self.assertEqual(product.extra_images.count(), 1)
+        self.assertEqual(product.extra_images.first().image_url, "/media/products/gallery/galeria.jpg")
+
     def test_import_upload_merges_ambiguous_rows_instead_of_creating_duplicates(self):
         cat_a = Category.objects.create(nombre="Categoria A")
         cat_b = Category.objects.create(nombre="Categoria B")
