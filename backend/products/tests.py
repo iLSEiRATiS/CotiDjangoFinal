@@ -461,3 +461,70 @@ class DedupeCategoriesCommandTests(TestCase):
         self.child.refresh_from_db()
         self.assertEqual(self.child.parent_id, self.canonical.pk)
         self.assertIn("estado=applied", out.getvalue())
+
+
+class AuditCatalogXlsxCommandTests(TestCase):
+    def _build_catalog_workbook(self, rows):
+        workbook = openpyxl.Workbook()
+        sheet = workbook.active
+        sheet.append([
+            "Nombre", "Stock", "SKU", "Precio", "Precio oferta",
+            "Nombre atributo 1", "Valor atributo 1", "Nombre atributo 2", "Valor atributo 2",
+            "Nombre atributo 3", "Valor atributo 3", "Categorías", "Peso", "Alto",
+            "Ancho", "Profundidad", "Mostrar en tienda", "IDProduct", "IDStock", "URL IMAGENES",
+        ])
+        for row in rows:
+            sheet.append(row)
+        return workbook
+
+    def test_audit_catalog_xlsx_reports_clean_workbook(self):
+        user = CustomUser.objects.create_user(
+            username="auditclean",
+            password="secret123",
+            email="auditclean@example.com",
+            approval_status="approved",
+        )
+        category = Category.objects.create(nombre="Cotillon")
+        product = Product.objects.create(
+            user=user,
+            categoria=category,
+            nombre="Producto Uno",
+            slug="producto-uno-audit",
+            precio="100.00",
+            stock=2,
+            activo=True,
+        )
+        workbook = self._build_catalog_workbook([
+            ["Producto Uno", 2, "", 100, "", "", "", "", "", "", "", "Cotillon", "", "", "", "", "Si", product.id, "", ""],
+            ["Producto Dos", 0, "", 200, "", "", "", "", "", "", "", "Velas > Velas con Luz", "", "", "", "", "Si", 99999, "", ""],
+        ])
+
+        with TemporaryDirectory() as tmpdir:
+            path = f"{tmpdir}/catalogo.xlsx"
+            workbook.save(path)
+            out = StringIO()
+
+            call_command("audit_catalog_xlsx", path, stdout=out)
+
+        output = out.getvalue()
+        self.assertIn("filas utiles: 2", output)
+        self.assertIn("grupos duplicados en XLSX por Nombre + Categorias: 0", output)
+        self.assertIn("IDs duplicados en XLSX: 0", output)
+        self.assertIn("IDs presentes en el XLSX pero ausentes en DB: 1", output)
+
+    def test_audit_catalog_xlsx_reports_duplicate_workbook_rows(self):
+        workbook = self._build_catalog_workbook([
+            ["Producto Uno", 2, "", 100, "", "", "", "", "", "", "", "Cotillon", "", "", "", "", "Si", 10, "", ""],
+            ["Producto Uno", 2, "", 100, "", "", "", "", "", "", "", "Cotillon", "", "", "", "", "Si", 10, "", ""],
+        ])
+
+        with TemporaryDirectory() as tmpdir:
+            path = f"{tmpdir}/catalogo_duplicado.xlsx"
+            workbook.save(path)
+            out = StringIO()
+
+            call_command("audit_catalog_xlsx", path, stdout=out)
+
+        output = out.getvalue()
+        self.assertIn("grupos duplicados en XLSX por Nombre + Categorias: 1", output)
+        self.assertIn("IDs duplicados en XLSX: 1", output)
