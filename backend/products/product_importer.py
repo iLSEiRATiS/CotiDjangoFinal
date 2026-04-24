@@ -209,6 +209,7 @@ class ProductXlsxImporter:
         created = 0
         updated = 0
         errors = []
+        seen_idproducts = {}
 
         def open_sheet():
             upload.seek(0)
@@ -229,8 +230,8 @@ class ProductXlsxImporter:
         wb.close()
 
         if header_row is None:
-            header_row = PRODUCT_HEADERS
-            header_idx = -1
+            errors.append("Faltan columnas obligatorias: precio, sku")
+            return created, updated, errors
 
         headers = [self._norm_header(cell) for cell in header_row]
         header_map = {}
@@ -242,6 +243,7 @@ class ProductXlsxImporter:
         missing = {"sku", "nombre", "precio"} - set(header_map.keys())
         if missing:
             errors.append(f"Faltan columnas obligatorias: {', '.join(sorted(missing))}")
+            return created, updated, errors
 
         sku_name_sets = {}
         wb, sheet = open_sheet()
@@ -289,6 +291,17 @@ class ProductXlsxImporter:
             idproduct_raw = row_data.get("idproduct") or ""
             categoria_raw = row_data.get("categoria") or ""
             subcategoria_raw = row_data.get("subcategoria") or ""
+
+            parsed_idproduct = self._parse_int(idproduct_raw)
+            if parsed_idproduct:
+                previous_row = seen_idproducts.get(parsed_idproduct)
+                if previous_row is not None:
+                    errors.append(
+                        f"Fila {idx}: IDProduct {parsed_idproduct} repetido en el archivo "
+                        f"(ya apareció en la fila {previous_row})."
+                    )
+                    continue
+                seen_idproducts[parsed_idproduct] = idx
 
             categoria_obj = None
             path_parts = self._compose_category_path(categoria_raw, subcategoria_raw)

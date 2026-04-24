@@ -56,3 +56,4 @@ npm run dev
 ## Notas
 - El backend sigue incluyendo el `api_bridge` que mapea las rutas que consume la SPA.
 - La carpeta `frontend/` no se borra por ahora para evitar romper referencias historicas o futuras comparaciones.
+- El runbook operativo para VPS y saneo controlado de categorias vive en `backend/docs/vps-deploy-runbook.md`.

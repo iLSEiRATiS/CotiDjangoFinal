@@ -44,7 +44,40 @@ npm run dev -- --host 127.0.0.1 --port 4173
 - `GET /api/offers`
 - Admin: `/api/admin/overview|users|orders|products|offers|upload-image`
 
+## Runbook VPS
+Para pasar cambios a produccion sin mezclar codigo y datos:
+
+1. Hacer backup de la base de datos antes de tocar nada.
+2. Actualizar el backend a `main`.
+3. Activar el entorno virtual del servidor.
+4. Correr chequeos basicos de Django.
+5. Ejecutar `sanitize_category_moves` primero en simulacion.
+6. Si el resultado coincide con lo esperado, ejecutar `sanitize_category_moves --apply`.
+7. Recolectar estaticos y reiniciar los servicios necesarios.
+8. Validar admin, login, catalogo y flujo XLSX.
+
+Comandos orientativos:
+
+```bash
+git checkout main
+git pull origin main
+source .venv/bin/activate
+python manage.py check
+python manage.py showmigrations
+python manage.py sanitize_category_moves
+python manage.py sanitize_category_moves --apply
+python manage.py collectstatic --noinput
+```
+
+Chequeos recomendados despues del deploy:
+- `/admin/`
+- `/admin/products/product/importar-xlsx/`
+- `/api/categories-list`
+- login desde el frontend oficial
+- catalogo `/productos`
+
 ## Notas
 - Se anadio un importador `import_frontend_products` para cargar productos demo desde JSON.
 - El campo `avatar` en usuarios permite subir imagenes desde la SPA.
 - Para migrar de SQLite a PostgreSQL sin romper datos, ver `docs/postgresql-migration.md`.
+- Para deploys en VPS con cambios de codigo + saneo de categorias, ver `docs/vps-deploy-runbook.md`.

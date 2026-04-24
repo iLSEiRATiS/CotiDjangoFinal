@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
@@ -21,9 +22,24 @@ class Category(models.Model):
         verbose_name = "Categoria"
         verbose_name_plural = "Categorias"
 
+    def clean(self):
+        parent = self.parent
+        if not parent:
+            return
+
+        if self.pk and parent.pk == self.pk:
+            raise ValidationError({"parent": "Una categoria no puede ser hija de si misma."})
+
+        ancestor = parent
+        while ancestor is not None:
+            if self.pk and ancestor.pk == self.pk:
+                raise ValidationError({"parent": "Una categoria no puede ser hija de una descendiente propia."})
+            ancestor = ancestor.parent
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.nombre)
+        self.full_clean()
         super().save(*args, **kwargs)
 
     def __str__(self):
