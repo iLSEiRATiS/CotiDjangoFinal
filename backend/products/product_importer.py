@@ -357,6 +357,7 @@ class ProductXlsxImporter:
             existing = existing or Product.objects.filter(slug=slug).first()
             is_new = existing is None
             product = existing or Product(slug=slug, user=self.request_user)
+            product.sku = sku_raw
             product.nombre = nombre
             product.descripcion = row_data.get("descripcion") or ""
             product.precio = precio
@@ -788,6 +789,8 @@ class ProductXlsxImporter:
 
             if current.nombre and (is_newer or not survivor.nombre):
                 survivor.nombre = current.nombre
+            if current.sku and (is_newer or not survivor.sku):
+                survivor.sku = current.sku
             if current.descripcion and (is_newer or not survivor.descripcion):
                 survivor.descripcion = current.descripcion
             if current.categoria_id and (is_newer or not survivor.categoria_id):
@@ -904,7 +907,7 @@ class ProductXlsxImporter:
         row = {header: "" for header in EXPORT_HEADERS}
         row["Nombre"] = product.nombre or ""
         row["Stock"] = product.stock if product.stock is not None else ""
-        row["SKU"] = ""
+        row["SKU"] = product.sku or ""
         row["Precio"] = self._format_export_number(product.precio)
         export_offer = self._get_export_offer(product)
         if export_offer and export_offer.activo and product.precio not in (None, "", Decimal("0")):

@@ -49,6 +49,7 @@ class Category(models.Model):
 class Product(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="products")
     categoria = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="products")
+    sku = models.CharField(max_length=100, blank=True, default="")
     nombre = models.CharField(max_length=255)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
     precio = models.DecimalField(max_digits=10, decimal_places=2)

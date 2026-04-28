@@ -73,11 +73,11 @@ class ProductImageInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
-    list_display = ("nombre", "slug", "precio", "user", "categoria", "has_video", "stock", "activo", "creado_en")
-    search_fields = ("nombre", "descripcion", "slug", "categoria__nombre")
+    list_display = ("sku", "nombre", "precio", "stock", "activo", "categoria", "creado_en")
+    search_fields = ("sku", "nombre", "descripcion", "slug", "categoria__nombre")
     list_filter = ("creado_en", "activo", "categoria")
     list_editable = ("precio", "stock", "activo")
-    search_help_text = "Buscar producto por nombre, slug o descripcion"
+    search_help_text = "Buscar producto por SKU, nombre, slug o descripcion"
     change_list_template = "admin/products/product/change_list.html"
     inlines = [ProductImageInline]
 
