@@ -110,6 +110,7 @@ class Offer(models.Model):
     slug = models.SlugField(max_length=140, unique=True, blank=True)
     descripcion = models.TextField(blank=True)
     porcentaje = models.DecimalField(max_digits=5, decimal_places=2, help_text="Ej: 10.00 para 10%")
+    precio_oferta = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     producto = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True, related_name="ofertas")
     categoria = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name="ofertas")
     activo = models.BooleanField(default=True)

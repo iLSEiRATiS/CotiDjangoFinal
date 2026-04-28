@@ -20,6 +20,7 @@ class OfferSerializer(serializers.ModelSerializer):
             "slug",
             "descripcion",
             "porcentaje",
+            "precio_oferta",
             "producto",
             "categoria",
             "activo",

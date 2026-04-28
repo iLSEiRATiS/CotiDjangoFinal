@@ -14,11 +14,20 @@ from .api_common import (
     build_category_path_slug,
     _norm_text,
     get_descendant_ids,
+    resolve_discount_for_product,
     resolve_category_reference,
     resolve_product,
     serialize_category,
     serialize_product,
 )
+
+OFFERS_CATEGORY_SLUG = "ofertas"
+
+
+def _is_offers_root_category(category):
+    if not category:
+        return False
+    return not category.parent_id and (_norm_text(category.nombre) == OFFERS_CATEGORY_SLUG or (category.slug or "") == OFFERS_CATEGORY_SLUG)
 
 
 class CategoriesListView(APIView):
@@ -26,6 +35,18 @@ class CategoriesListView(APIView):
 
     def get(self, request):
         items = Category.objects.select_related("parent").all().order_by("nombre", "id")
+        if not any(_is_offers_root_category(cat) for cat in items):
+            virtual_offers = {
+                "id": None,
+                "nombre": "Ofertas",
+                "slug": OFFERS_CATEGORY_SLUG,
+                "path_name": "Ofertas",
+                "path_slug": OFFERS_CATEGORY_SLUG,
+                "descripcion": "",
+                "parent": None,
+            }
+        else:
+            virtual_offers = None
         data = [{
             "id": cat.id,
             "nombre": cat.nombre,
@@ -35,6 +56,8 @@ class CategoriesListView(APIView):
             "descripcion": cat.descripcion or "",
             "parent": cat.parent_id,
         } for cat in items]
+        if virtual_offers:
+            data.append(virtual_offers)
         return Response({"items": data})
 
 
@@ -49,6 +72,7 @@ class ProductListView(APIView):
         sort = (request.query_params.get("sort") or "").strip().lower()
         page = max(1, int(request.query_params.get("page") or 1))
         limit = max(1, min(100, int(request.query_params.get("limit") or 20)))
+        offers_filter = False
 
         qs = Product.objects.select_related("categoria").prefetch_related("extra_images")
         if not include_inactive:
@@ -79,11 +103,20 @@ class ProductListView(APIView):
             except Exception:
                 root_id = None
             if root_id:
-                qs = qs.filter(categoria_id__in=get_descendant_ids(root_id))
+                root = Category.objects.filter(pk=root_id).first()
+                if _is_offers_root_category(root):
+                    offers_filter = True
+                else:
+                    qs = qs.filter(categoria_id__in=get_descendant_ids(root_id))
         elif category:
             root = resolve_category_reference(category)
             if root:
-                qs = qs.filter(categoria_id__in=get_descendant_ids(root.id))
+                if _is_offers_root_category(root):
+                    offers_filter = True
+                else:
+                    qs = qs.filter(categoria_id__in=get_descendant_ids(root.id))
+            elif _norm_text(category) == OFFERS_CATEGORY_SLUG:
+                offers_filter = True
 
         if sort in {"mas_vendidos", "relevancia"}:
             qs = qs.annotate(sold=Coalesce(Sum("order_items__cantidad"), 0)).order_by("-sold", "-creado_en")
@@ -98,8 +131,13 @@ class ProductListView(APIView):
         else:
             qs = qs.order_by("-creado_en")
 
-        total = qs.count()
-        items = qs[(page - 1) * limit:(page - 1) * limit + limit]
+        if offers_filter:
+            discounted_items = [product for product in qs if resolve_discount_for_product(product)]
+            total = len(discounted_items)
+            items = discounted_items[(page - 1) * limit:(page - 1) * limit + limit]
+        else:
+            total = qs.count()
+            items = qs[(page - 1) * limit:(page - 1) * limit + limit]
         return Response({"items": [serialize_product(p, request) for p in items], "total": total, "page": page, "pages": ceil(total / limit) if total else 1})
 
 

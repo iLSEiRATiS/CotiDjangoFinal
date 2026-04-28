@@ -29,8 +29,9 @@
       <code style="white-space:pre-wrap; line-height:1.7; color:#111827; background:#f3f4f6;">{{ export_headers|join:", " }}</code>
     </div>
     <p class="help" style="margin-top:0; color:#374151;">
-      El archivo esperado tiene <strong>20 columnas</strong>, con categor&iacute;as en una sola columna como
-      <strong>Categoria &gt; Subcategoria &gt; Seccion</strong> y las im&aacute;genes en <strong>URL IMAGENES</strong>.
+      El archivo esperado tiene <strong>21 columnas</strong>, con categor&iacute;as en una sola columna como
+      <strong>Categoria &gt; Subcategoria &gt; Seccion</strong>, las im&aacute;genes en <strong>URL IMAGENES</strong>
+      y el bloque de oferta compuesto por <strong>Precio oferta</strong> + <strong>Oferta (Si/No)</strong>.
     </p>
 
     <h2 style="margin:16px 0 8px; font-size:16px;">Descarga recomendada</h2>
@@ -43,9 +44,10 @@
 
     <h2 style="margin:16px 0 8px; font-size:16px;">C&oacute;mo procesa la importaci&oacute;n</h2>
     <ul class="help" style="margin-top:0; color:#374151;">
-      <li>Se toman como referencia principal campos como <strong>Nombre, Precio, Categor&iacute;as, Stock, Mostrar en tienda y URL IMAGENES</strong>.</li>
+      <li>Se toman como referencia principal campos como <strong>Nombre, Precio, Precio oferta, Oferta, Categor&iacute;as, Stock, Mostrar en tienda y URL IMAGENES</strong>.</li>
       <li>Los atributos se leen desde <strong>Nombre atributo 1/2/3</strong> y <strong>Valor atributo 1/2/3</strong> cuando existan.</li>
       <li>Si una categor&iacute;a no existe, se crea autom&aacute;ticamente siguiendo la ruta indicada en la columna <strong>Categor&iacute;as</strong>.</li>
+      <li>Si <strong>Oferta = Si</strong>, la columna <strong>Precio oferta</strong> debe traer el precio final con descuento para calcular la oferta del producto.</li>
       <li><strong>Nuevos</strong>: productos creados. <strong>Actualizados</strong>: productos existentes modificados.</li>
       <li>Para evitar errores de formato, no conviene subir planillas vac&iacute;as ni archivos armados desde cero.</li>
     </ul>

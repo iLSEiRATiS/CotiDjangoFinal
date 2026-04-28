@@ -436,20 +436,45 @@ def sync_product_images(product: Product, image_urls):
 
 def resolve_discount_for_product(product: Product):
     now = timezone.now()
+    xlsx_slug = f"xlsx-offer-product-{product.pk}"
     category_ids = get_ancestor_ids(getattr(product, "categoria", None))
-    offer_filter = models.Q(producto=product)
-    if category_ids:
-        offer_filter |= models.Q(categoria_id__in=category_ids)
-    offers = Offer.objects.filter(activo=True).filter(offer_filter)
-    offers = offers.filter(
+
+    active_window = (
         models.Q(empieza__isnull=True) | models.Q(empieza__lte=now),
         models.Q(termina__isnull=True) | models.Q(termina__gte=now),
-    ).order_by("-producto_id", "-porcentaje")
-    offer = offers.first()
+    )
+
+    xlsx_offer = Offer.objects.filter(
+        activo=True,
+        producto=product,
+        slug=xlsx_slug,
+    ).filter(*active_window).first()
+
+    if xlsx_offer:
+        offer = xlsx_offer
+    else:
+        category_offer = None
+        if category_ids:
+            category_offer = Offer.objects.filter(
+                activo=True,
+                categoria_id__in=category_ids,
+            ).filter(*active_window).order_by("-porcentaje").first()
+        offer = category_offer
+
     if not offer:
         return None
-    pct = offer.porcentaje or Decimal("0")
-    final_price = product.precio * (Decimal("1.00") - (pct / Decimal("100")))
+    base_price = product.precio if isinstance(product.precio, Decimal) else Decimal(str(product.precio or "0"))
+    pct = offer.porcentaje if isinstance(offer.porcentaje, Decimal) else Decimal(str(offer.porcentaje or "0"))
+    exact_offer_price = getattr(offer, "precio_oferta", None)
+    if exact_offer_price is not None:
+        exact_offer_price = exact_offer_price if isinstance(exact_offer_price, Decimal) else Decimal(str(exact_offer_price))
+    if exact_offer_price is not None and exact_offer_price > 0:
+        final_price = exact_offer_price
+        if base_price > 0:
+            pct = ((base_price - final_price) / base_price) * Decimal("100")
+            pct = pct.quantize(Decimal("0.01"))
+    else:
+        final_price = base_price * (Decimal("1.00") - (pct / Decimal("100")))
     if final_price < 0:
         final_price = Decimal("0.00")
     return {

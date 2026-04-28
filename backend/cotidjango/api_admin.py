@@ -381,6 +381,7 @@ class AdminOffersView(APIView):
             "slug": o.slug,
             "name": o.nombre,
             "percent": float(o.porcentaje),
+            "offerPrice": float(o.precio_oferta) if o.precio_oferta is not None else None,
             "active": o.activo,
             "product": serialize_product(o.producto, request) if o.producto else None,
             "category": serialize_category(o.categoria),
@@ -400,6 +401,7 @@ class AdminOffersView(APIView):
             nombre=name,
             descripcion=request.data.get("description") or "",
             porcentaje=Decimal(str(pct)),
+            precio_oferta=Decimal(str(request.data.get("offerPrice"))) if request.data.get("offerPrice") not in (None, "") else None,
             producto=product,
             categoria=category,
             activo=str(request.data.get("active") or "true").lower() in {"1", "true", "yes"},
@@ -422,6 +424,8 @@ class AdminOfferDetailView(APIView):
             offer.descripcion = request.data.get("description") or ""
         if "percent" in request.data and request.data.get("percent") is not None:
             offer.porcentaje = Decimal(str(request.data.get("percent")))
+        if "offerPrice" in request.data:
+            offer.precio_oferta = Decimal(str(request.data.get("offerPrice"))) if request.data.get("offerPrice") not in (None, "") else None
         if "active" in request.data:
             offer.activo = str(request.data.get("active")).lower() in {"1", "true", "yes"}
         if "product" in request.data:

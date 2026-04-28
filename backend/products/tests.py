@@ -1,3 +1,4 @@
+from decimal import Decimal
 from io import BytesIO
 from io import StringIO
 from tempfile import TemporaryDirectory
@@ -7,9 +8,11 @@ from django.core.management import call_command
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
+from rest_framework.test import APIRequestFactory
 
 from products.models import Category, Offer, Product, ProductImage
 from products.product_importer import ProductXlsxImporter
+from cotidjango.api_products import CategoriesListView, ProductListView
 from users.models import CustomUser
 
 
@@ -68,10 +71,12 @@ class ProductXlsxImporterTests(TestCase):
         self.assertEqual(len(rows) - 1, Product.objects.count())
         self.assertEqual(rows[1][0], "Producto Uno")
         self.assertEqual(rows[1][1], 0)
-        self.assertEqual(rows[1][16], "Si")
+        self.assertEqual(rows[1][17], "Si")
+        self.assertIsNone(rows[1][4])
         self.assertEqual(rows[2][0], "Producto Dos")
         self.assertEqual(rows[2][1], 3)
-        self.assertEqual(rows[2][16], "No")
+        self.assertEqual(rows[2][17], "No")
+        self.assertIsNone(rows[2][4])
 
     def test_export_products_response_uses_uploaded_files_when_image_urls_are_missing(self):
         with TemporaryDirectory() as tmpdir:
@@ -100,7 +105,7 @@ class ProductXlsxImporterTests(TestCase):
         sheet = workbook.active
         data_rows = list(sheet.iter_rows(min_row=2, values_only=True))
         exported = next(row for row in data_rows if row[0] == "Producto Con Archivo")
-        image_cell = exported[19]
+        image_cell = exported[20]
 
         self.assertIn("/media/products/principal.jpg", image_cell)
         self.assertIn("/media/products/gallery/galeria.jpg", image_cell)
@@ -234,6 +239,215 @@ class ProductXlsxImporterTests(TestCase):
         self.assertEqual(product.image_url, "/media/products/principal.jpg")
         self.assertEqual(product.extra_images.count(), 1)
         self.assertEqual(product.extra_images.first().image_url, "/media/products/gallery/galeria.jpg")
+
+    def test_import_upload_creates_product_offer_when_xlsx_marks_oferta_si(self):
+        category = Category.objects.create(nombre="Ofertas")
+        product = Product.objects.create(
+            user=self.user,
+            categoria=category,
+            nombre="Producto Oferta XLSX",
+            slug="producto-oferta-xlsx",
+            precio="100.00",
+            stock=5,
+            activo=True,
+        )
+
+        upload = self._build_upload(
+            ["Nombre", "Stock", "SKU", "Precio", "Precio oferta", "Oferta", "Categorias", "Mostrar en tienda", "IDProduct"],
+            [[
+                "Producto Oferta XLSX",
+                8,
+                "",
+                100,
+                80,
+                "Si",
+                "Ofertas",
+                "Si",
+                product.id,
+            ]],
+        )
+
+        created, updated, errors = self.importer.import_upload(upload)
+        product.refresh_from_db()
+        offer = Offer.objects.get(producto=product, slug=f"xlsx-offer-product-{product.id}")
+
+        self.assertEqual(created, 0)
+        self.assertEqual(updated, 1)
+        self.assertEqual(errors, [])
+        self.assertEqual(product.precio, 100)
+        self.assertTrue(offer.activo)
+        self.assertEqual(offer.porcentaje, 20)
+        self.assertEqual(offer.precio_oferta, Decimal("80.00"))
+
+    def test_import_upload_deactivates_xlsx_managed_offer_when_oferta_is_no(self):
+        category = Category.objects.create(nombre="Sin Oferta")
+        product = Product.objects.create(
+            user=self.user,
+            categoria=category,
+            nombre="Producto Sin Oferta",
+            slug="producto-sin-oferta",
+            precio="100.00",
+            stock=5,
+            activo=True,
+        )
+        Offer.objects.create(
+            nombre="Oferta XLSX - Producto Sin Oferta",
+            slug=f"xlsx-offer-product-{product.id}",
+            porcentaje="15.00",
+            producto=product,
+            activo=True,
+        )
+
+        upload = self._build_upload(
+            ["Nombre", "Stock", "SKU", "Precio", "Precio oferta", "Oferta", "Categorias", "Mostrar en tienda", "IDProduct"],
+            [[
+                "Producto Sin Oferta",
+                5,
+                "",
+                100,
+                "",
+                "No",
+                "Sin Oferta",
+                "Si",
+                product.id,
+            ]],
+        )
+
+        created, updated, errors = self.importer.import_upload(upload)
+        offer = Offer.objects.get(producto=product, slug=f"xlsx-offer-product-{product.id}")
+
+        self.assertEqual(created, 0)
+        self.assertEqual(updated, 1)
+        self.assertEqual(errors, [])
+        self.assertFalse(offer.activo)
+
+    def test_import_upload_oferta_no_disables_manual_product_offer_too(self):
+        category = Category.objects.create(nombre="Manual Offer")
+        product = Product.objects.create(
+            user=self.user,
+            categoria=category,
+            nombre="Producto Manual Offer",
+            slug="producto-manual-offer",
+            precio="100.00",
+            stock=2,
+            activo=True,
+        )
+        manual_offer = Offer.objects.create(
+            nombre="Oferta Manual",
+            slug="oferta-manual-producto",
+            porcentaje="10.00",
+            producto=product,
+            activo=True,
+        )
+
+        upload = self._build_upload(
+            ["Nombre", "Stock", "SKU", "Precio", "Precio oferta", "Oferta", "Categorias", "Mostrar en tienda", "IDProduct"],
+            [[
+                "Producto Manual Offer",
+                2,
+                "",
+                100,
+                "",
+                "No",
+                "Manual Offer",
+                "Si",
+                product.id,
+            ]],
+        )
+
+        created, updated, errors = self.importer.import_upload(upload)
+        manual_offer.refresh_from_db()
+
+        self.assertEqual(created, 0)
+        self.assertEqual(updated, 1)
+        self.assertEqual(errors, [])
+        self.assertFalse(manual_offer.activo)
+
+    def test_export_products_response_includes_precio_oferta_and_oferta_for_xlsx_offer(self):
+        category = Category.objects.create(nombre="Categoria Oferta")
+        product = Product.objects.create(
+            user=self.user,
+            categoria=category,
+            nombre="Producto Exportado Oferta",
+            slug="producto-exportado-oferta",
+            precio="100.00",
+            stock=7,
+            activo=True,
+        )
+        Offer.objects.create(
+            nombre="Oferta XLSX - Producto Exportado Oferta",
+            slug=f"xlsx-offer-product-{product.id}",
+            porcentaje="20.00",
+            producto=product,
+            activo=True,
+        )
+
+        response = self.importer.export_products_response()
+
+        workbook = openpyxl.load_workbook(BytesIO(response.content), read_only=True)
+        sheet = workbook.active
+        rows = list(sheet.iter_rows(values_only=True))
+        exported = rows[1]
+
+        self.assertEqual(exported[4], "Si")
+        self.assertEqual(exported[5], "80")
+
+    def test_export_products_response_ignores_manual_active_product_offer(self):
+        category = Category.objects.create(nombre="Categoria Oferta Manual")
+        product = Product.objects.create(
+            user=self.user,
+            categoria=category,
+            nombre="Producto Exportado Oferta Manual",
+            slug="producto-exportado-oferta-manual",
+            precio="100.00",
+            stock=7,
+            activo=True,
+        )
+        Offer.objects.create(
+            nombre="Oferta Manual Producto Exportado",
+            slug="oferta-manual-exportada",
+            porcentaje="15.00",
+            producto=product,
+            activo=True,
+        )
+
+        response = self.importer.export_products_response()
+
+        workbook = openpyxl.load_workbook(BytesIO(response.content), read_only=True)
+        sheet = workbook.active
+        rows = list(sheet.iter_rows(values_only=True))
+        exported = next(row for row in rows[1:] if row[0] == "Producto Exportado Oferta Manual")
+
+        self.assertIsNone(exported[4])
+        self.assertIsNone(exported[5])
+
+    def test_resolve_discount_for_product_uses_exact_offer_price_when_available(self):
+        from cotidjango.api_common import resolve_discount_for_product
+
+        category = Category.objects.create(nombre="Categoria Oferta Exacta")
+        product = Product.objects.create(
+            user=self.user,
+            categoria=category,
+            nombre="Producto Oferta Exacta",
+            slug="producto-oferta-exacta",
+            precio="881.82",
+            stock=1,
+            activo=True,
+        )
+        Offer.objects.create(
+            nombre="Oferta XLSX - Producto Oferta Exacta",
+            slug=f"xlsx-offer-product-{product.id}",
+            porcentaje="9.28",
+            precio_oferta="800.00",
+            producto=product,
+            activo=True,
+        )
+
+        discount = resolve_discount_for_product(product)
+
+        self.assertIsNotNone(discount)
+        self.assertEqual(discount["final_price"], Decimal("800.00"))
+        self.assertEqual(discount["meta"]["percent"], 9.28)
 
     def test_import_upload_merges_ambiguous_rows_instead_of_creating_duplicates(self):
         cat_a = Category.objects.create(nombre="Categoria A")
@@ -528,3 +742,49 @@ class AuditCatalogXlsxCommandTests(TestCase):
         output = out.getvalue()
         self.assertIn("grupos duplicados en XLSX por Nombre + Categorias: 1", output)
         self.assertIn("IDs duplicados en XLSX: 1", output)
+
+
+class OffersVirtualCategoryApiTests(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.user = CustomUser.objects.create_user(
+            username="offerapi",
+            password="secret123",
+            email="offerapi@example.com",
+            approval_status="approved",
+        )
+        self.root = Category.objects.create(nombre="Guirnaldas y Decoración", slug="guirnaldas-y-decoracion")
+        self.product = Product.objects.create(
+            user=self.user,
+            categoria=self.root,
+            nombre="Producto con Oferta",
+            slug="producto-con-oferta",
+            precio="100.00",
+            stock=3,
+            activo=True,
+        )
+        Offer.objects.create(
+            nombre="Oferta XLSX - Producto con Oferta",
+            slug=f"xlsx-offer-product-{self.product.id}",
+            porcentaje="20.00",
+            precio_oferta="80.00",
+            producto=self.product,
+            activo=True,
+        )
+
+    def test_categories_list_includes_ofertas_root(self):
+        request = self.factory.get("/api/categories-list")
+        response = CategoriesListView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        names = [item["nombre"] for item in response.data["items"]]
+        self.assertIn("Ofertas", names)
+
+    def test_products_list_returns_discounted_products_for_ofertas_category(self):
+        request = self.factory.get("/api/products", {"category": "ofertas", "page": 1, "limit": 24})
+        response = ProductListView.as_view()(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["total"], 1)
+        self.assertEqual(response.data["items"][0]["name"], "Producto con Oferta")
+        self.assertEqual(response.data["items"][0]["priceOriginal"], 100.0)
+        self.assertEqual(response.data["items"][0]["price"], 80.0)

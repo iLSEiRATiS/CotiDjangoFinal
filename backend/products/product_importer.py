@@ -20,7 +20,7 @@ PRODUCT_HEADERS = [
 ]
 
 EXPORT_HEADERS = [
-    "Nombre", "Stock", "SKU", "Precio", "Precio oferta", "Nombre atributo 1", "Valor atributo 1",
+    "Nombre", "Stock", "SKU", "Precio", "Oferta", "Precio oferta", "Nombre atributo 1", "Valor atributo 1",
     "Nombre atributo 2", "Valor atributo 2", "Nombre atributo 3", "Valor atributo 3", "Categorías",
     "Peso", "Alto", "Ancho", "Profundidad", "Mostrar en tienda", "IDProduct", "IDStock", "URL IMAGENES",
 ]
@@ -46,6 +46,7 @@ EXPORT_COLUMN_WIDTHS = {
     "R": 13.0,
     "S": 13.0,
     "T": 13.0,
+    "U": 13.0,
 }
 
 
@@ -136,6 +137,9 @@ HEADER_ALIAS = {
     "idstock": "idstock",
     "id stock": "idstock",
     "id_stock": "idstock",
+    "precio oferta": "precio_oferta",
+    "precio_oferta": "precio_oferta",
+    "oferta": "oferta",
     "nombre atributo 1": "opcion_1_nombre",
     "valor atributo 1": "opcion_1_valor",
     "nombre atributo1": "opcion_1_nombre",
@@ -149,6 +153,8 @@ HEADER_ALIAS = {
     "nombre atributo3": "opcion_3_nombre",
     "valor atributo3": "opcion_3_valor",
 }
+
+XLSX_OFFER_SLUG_PREFIX = "xlsx-offer-product"
 
 
 class ProductXlsxImporter:
@@ -244,6 +250,8 @@ class ProductXlsxImporter:
         if missing:
             errors.append(f"Faltan columnas obligatorias: {', '.join(sorted(missing))}")
             return created, updated, errors
+        offer_column_present = "oferta" in header_map
+        offer_price_column_present = "precio_oferta" in header_map
 
         sku_name_sets = {}
         wb, sheet = open_sheet()
@@ -276,6 +284,13 @@ class ProductXlsxImporter:
 
             nombre = row_data.get("nombre") or ""
             precio = self._parse_decimal(row_data.get("precio"))
+            precio_oferta = self._parse_decimal(row_data.get("precio_oferta"))
+            oferta_flag = self._parse_optional_bool(row_data.get("oferta"))
+            if oferta_flag is None:
+                if offer_column_present:
+                    oferta_flag = precio_oferta is not None if offer_price_column_present else False
+                elif precio_oferta is not None:
+                    oferta_flag = True
             if not nombre:
                 errors.append(f"Fila {idx}: nombre es obligatorio.")
                 continue
@@ -404,6 +419,14 @@ class ProductXlsxImporter:
             if is_new and not product.slug:
                 product.slug = self._build_slug(nombre)
             product.save()
+            offer_error = self._sync_xlsx_offer(
+                product=product,
+                base_price=precio,
+                offer_price=precio_oferta,
+                offer_flag=oferta_flag,
+            )
+            if offer_error:
+                errors.append(f"Fila {idx}: {offer_error}")
 
             if image_urls:
                 gallery_urls = image_urls[1:]
@@ -450,7 +473,19 @@ class ProductXlsxImporter:
         if isinstance(value, bool):
             return value
         text = str(value).strip().lower()
-        return text in {"true", "1", "si", "sÃƒÂ­", "yes", "y"}
+        return text in {"true", "1", "si", "sí", "sÃƒÂ­", "yes", "y"}
+
+    def _parse_optional_bool(self, value):
+        if value is None or value == "":
+            return None
+        if isinstance(value, bool):
+            return value
+        text = self._norm_header(value)
+        if text in {"true", "1", "si", "sí", "yes", "y"}:
+            return True
+        if text in {"false", "0", "no", "n"}:
+            return False
+        return None
 
     def _parse_decimal(self, value):
         if value is None or value == "":
@@ -871,7 +906,21 @@ class ProductXlsxImporter:
         row["Stock"] = product.stock if product.stock is not None else ""
         row["SKU"] = ""
         row["Precio"] = self._format_export_number(product.precio)
-        row["Precio oferta"] = ""
+        export_offer = self._get_export_offer(product)
+        if export_offer and export_offer.activo and product.precio not in (None, "", Decimal("0")):
+            exact_offer_price = self._parse_decimal(getattr(export_offer, "precio_oferta", None))
+            if exact_offer_price is not None and exact_offer_price > 0:
+                offer_price = exact_offer_price
+            else:
+                pct = self._parse_decimal(export_offer.porcentaje) or Decimal("0")
+                offer_price = product.precio * (Decimal("1.00") - (pct / Decimal("100")))
+                if offer_price < 0:
+                    offer_price = Decimal("0.00")
+            row["Precio oferta"] = self._format_export_number(offer_price)
+            row["Oferta"] = "Si"
+        else:
+            row["Precio oferta"] = ""
+            row["Oferta"] = ""
         row["Categorías"] = self._build_export_category_path(product.categoria)
         row["Peso"] = ""
         row["Alto"] = ""
@@ -902,6 +951,65 @@ class ProductXlsxImporter:
                 row[f"Valor atributo {index}"] = str(values)
 
         return row
+
+    def _xlsx_offer_slug(self, product):
+        return f"{XLSX_OFFER_SLUG_PREFIX}-{product.pk}"
+
+    def _get_xlsx_offer(self, product):
+        if not product or not product.pk:
+            return None
+        return Offer.objects.filter(slug=self._xlsx_offer_slug(product)).first()
+
+    def _get_export_offer(self, product):
+        if not product or not product.pk:
+            return None
+        return Offer.objects.filter(
+            producto=product,
+            activo=True,
+            slug=self._xlsx_offer_slug(product),
+        ).first()
+
+    def _sync_xlsx_offer(self, *, product, base_price, offer_price, offer_flag):
+        if offer_flag is None and offer_price is None:
+            return None
+
+        xlsx_offer = self._get_xlsx_offer(product)
+        product_offers = Offer.objects.filter(producto=product)
+
+        if offer_flag is False:
+            product_offers.update(activo=False)
+            return None
+
+        if offer_price is None:
+            return "si Oferta es 'Si', Precio oferta es obligatorio."
+
+        if base_price is None or base_price <= 0:
+            return "no se puede calcular la oferta porque Precio debe ser mayor a 0."
+
+        if offer_price <= 0:
+            return "Precio oferta debe ser mayor a 0."
+
+        if offer_price >= base_price:
+            return "Precio oferta debe ser menor que Precio para generar descuento."
+
+        percent = ((base_price - offer_price) / base_price) * Decimal("100")
+        percent = percent.quantize(Decimal("0.01"))
+        if percent <= 0:
+            return "no se pudo calcular un porcentaje de descuento valido."
+
+        product_offers.exclude(slug=self._xlsx_offer_slug(product)).update(activo=False)
+        offer = xlsx_offer or Offer(slug=self._xlsx_offer_slug(product))
+        offer.nombre = (f"Oferta XLSX - {product.nombre}" if product.nombre else "Oferta XLSX")[:120]
+        offer.descripcion = "Oferta administrada desde importacion XLSX."
+        offer.porcentaje = percent
+        offer.precio_oferta = offer_price.quantize(Decimal("0.01"))
+        offer.producto = product
+        offer.categoria = None
+        offer.activo = True
+        offer.empieza = None
+        offer.termina = None
+        offer.save()
+        return None
 
     def _get_export_image_value(self, url_value, file_field):
         if url_value:
