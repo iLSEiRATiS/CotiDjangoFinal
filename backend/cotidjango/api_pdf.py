@@ -203,11 +203,9 @@ def build_invoice_pdf(order) -> bytes:
 
         return y - 10
 
-    col_code = x_left
-    col_qty = x_left + 55
-    col_desc = x_left + 110
+    col_qty = x_left
+    col_desc = x_left + 55
     v1 = x_left + 48
-    v2 = x_left + 102
     v3 = x_right - 140
     v4 = x_right - 70
 
@@ -215,19 +213,18 @@ def build_invoice_pdf(order) -> bytes:
         row_h = 22
         stroke_light()
         canvas_obj.rect(x_left, y - row_h, x_right - x_left, row_h)
-        for v in (v1, v2, v3, v4):
+        for v in (v1, v3, v4):
             canvas_obj.line(v, y - row_h, v, y)
 
         canvas_obj.setFont(font_bold, 9.2)
         text_dark()
-        canvas_obj.drawString(col_code + 2, y - 15, "Código")
         canvas_obj.drawString(col_qty + 2, y - 15, "Cantidad")
         canvas_obj.drawString(col_desc + 2, y - 15, "Descripción")
         canvas_obj.drawRightString(v4 - 6, y - 15, "P. unitario")
         canvas_obj.drawRightString(x_right - 6, y - 15, "Total")
         return y - row_h
 
-    def table_row(y, code, qty, desc, unit, total):
+    def table_row(y, qty, desc, unit, total):
         font_size = 9
         line_height = 10
         desc_max_width = v3 - col_desc - 6
@@ -235,12 +232,11 @@ def build_invoice_pdf(order) -> bytes:
         row_h = max(18, 8 + len(desc_lines) * line_height)
         stroke_light()
         canvas_obj.rect(x_left, y - row_h, x_right - x_left, row_h)
-        for v in (v1, v2, v3, v4):
+        for v in (v1, v3, v4):
             canvas_obj.line(v, y - row_h, v, y)
 
         canvas_obj.setFont(font_regular, font_size)
         text_dark()
-        canvas_obj.drawString(col_code + 2, y - 13, str(code))
         canvas_obj.drawString(col_qty + 2, y - 13, str(qty))
         for idx, line in enumerate(desc_lines):
             canvas_obj.drawString(col_desc + 2, y - 13 - (idx * line_height), line)
@@ -265,7 +261,7 @@ def build_invoice_pdf(order) -> bytes:
             y = customer(y)
             y = table_header(y)
 
-        y = table_row(y, item.product_id or "-", item.cantidad, desc, item.precio_unitario, item.subtotal)
+        y = table_row(y, item.cantidad, desc, item.precio_unitario, item.subtotal)
 
     y -= 14
     canvas_obj.setFont(font_bold, 11)
