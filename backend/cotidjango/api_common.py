@@ -131,6 +131,8 @@ def serialize_user(user, request=None):
         "documentNumber": str(getattr(user, "document_number", "") or "").strip(),
         "email": user.email,
         "role": user.role,
+        "approvalStatus": str(getattr(user, "approval_status", "") or "pending"),
+        "isActive": bool(getattr(user, "is_active", False)),
         "missingProfileFields": missing_profile_fields,
         "profileCompletionRequired": bool(missing_profile_fields),
         "profile": {

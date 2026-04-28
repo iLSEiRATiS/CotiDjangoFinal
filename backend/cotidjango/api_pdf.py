@@ -52,6 +52,26 @@ def build_invoice_pdf(order) -> bytes:
         s = str(txt or "").strip()
         return s if s else fallback
 
+    def _wrap_text(text, max_width, font_name, font_size):
+        content = str(text or "").strip()
+        if not content:
+            return [""]
+        words = content.split()
+        if not words:
+            return [content]
+
+        lines = []
+        current = words[0]
+        for word in words[1:]:
+            candidate = f"{current} {word}"
+            if pdfmetrics.stringWidth(candidate, font_name, font_size) <= max_width:
+                current = candidate
+            else:
+                lines.append(current)
+                current = word
+        lines.append(current)
+        return lines
+
     buffer = BytesIO()
     width, height = A4
     canvas_obj = canvas.Canvas(buffer, pagesize=A4)
@@ -208,20 +228,22 @@ def build_invoice_pdf(order) -> bytes:
         return y - row_h
 
     def table_row(y, code, qty, desc, unit, total):
-        row_h = 18
+        font_size = 9
+        line_height = 10
+        desc_max_width = v3 - col_desc - 6
+        desc_lines = _wrap_text(desc, desc_max_width, font_regular, font_size)
+        row_h = max(18, 8 + len(desc_lines) * line_height)
         stroke_light()
         canvas_obj.rect(x_left, y - row_h, x_right - x_left, row_h)
         for v in (v1, v2, v3, v4):
             canvas_obj.line(v, y - row_h, v, y)
 
-        canvas_obj.setFont(font_regular, 9)
+        canvas_obj.setFont(font_regular, font_size)
         text_dark()
         canvas_obj.drawString(col_code + 2, y - 13, str(code))
         canvas_obj.drawString(col_qty + 2, y - 13, str(qty))
-
-        if len(desc) > 60:
-            desc = desc[:57] + "..."
-        canvas_obj.drawString(col_desc + 2, y - 13, desc)
+        for idx, line in enumerate(desc_lines):
+            canvas_obj.drawString(col_desc + 2, y - 13 - (idx * line_height), line)
 
         canvas_obj.drawRightString(v4 - 6, y - 13, _money(unit))
         canvas_obj.drawRightString(x_right - 6, y - 13, _money(total))
@@ -233,14 +255,16 @@ def build_invoice_pdf(order) -> bytes:
     y = table_header(y)
 
     for item in order.items.all():
-        if y < footer_reserved_space + 18:
+        desc = f"{order_item_name(item)}{_attrs_label(item.atributos)}"
+        desc_lines = _wrap_text(desc, v3 - col_desc - 6, font_regular, 9)
+        row_h = max(18, 8 + len(desc_lines) * 10)
+        if y < footer_reserved_space + row_h:
             canvas_obj.showPage()
             y = height - 40
             y = header(y)
             y = customer(y)
             y = table_header(y)
 
-        desc = f"{order_item_name(item)}{_attrs_label(item.atributos)}"
         y = table_row(y, item.product_id or "-", item.cantidad, desc, item.precio_unitario, item.subtotal)
 
     y -= 14
@@ -249,6 +273,22 @@ def build_invoice_pdf(order) -> bytes:
         canvas_obj.drawRightString(x_right, y, f"ENVIO: {_money(order.envio)}")
         y -= 14
     canvas_obj.drawRightString(x_right, y, f"TOTAL: {_money(order.total)}")
+    note = str(getattr(order, "nota", "") or "").strip()
+    if note:
+        note_lines = _wrap_text(note, x_right - x_left, font_regular, 9)
+        note_block_height = 18 + (len(note_lines) * 10)
+        if y - 20 - note_block_height < footer_reserved_space:
+            canvas_obj.showPage()
+            y = height - 40
+            y = header(y)
+        y -= 24
+        canvas_obj.setFont(font_bold, 9.5)
+        canvas_obj.drawString(x_left, y, "Nota:")
+        y -= 12
+        canvas_obj.setFont(font_regular, 9)
+        for line in note_lines:
+            canvas_obj.drawString(x_left, y, line)
+            y -= 10
 
     if y < footer_reserved_space:
         canvas_obj.showPage()
@@ -274,7 +314,7 @@ LABEL_SIZES = {
 
 def _get_sender_defaults():
     return {
-        "name":     os.getenv("LABEL_SENDER_NAME", "PARTY STORE"),
+        "name":     os.getenv("LABEL_SENDER_NAME", "CotiStore"),
         "email":    os.getenv("LABEL_SENDER_EMAIL", ""),
         "address":  os.getenv("LABEL_SENDER_ADDRESS", "Avenida Rivadavia 13770"),
         "city":     os.getenv("LABEL_SENDER_CITY", "Ramos Mejía"),

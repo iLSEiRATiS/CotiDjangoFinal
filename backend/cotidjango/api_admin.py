@@ -66,7 +66,12 @@ class AdminOverviewView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
     def get(self, request):
-        counts = {"users": User.objects.count(), "products": Product.objects.filter(activo=True).count(), "orders": Order.objects.count()}
+        counts = {
+            "users": User.objects.count(),
+            "products": Product.objects.filter(activo=True).count(),
+            "categories": Category.objects.count(),
+            "orders": Order.objects.count(),
+        }
         since = timezone.now() - timedelta(days=30)
         recent = Order.objects.filter(creado_en__gte=since, status__in=["paid", "shipped", "delivered"])
         revenue = recent.aggregate(total=Sum("total")).get("total") or Decimal("0.00")
@@ -149,6 +154,11 @@ class AdminUserDetailView(APIView):
             if candidate:
                 user.email = candidate
                 user.username = user.username or candidate
+        if "approvalStatus" in request.data or "approval_status" in request.data:
+            approval_status = str(request.data.get("approvalStatus") or request.data.get("approval_status") or "").strip()
+            if approval_status not in {"pending", "approved", "rejected"}:
+                return Response({"error": "Estado de aprobacion invalido"}, status=status.HTTP_400_BAD_REQUEST)
+            user.set_approval_status(approval_status)
         if "password" in request.data and request.data.get("password"):
             candidate_pwd = request.data.get("password")
             try:

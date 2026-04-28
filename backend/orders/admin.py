@@ -21,7 +21,7 @@ LABEL_SIZE_CHOICES = (
 
 
 class OrderLabelsForm(forms.Form):
-    label_size = forms.ChoiceField(label="Tamaño del rótulo", choices=LABEL_SIZE_CHOICES, initial="thermal")
+    label_size = forms.ChoiceField(label="Tamaño del rótulo", choices=LABEL_SIZE_CHOICES, initial="a4")
     num_bultos = forms.IntegerField(label="Cantidad de bultos", min_value=1, initial=1)
 
     def clean_label_size(self):
@@ -198,7 +198,7 @@ class OrderAdmin(admin.ModelAdmin):
                 num_bultos = form.cleaned_data["num_bultos"]
                 pdf = build_shipping_label_pdf(order, label_size=label_size, num_bultos=num_bultos)
                 response = HttpResponse(pdf, content_type="application/pdf")
-                response["Content-Disposition"] = f'inline; filename="rotulos-pedido-{order.id}.pdf"'
+                response["Content-Disposition"] = f'attachment; filename="rotulos-pedido-{order.id}.pdf"'
                 return response
         else:
             form = OrderLabelsForm()
