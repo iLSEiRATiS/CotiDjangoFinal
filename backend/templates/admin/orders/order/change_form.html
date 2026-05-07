@@ -20,9 +20,16 @@
 
 {% block object-tools-items %}
 {{ block.super }}
-{% if change and original and labels_url %}
-<li>
-  <a href="{{ labels_url }}" class="historylink">Imprimir rótulos</a>
-</li>
+{% if change and original %}
+  {% if download_pdf_url %}
+  <li>
+    <a href="{{ download_pdf_url }}" class="historylink">Descargar pedido</a>
+  </li>
+  {% endif %}
+  {% if labels_url %}
+  <li>
+    <a href="{{ labels_url }}" class="historylink">Imprimir rótulos</a>
+  </li>
+  {% endif %}
 {% endif %}
 {% endblock %}
