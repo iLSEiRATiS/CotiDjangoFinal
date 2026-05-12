@@ -79,12 +79,26 @@ class OrderItemInline(admin.TabularInline):
     model = OrderItem
     form = OrderItemAdminForm
     extra = 0
-    fields = ("product", "cantidad", "precio_unitario", "subtotal")
-    readonly_fields = ("subtotal",)
+    fields = ("product", "cantidad", "precio_unitario", "attr_name_1", "attr_value_1", "subtotal")
+    readonly_fields = ("subtotal", "attr_name_1", "attr_value_1")
     autocomplete_fields = ("product",)
     show_change_link = False
     verbose_name = "Producto del pedido"
     verbose_name_plural = "Productos del pedido"
+
+    def attr_name_1(self, obj):
+        if not obj or not obj.atributos:
+            return "-"
+        keys = list(obj.atributos.keys())
+        return keys[0] if keys else "-"
+    attr_name_1.short_description = "Nombre atributo 1"
+
+    def attr_value_1(self, obj):
+        if not obj or not obj.atributos:
+            return "-"
+        values = list(obj.atributos.values())
+        return values[0] if values else "-"
+    attr_value_1.short_description = "Valor atributo 1"
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         formfield = super().formfield_for_dbfield(db_field, request, **kwargs)

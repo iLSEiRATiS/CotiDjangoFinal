@@ -10,8 +10,25 @@ import sys
 os.environ["DATABASE_URL"] = ""                     # forzar SQLite local
 os.environ["DEBUG"] = "True"
 os.environ["ALLOWED_HOSTS"] = "localhost,127.0.0.1"
-os.environ["CORS_ALLOWED_ORIGINS"] = "http://localhost:5173,http://localhost:8000"
-os.environ["CSRF_TRUSTED_ORIGINS"] = "http://localhost:5173,http://localhost:8000"
+os.environ["CORS_ALLOW_ALL_ORIGINS"] = "True"
+os.environ["CORS_ALLOWED_ORIGINS"] = ",".join(
+    [
+        "http://localhost:5173",
+        "http://localhost:4173",
+        "http://localhost:8000",
+        "http://127.0.0.1:4173",
+        "http://127.0.0.1:8000",
+    ]
+)
+os.environ["CSRF_TRUSTED_ORIGINS"] = ",".join(
+    [
+        "http://localhost:5173",
+        "http://localhost:4173",
+        "http://localhost:8000",
+        "http://127.0.0.1:4173",
+        "http://127.0.0.1:8000",
+    ]
+)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cotidjango.settings")
 
 # Construir argv para manage.py
