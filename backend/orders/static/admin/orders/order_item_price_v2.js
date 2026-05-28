@@ -346,13 +346,12 @@
     if (!select || !/-product$/.test(select.getAttribute('name') || '')) return;
     if (select.dataset.priceAutofillBound !== '1') {
       select.dataset.priceAutofillBound = '1';
-      // Store initial value to avoid autofilling existing prices on load
-      lastSeenProductBySelect.set(select, String(select.value || '').trim());
       select.addEventListener('change', () => updatePrice(select));
       select.addEventListener('input', () => updatePrice(select));
     }
     const priceInput = findPriceInput(select);
     bindPriceInput(priceInput);
+    syncSelect(select);
   }
 
   function bindAll() {
