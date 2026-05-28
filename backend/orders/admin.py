@@ -267,15 +267,21 @@ class OrderAdmin(admin.ModelAdmin):
         )
 
     def product_price_view(self, request, product_id):
+        from cotidjango.api_common import resolve_discount_for_product
         product = Product.objects.select_related("categoria").filter(pk=product_id).first()
         if not product:
             return JsonResponse({"error": "Producto no encontrado"}, status=404)
+        
+        # Resolve active discount if any
+        discount = resolve_discount_for_product(product)
+        final_price = discount["final_price"] if discount else product.precio
+        
         return JsonResponse(
             {
                 "id": product.id,
                 "name": product.nombre,
                 "category": product.categoria.nombre if product.categoria_id else "",
-                "price": str(product.precio),
+                "price": str(final_price),
             }
         )
 
