@@ -194,6 +194,7 @@ def serialize_product(prod, request=None):
         "attributes_price": prod.atributos_precio or {},
         "category": serialize_category(prod.categoria),
         "stock": prod.stock,
+        "sin_stock": prod.sin_stock,
         "active": prod.activo,
         "createdAt": prod.creado_en.isoformat() if prod.creado_en else None,
         "updatedAt": None,

@@ -20,7 +20,7 @@ PRODUCT_HEADERS = [
 ]
 
 EXPORT_HEADERS = [
-    "Nombre", "Stock", "SKU", "Precio", "Oferta", "Precio oferta", "Nombre atributo 1", "Valor atributo 1",
+    "Nombre", "Stock", "Sin stock", "SKU", "Precio", "Oferta", "Precio oferta", "Nombre atributo 1", "Valor atributo 1",
     "Nombre atributo 2", "Valor atributo 2", "Nombre atributo 3", "Valor atributo 3", "Categorías",
     "Peso", "Alto", "Ancho", "Profundidad", "Mostrar en tienda", "IDProduct", "IDStock", "URL IMAGENES",
 ]
@@ -140,6 +140,8 @@ HEADER_ALIAS = {
     "precio oferta": "precio_oferta",
     "precio_oferta": "precio_oferta",
     "oferta": "oferta",
+    "sin stock": "sin_stock",
+    "sin_stock": "sin_stock",
     "nombre atributo 1": "opcion_1_nombre",
     "valor atributo 1": "opcion_1_valor",
     "nombre atributo1": "opcion_1_nombre",
@@ -363,6 +365,7 @@ class ProductXlsxImporter:
             product.precio = precio
             stock = self._parse_int(row_data.get("stock"))
             product.stock = stock if stock is not None else 0
+            product.sin_stock = self._parse_bool(row_data.get("sin_stock"), default=False)
             product.activo = self._parse_bool(row_data.get("activo"), default=True)
             product.categoria = categoria_obj
 
@@ -907,6 +910,7 @@ class ProductXlsxImporter:
         row = {header: "" for header in EXPORT_HEADERS}
         row["Nombre"] = product.nombre or ""
         row["Stock"] = product.stock if product.stock is not None else ""
+        row["Sin stock"] = "Si" if product.sin_stock else "No"
         row["SKU"] = product.sku or ""
         row["Precio"] = self._format_export_number(product.precio)
         export_offer = self._get_export_offer(product)

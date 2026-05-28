@@ -73,13 +73,24 @@ class ProductImageInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
-    list_display = ("sku", "nombre", "precio", "stock", "activo", "categoria", "creado_en")
+    list_display = ("sku", "nombre", "precio", "stock", "sin_stock", "activo", "categoria", "creado_en")
     search_fields = ("sku", "nombre", "descripcion", "slug", "categoria__nombre")
-    list_filter = ("creado_en", "activo", "categoria")
-    list_editable = ("precio", "stock", "activo")
+    list_filter = ("creado_en", "activo", "sin_stock", "categoria")
+    list_editable = ("precio", "stock", "sin_stock", "activo")
     search_help_text = "Buscar producto por SKU, nombre, slug o descripcion"
     change_list_template = "admin/products/product/change_list.html"
     inlines = [ProductImageInline]
+    actions = ["marcar_sin_stock", "marcar_con_stock"]
+
+    @admin.action(description="Marcar productos seleccionados como Sin Stock")
+    def marcar_sin_stock(self, request, queryset):
+        queryset.update(sin_stock=True)
+        self.message_user(request, "Productos marcados como Sin Stock.")
+
+    @admin.action(description="Marcar productos seleccionados con Stock")
+    def marcar_con_stock(self, request, queryset):
+        queryset.update(sin_stock=False)
+        self.message_user(request, "Productos marcados con Stock.")
 
     template_xlsx_path = str(Path(__file__).resolve().parent / "resources" / "ProductosCoti_base.xlsx")
     product_headers = PRODUCT_HEADERS
