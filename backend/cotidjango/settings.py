@@ -257,6 +257,7 @@ if not DEBUG:
 # - keep request body limit high enough
 # - force files to temp-disk early (not RAM)
 DATA_UPLOAD_MAX_MEMORY_SIZE = _env_int("DATA_UPLOAD_MAX_MEMORY_SIZE", 50 * 1024 * 1024)  # 50MB
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000 # Aumentado para pedidos con muchos artículos
 FILE_UPLOAD_MAX_MEMORY_SIZE = _env_int("FILE_UPLOAD_MAX_MEMORY_SIZE", 1 * 1024 * 1024)    # 1MB
 
 REST_FRAMEWORK = {
