@@ -74,6 +74,7 @@ class ProductImageInline(admin.TabularInline):
 class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
     list_display = ("sku", "nombre", "precio", "stock", "sin_stock", "activo", "categoria", "creado_en")
+    list_display_links = ("nombre",)
     search_fields = ("sku", "nombre", "descripcion", "slug", "categoria__nombre")
     list_filter = ("creado_en", "activo", "sin_stock", "categoria")
     list_editable = ("precio", "stock", "sin_stock", "activo")
