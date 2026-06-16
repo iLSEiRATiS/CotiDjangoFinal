@@ -81,7 +81,7 @@ def build_invoice_pdf(order) -> bytes:
     margin_r = 36
     x_left = margin_l
     x_right = width - margin_r
-    footer_reserved_space = 78
+    footer_reserved_space = 96
 
     date_label = order.creado_en.strftime("%d/%m/%y %H:%M") if order.creado_en else ""
     address = ", ".join(filter(None, [order.direccion, order.ciudad, order.cp]))
@@ -119,11 +119,31 @@ def build_invoice_pdf(order) -> bytes:
         canvas_obj.drawString(x_left, y, "Dirección:")
         canvas_obj.setFont(font_regular, 9.5)
         canvas_obj.drawString(x_left + 55, y, _safe(address))
-        return y - 20
+        y -= 12
+        phone = str(order.telefono or "").strip()
+        if phone:
+            canvas_obj.setFont(font_bold, 9.5)
+            canvas_obj.drawString(x_left, y, "Teléfono:")
+            canvas_obj.setFont(font_regular, 9.5)
+            canvas_obj.drawString(x_left + 50, y, phone)
+            y -= 12
+        return y - 8
 
     y = height - 40
     y = header(y)
     y = customer(y)
+
+    # Nota / comentario del pedido
+    nota = str(order.nota or "").strip()
+    if nota:
+        nota_lines = _wrap_text(nota, x_right - x_left - 60, font_regular, 9)
+        canvas_obj.setFont(font_bold, 9)
+        canvas_obj.drawString(x_left, y, "Nota:")
+        canvas_obj.setFont(font_regular, 9)
+        for i, line in enumerate(nota_lines):
+            canvas_obj.drawString(x_left + 38, y - (i * 11), line)
+        y -= max(12, len(nota_lines) * 11)
+        y -= 6
 
     # Table Header
     row_h = 22
@@ -156,13 +176,60 @@ def build_invoice_pdf(order) -> bytes:
         canvas_obj.drawRightString(x_right - 6, y - 13, _money(item.subtotal))
         y -= row_h
 
-    y -= 20
-    canvas_obj.setFont(font_bold, 11)
-    if getattr(order, "envio", 0):
-        canvas_obj.drawRightString(x_right, y, f"ENVIO: {_money(order.envio)}")
+    from decimal import Decimal as _Dec
+
+    y -= 10
+    # Separador antes de totales
+    canvas_obj.setLineWidth(0.6)
+    canvas_obj.setStrokeColorRGB(0.7, 0.7, 0.7)
+    canvas_obj.line(x_right - 180, y, x_right, y)
+    y -= 14
+
+    subtotal_items = sum(
+        (item.precio_unitario or _Dec("0")) * (item.cantidad or 0)
+        for item in order.items.all()
+    )
+    envio_val = _Dec(str(getattr(order, "envio", 0) or 0))
+    total_final = subtotal_items + envio_val
+
+    canvas_obj.setFont(font_regular, 10)
+    canvas_obj.drawRightString(x_right - 90, y, "Subtotal:")
+    canvas_obj.setFont(font_bold, 10)
+    canvas_obj.drawRightString(x_right, y, _money(subtotal_items))
+    y -= 14
+
+    if envio_val > 0:
+        canvas_obj.setFont(font_regular, 10)
+        canvas_obj.drawRightString(x_right - 90, y, "Envío:")
+        canvas_obj.setFont(font_bold, 10)
+        canvas_obj.drawRightString(x_right, y, _money(envio_val))
         y -= 14
-    canvas_obj.drawRightString(x_right, y, f"TOTAL: {_money(order.total)}")
-    
+
+    # Línea gruesa antes del total final
+    canvas_obj.setLineWidth(1.0)
+    canvas_obj.setStrokeColorRGB(0.2, 0.2, 0.2)
+    canvas_obj.line(x_right - 180, y + 4, x_right, y + 4)
+    y -= 8
+
+    canvas_obj.setFont(font_bold, 12)
+    canvas_obj.drawRightString(x_right - 90, y, "TOTAL:")
+    canvas_obj.drawRightString(x_right, y, _money(total_final))
+
+
+    # Leyenda al pie de la última página
+    legend_y = 36
+    canvas_obj.setLineWidth(0.4)
+    canvas_obj.setStrokeColorRGB(0.75, 0.75, 0.75)
+    canvas_obj.line(x_left, legend_y + 14, x_right, legend_y + 14)
+    canvas_obj.setFont(font_regular, 8)
+    canvas_obj.setFillColorRGB(0.45, 0.45, 0.45)
+    canvas_obj.drawCentredString(
+        (x_left + x_right) / 2,
+        legend_y,
+        "Los reclamos deben hacerse dentro de las 48 hs posteriores al recibir el pedido."
+    )
+    canvas_obj.setFillColorRGB(0, 0, 0)
+
     canvas_obj.save()
     return buffer.getvalue()
 

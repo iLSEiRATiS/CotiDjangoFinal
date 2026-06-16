@@ -82,6 +82,9 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline]
     actions = ["marcar_sin_stock", "marcar_con_stock"]
 
+    class Media:
+        js = ("admin/js/product_attributes.js",)
+
     @admin.action(description="Marcar productos seleccionados como Sin Stock")
     def marcar_sin_stock(self, request, queryset):
         queryset.update(sin_stock=True)

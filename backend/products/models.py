@@ -60,6 +60,7 @@ class Product(models.Model):
     atributos = models.JSONField(default=dict, blank=True)
     atributos_stock = models.JSONField(default=dict, blank=True)
     atributos_precio = models.JSONField(default=dict, blank=True)
+    atributos_sin_stock = models.JSONField(default=dict, blank=True)
     stock = models.PositiveIntegerField(default=0)
     sin_stock = models.BooleanField(default=False)
     activo = models.BooleanField(default=True)

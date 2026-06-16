@@ -192,6 +192,7 @@ def serialize_product(prod, request=None):
         "attributes": prod.atributos or {},
         "attributes_stock": prod.atributos_stock or {},
         "attributes_price": prod.atributos_precio or {},
+        "atributos_sin_stock": prod.atributos_sin_stock or {},
         "category": serialize_category(prod.categoria),
         "stock": prod.stock,
         "sin_stock": prod.sin_stock,

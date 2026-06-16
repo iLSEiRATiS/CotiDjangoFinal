@@ -776,6 +776,7 @@ class ProductXlsxImporter:
         attrs = survivor.atributos if isinstance(survivor.atributos, dict) else {}
         attrs_stock = survivor.atributos_stock if isinstance(survivor.atributos_stock, dict) else {}
         attrs_price = survivor.atributos_precio if isinstance(survivor.atributos_precio, dict) else {}
+        attrs_sin_stock = survivor.atributos_sin_stock if isinstance(survivor.atributos_sin_stock, dict) else {}
         def gallery_key(image):
             if image.image_url:
                 return ("url", image.image_url.strip())
@@ -837,9 +838,21 @@ class ProductXlsxImporter:
                         existing_map[value] = price_value
                 attrs_price[key] = existing_map
 
+            current_sin_stock = current.atributos_sin_stock if isinstance(current.atributos_sin_stock, dict) else {}
+            for key, values in current_sin_stock.items():
+                existing = attrs_sin_stock.get(key, [])
+                if not isinstance(existing, list):
+                    existing = [existing] if existing else []
+                incoming_values = values if isinstance(values, list) else [values]
+                for value in incoming_values:
+                    if value not in existing:
+                        existing.append(value)
+                attrs_sin_stock[key] = existing
+
         survivor.atributos = attrs if attrs else {}
         survivor.atributos_stock = attrs_stock if attrs_stock else {}
         survivor.atributos_precio = attrs_price if attrs_price else {}
+        survivor.atributos_sin_stock = attrs_sin_stock if attrs_sin_stock else {}
         survivor.precio = self._resolve_base_price(survivor, fallback=survivor.precio)
         survivor.save()
 

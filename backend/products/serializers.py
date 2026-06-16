@@ -56,6 +56,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "atributos",
             "atributos_stock",
             "atributos_precio",
+            "atributos_sin_stock",
             "stock",
             "sin_stock",
             "activo",
