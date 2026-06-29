@@ -156,7 +156,32 @@ def build_invoice_pdf(order) -> bytes:
     canvas_obj.drawRightString(x_right - 6, y - 15, "Total")
     y -= row_h
 
-    for item in order.items.all():
+    import re
+    items = list(order.items.all())
+    
+    def sort_key(item):
+        has_sku = 1
+        sku_sort = []
+        cat_name = "zzzzz"
+        prod_name = ""
+        
+        if item.product:
+            sku = (item.product.sku or "").strip()
+            if sku:
+                has_sku = 0
+                # Split strings and numbers for natural sorting (e.g., 2 comes before 10)
+                sku_sort = [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', sku)]
+                
+            if item.product.categoria and item.product.categoria.nombre:
+                cat_name = item.product.categoria.nombre.lower()
+                
+            prod_name = (item.product.nombre or "").lower()
+            
+        return (has_sku, cat_name, sku_sort, prod_name)
+    
+    items.sort(key=sort_key)
+
+    for item in items:
         sku_val = getattr(item.product, "sku", "").strip() if item.product else ""
         desc = f"{order_item_name(item)}{_attrs_label(item.atributos)}"
         
@@ -229,6 +254,159 @@ def build_invoice_pdf(order) -> bytes:
         "Los reclamos deben hacerse dentro de las 48 hs posteriores al recibir el pedido."
     )
     canvas_obj.setFillColorRGB(0, 0, 0)
+
+    canvas_obj.save()
+    return buffer.getvalue()
+
+def build_stock_request_pdf(order) -> bytes:
+    from io import BytesIO
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.utils import ImageReader
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.pdfgen import canvas
+    import re
+
+    def _attrs_label(attrs):
+        return order_item_attrs_label(attrs, prefix=" - ", separator=" | ", suffix="")
+
+    def _wrap_text(text, max_width, font_name, font_size):
+        content = str(text or "").strip()
+        if not content: return [""]
+        paragraphs = content.splitlines()
+        all_lines = []
+        for paragraph in paragraphs:
+            words = paragraph.split()
+            if not words:
+                all_lines.append("")
+                continue
+            current = words[0]
+            for word in words[1:]:
+                candidate = f"{current} {word}"
+                if pdfmetrics.stringWidth(candidate, font_name, font_size) <= max_width:
+                    current = candidate
+                else:
+                    all_lines.append(current)
+                    current = word
+            all_lines.append(current)
+        return all_lines
+
+    buffer = BytesIO()
+    width, height = A4
+    canvas_obj = canvas.Canvas(buffer, pagesize=A4)
+
+    font_regular = "Helvetica"
+    font_bold = "Helvetica-Bold"
+    try:
+        arial = r"C:\Windows\Fonts\arial.ttf"
+        arial_bold = r"C:\Windows\Fonts\arialbd.ttf"
+        if Path(arial).exists():
+            pdfmetrics.registerFont(TTFont("Arial", arial))
+            font_regular = "Arial"
+            pdfmetrics.registerFont(TTFont("Arial-Bold", arial_bold))
+            font_bold = "Arial-Bold"
+    except: pass
+
+    margin_l = 36
+    margin_r = 36
+    x_left = margin_l
+    x_right = width - margin_r
+    footer_reserved_space = 40
+
+    date_label = order.creado_en.strftime("%d/%m/%y %H:%M") if order.creado_en else ""
+    logo_path = _invoice_logo_path()
+
+    def header(y):
+        if logo_path:
+            try:
+                img = ImageReader(str(logo_path))
+                canvas_obj.drawImage(img, x_right - 180, height - 66, width=180, height=58, mask="auto", preserveAspectRatio=True)
+            except: pass
+        canvas_obj.setFont(font_bold, 14)
+        canvas_obj.drawString(x_left, y, f"Orden: #{order.id}")
+        y -= 16
+        canvas_obj.setFont(font_bold, 12)
+        canvas_obj.drawString(x_left, y, "PEDIDO DE STOCK")
+        y -= 16
+        canvas_obj.setFont(font_regular, 9.5)
+        canvas_obj.drawString(x_left, y, f"Fecha: {date_label}")
+        y -= 24
+        canvas_obj.setLineWidth(0.6)
+        canvas_obj.setStrokeColorRGB(0.7, 0.7, 0.7)
+        canvas_obj.line(x_left, y, x_right, y)
+        return y - 16
+
+    def customer(y):
+        canvas_obj.setFont(font_bold, 9.5)
+        canvas_obj.drawString(x_left, y, "Solicita:")
+        canvas_obj.setFont(font_regular, 9.5)
+        canvas_obj.drawString(x_left + 45, y, "CotiStore")
+        y -= 12
+        canvas_obj.setFont(font_bold, 9.5)
+        canvas_obj.drawString(x_left, y, "Dirección:")
+        canvas_obj.setFont(font_regular, 9.5)
+        canvas_obj.drawString(x_left + 55, y, "Gregorio de Laferrere - CP 1757")
+        y -= 12
+        canvas_obj.setFont(font_bold, 9.5)
+        canvas_obj.drawString(x_left, y, "Teléfono:")
+        canvas_obj.setFont(font_regular, 9.5)
+        canvas_obj.drawString(x_left + 50, y, "11 3958-1816")
+        y -= 12
+        return y - 8
+
+    y = height - 40
+    y = header(y)
+    y = customer(y)
+
+    # Table Header
+    row_h = 22
+    canvas_obj.rect(x_left, y - row_h, x_right - x_left, row_h)
+    canvas_obj.setFont(font_bold, 9.2)
+    canvas_obj.drawString(x_left + 2, y - 15, "Cant")
+    canvas_obj.drawString(x_left + 48, y - 15, "SKU")
+    canvas_obj.drawString(x_left + 115, y - 15, "Descripción")
+    y -= row_h
+
+    items = list(order.items.all())
+    
+    def sort_key(item):
+        has_sku = 1
+        sku_sort = []
+        cat_name = "zzzzz"
+        prod_name = ""
+        
+        if item.product:
+            sku = (item.product.sku or "").strip()
+            if sku:
+                has_sku = 0
+                sku_sort = [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', sku)]
+                
+            if item.product.categoria and item.product.categoria.nombre:
+                cat_name = item.product.categoria.nombre.lower()
+                
+            prod_name = (item.product.nombre or "").lower()
+            
+        return (has_sku, cat_name, sku_sort, prod_name)
+    
+    items.sort(key=sort_key)
+
+    for item in items:
+        sku_val = getattr(item.product, "sku", "").strip() if item.product else ""
+        desc = f"{order_item_name(item)}{_attrs_label(item.atributos)}"
+        
+        desc_lines = _wrap_text(desc, x_right - (x_left + 115) - 5, font_regular, 9)
+        row_h = max(18, 8 + len(desc_lines) * 10)
+        if y < footer_reserved_space + row_h:
+            canvas_obj.showPage()
+            y = height - 40
+        
+        canvas_obj.rect(x_left, y - row_h, x_right - x_left, row_h)
+        canvas_obj.setFont(font_regular, 9)
+        canvas_obj.drawString(x_left + 2, y - 13, str(item.cantidad))
+        canvas_obj.drawString(x_left + 48, y - 13, sku_val)
+        for i, line in enumerate(desc_lines):
+            canvas_obj.drawString(x_left + 115, y - 13 - (i * 10), line)
+        y -= row_h
 
     canvas_obj.save()
     return buffer.getvalue()

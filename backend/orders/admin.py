@@ -10,7 +10,12 @@ from django.utils.safestring import mark_safe
 from products.models import Product
 
 from .models import Order, OrderItem
-from cotidjango.api_pdf import LABEL_SIZES, build_shipping_label_pdf, build_invoice_pdf
+from cotidjango.api_pdf import (
+    LABEL_SIZES,
+    build_shipping_label_pdf,
+    build_invoice_pdf,
+    build_stock_request_pdf,
+)
 
 
 LABEL_SIZE_CHOICES = (
@@ -175,6 +180,11 @@ class OrderAdmin(admin.ModelAdmin):
                 name="orders_order_download_pdf",
             ),
             path(
+                "<path:object_id>/descargar-stock-pdf/",
+                self.admin_site.admin_view(self.stock_pdf_view),
+                name="orders_order_stock_pdf",
+            ),
+            path(
                 "product-price/<int:product_id>/",
                 self.admin_site.admin_view(self.product_price_view),
                 name="orders_order_product_price",
@@ -191,6 +201,7 @@ class OrderAdmin(admin.ModelAdmin):
         extra_context = extra_context or {}
         extra_context["labels_url"] = self._labels_url(object_id)
         extra_context["download_pdf_url"] = self._download_pdf_url(object_id)
+        extra_context["stock_pdf_url"] = self._stock_pdf_url(object_id)
         return super().change_view(request, object_id, form_url=form_url, extra_context=extra_context)
 
     def _labels_url(self, object_id):
@@ -203,18 +214,28 @@ class OrderAdmin(admin.ModelAdmin):
             return ""
         return reverse("admin:orders_order_download_pdf", args=[object_id])
 
+    def _stock_pdf_url(self, object_id):
+        if not object_id:
+            return ""
+        return reverse("admin:orders_order_stock_pdf", args=[object_id])
+
     @admin.display(description="Acciones")
     def acciones(self, obj):
         change_url = reverse("admin:orders_order_change", args=[obj.pk])
         labels_url = reverse("admin:orders_order_labels", args=[obj.pk])
         pdf_url = reverse("admin:orders_order_download_pdf", args=[obj.pk])
+        stock_url = reverse("admin:orders_order_stock_pdf", args=[obj.pk])
         return format_html(
-            '<a class="button" href="{}" style="margin-right:4px;">Ver</a>'
-            '<a class="button default" href="{}" style="margin-right:4px;">Rótulo</a>'
-            '<a class="button default" href="{}">Descargar</a>',
+            '<div style="display: flex; gap: 4px; flex-wrap: wrap; min-width: max-content;">'
+            '<a class="button" href="{}">Ver</a>'
+            '<a class="button default" href="{}">Rótulo</a>'
+            '<a class="button default" href="{}">Descargar</a>'
+            '<a class="button default" href="{}">Pedir Stock</a>'
+            '</div>',
             change_url,
             labels_url,
             pdf_url,
+            stock_url,
         )
 
     def download_pdf_view(self, request, object_id):
@@ -222,6 +243,14 @@ class OrderAdmin(admin.ModelAdmin):
         pdf = build_invoice_pdf(order)
         response = HttpResponse(pdf, content_type="application/pdf")
         filename = f"pedido-{order.id}.pdf"
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        return response
+
+    def stock_pdf_view(self, request, object_id):
+        order = get_object_or_404(Order, pk=object_id)
+        pdf = build_stock_request_pdf(order)
+        response = HttpResponse(pdf, content_type="application/pdf")
+        filename = f"pedido-stock-{order.id}.pdf"
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response
 
