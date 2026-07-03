@@ -133,6 +133,7 @@ def serialize_user(user, request=None):
         "role": user.role,
         "approvalStatus": str(getattr(user, "approval_status", "") or "pending"),
         "isActive": bool(getattr(user, "is_active", False)),
+        "must_change_password": bool(getattr(user, "must_change_password", False)),
         "missingProfileFields": missing_profile_fields,
         "profileCompletionRequired": bool(missing_profile_fields),
         "profile": {

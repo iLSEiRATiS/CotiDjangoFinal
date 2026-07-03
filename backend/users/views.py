@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from rest_framework import viewsets, permissions, generics, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 
@@ -21,6 +22,14 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all().order_by("-date_joined")
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=True, methods=["post"])
+    def reset_password(self, request, pk=None):
+        user = self.get_object()
+        user.set_password("Abcd1234@")
+        user.must_change_password = True
+        user.save()
+        return Response({"detail": "Contraseña reseteada"})
 
 
 class SignUpView(generic.CreateView):
@@ -161,5 +170,6 @@ class PasswordApiView(APIView):
         except ValidationError as exc:
             return Response({"detail": exc.messages}, status=status.HTTP_400_BAD_REQUEST)
         request.user.set_password(new)
+        request.user.must_change_password = False
         request.user.save()
         return Response({"detail": "Contraseña actualizada"})

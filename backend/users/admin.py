@@ -28,9 +28,9 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ("approval_status", "is_staff", "is_superuser", "is_active")
     search_fields = ("username", "email", "first_name", "last_name")
     ordering = ("-date_joined",)
-    actions = ("approve_users", "reject_users", "add_staff", "remove_staff")
+    actions = ("approve_users", "reject_users", "add_staff", "remove_staff", "reset_password_default")
     fieldsets = (
-        (None, {"fields": ("username", "password")}),
+        (None, {"fields": ("username",)}),
         ("Datos personales", {"fields": ("first_name", "last_name", "email", "name", "phone", "address", "city", "zip_code", "avatar")}),
         ("Estado de aprobacion", {"fields": ("approval_status",)}),
         ("Presupuesto de envio", {"fields": ("shipping_quote_amount", "shipping_quote_note", "shipping_quote_updated_at")}),
@@ -60,7 +60,16 @@ class CustomUserAdmin(UserAdmin):
                 name="users_customuser_import_xlsx",
             ),
         ]
+        # Filter out the default password change url to prevent manual access
+        urls = [url for url in urls if getattr(url, "name", "") != "users_customuser_password_change"]
         return custom + urls
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if obj and 'password' in form.base_fields:
+            # Quitamos el campo de contraseña en la vista de edición para evitar que se muestre el widget
+            del form.base_fields['password']
+        return form
 
     def save_model(self, request, obj, form, change):
         if obj.first_name or obj.last_name:
@@ -139,3 +148,12 @@ class CustomUserAdmin(UserAdmin):
             user.approval_status = "approved"
             user.is_active = True
             user.save(update_fields=["is_staff", "approval_status", "is_active", "role"])
+
+    @admin.action(description="Restablecer clave por defecto (Abcd1234)")
+    def reset_password_default(self, request, queryset):
+        for user in queryset:
+            user.set_password("Abcd1234")
+            user.must_change_password = True
+            user.save(update_fields=["password", "must_change_password"])
+        messages.success(request, f"Se restableció la clave por defecto de {queryset.count()} usuario(s).")
+

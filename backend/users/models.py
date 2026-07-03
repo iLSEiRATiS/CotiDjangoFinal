@@ -24,6 +24,7 @@ class CustomUser(AbstractUser):
     approval_status = models.CharField("estado de aprobacion", max_length=10, choices=APPROVAL_CHOICES, default="pending")
     welcome_email_sent_at = models.DateTimeField("bienvenida enviada el", null=True, blank=True)
     last_password_changed_at = models.DateTimeField("ultima clave cambiada el", null=True, blank=True)
+    must_change_password = models.BooleanField("debe cambiar clave", default=False)
     shipping_quote_amount = models.DecimalField("presupuesto de envio", max_digits=12, decimal_places=2, null=True, blank=True)
     shipping_quote_note = models.TextField("detalle de envio", blank=True, default="")
     shipping_quote_updated_at = models.DateTimeField("presupuesto de envio actualizado el", null=True, blank=True)
