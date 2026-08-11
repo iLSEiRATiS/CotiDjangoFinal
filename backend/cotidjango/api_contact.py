@@ -35,6 +35,7 @@ class StoreConfigView(APIView):
         settings_row = StoreSettings.get_solo()
         return Response({
             "minOrderAmount": float(settings_row.min_order_amount),
+            "showPricesToGuests": settings_row.mostrar_precios_invitados,
         })
 
 

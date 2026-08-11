@@ -223,7 +223,8 @@ class HomeMarqueeAdmin(admin.ModelAdmin):
 
 @admin.register(StoreSettings)
 class StoreSettingsAdmin(admin.ModelAdmin):
-    list_display = ("min_order_amount", "actualizado_en")
+    list_display = ("min_order_amount", "mostrar_precios_invitados", "actualizado_en")
+    list_editable = ("mostrar_precios_invitados",)
 
     def has_add_permission(self, request):
         if StoreSettings.objects.exists():

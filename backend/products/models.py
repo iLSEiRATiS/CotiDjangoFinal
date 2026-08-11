@@ -190,6 +190,11 @@ class StoreSettings(models.Model):
         default=100000,
         help_text="Monto minimo requerido para permitir compras.",
     )
+    mostrar_precios_invitados = models.BooleanField(
+        "Mostrar precios a invitados",
+        default=True,
+        help_text="Si está activo, los usuarios sin iniciar sesión podrán ver los precios de los productos."
+    )
     actualizado_en = models.DateTimeField(auto_now=True)
 
     class Meta:

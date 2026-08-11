@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from orders.models import Order, OrderItem
-from products.models import Category, Offer, Product
+from products.models import Category, Offer, Product, StoreSettings
 from .api_common import (
     User,
     _abs_media,
@@ -455,3 +455,17 @@ class AdminOfferDetailView(APIView):
             return Response({"error": "Oferta no encontrada"}, status=status.HTTP_404_NOT_FOUND)
         offer.delete()
         return Response({"ok": True})
+
+class AdminStoreConfigView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request):
+        settings_row = StoreSettings.get_solo()
+        show_prices = request.data.get("showPricesToGuests")
+        if show_prices is not None:
+            settings_row.mostrar_precios_invitados = bool(show_prices)
+            settings_row.save()
+        return Response({
+            "minOrderAmount": float(settings_row.min_order_amount),
+            "showPricesToGuests": settings_row.mostrar_precios_invitados,
+        })

@@ -11,6 +11,7 @@ from .api_admin import (
     AdminUploadImageView,
     AdminUserDetailView,
     AdminUsersView,
+    AdminStoreConfigView,
 )
 from .api_auth import (
     AccountPasswordView,
@@ -41,6 +42,7 @@ __all__ = [
     "AdminUploadImageView",
     "AdminUserDetailView",
     "AdminUsersView",
+    "AdminStoreConfigView",
     "AuthForgotPasswordView",
     "AuthLoginView",
     "AuthMeView",

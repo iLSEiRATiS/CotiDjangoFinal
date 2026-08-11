@@ -69,6 +69,7 @@ urlpatterns += [
     re_path(r"^api/orders/(?P<pk>[^/]+)/?$", api_bridge.OrderDetailView.as_view(), name="api-bridge-order-detail"),
     re_path(r"^api/orders/(?P<pk>[^/]+)/pay/?$", api_bridge.OrderMarkPaidView.as_view(), name="api-bridge-order-pay"),
     re_path(r"^api/admin/overview/?$", api_bridge.AdminOverviewView.as_view(), name="api-bridge-admin-overview"),
+    re_path(r"^api/admin/store-config/?$", api_bridge.AdminStoreConfigView.as_view(), name="api-bridge-admin-store-config"),
     re_path(r"^api/admin/users/?$", api_bridge.AdminUsersView.as_view(), name="api-bridge-admin-users"),
     re_path(r"^api/admin/users/(?P<pk>[^/]+)/?$", api_bridge.AdminUserDetailView.as_view(), name="api-bridge-admin-user"),
     re_path(r"^api/admin/orders/?$", api_bridge.AdminOrdersView.as_view(), name="api-bridge-admin-orders"),
