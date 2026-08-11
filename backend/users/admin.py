@@ -9,7 +9,7 @@ from django.urls import path, reverse
 from rest_framework.authtoken.models import Token, TokenProxy
 
 from .forms import AdminCustomUserCreationForm
-from .models import CustomUser
+from .models import CustomUser, GlobalStoreSettings
 from .user_importer import USER_IMPORT_HEADERS, USER_SAMPLE_ROWS, UserXlsxImporter
 
 
@@ -120,7 +120,9 @@ class CustomUserAdmin(UserAdmin):
             "updated": updated,
             "errors": errors,
         }
-        return TemplateResponse(request, "admin/users/customuser/import_xlsx.html", context)
+        return TemplateResponse(request, "admin/users_import.html", context)
+
+
 
     @admin.action(description="Aprobar usuarios seleccionados")
     def approve_users(self, request, queryset):
@@ -157,3 +159,15 @@ class CustomUserAdmin(UserAdmin):
             user.save(update_fields=["password", "must_change_password"])
         messages.success(request, f"Se restableció la clave por defecto de {queryset.count()} usuario(s).")
 
+@admin.register(GlobalStoreSettings)
+class GlobalStoreSettingsAdmin(admin.ModelAdmin):
+    list_display = ("min_order_amount", "mostrar_precios_invitados", "actualizado_en")
+    list_editable = ("mostrar_precios_invitados",)
+
+    def has_add_permission(self, request):
+        if GlobalStoreSettings.objects.exists():
+            return False
+        return super().has_add_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return False

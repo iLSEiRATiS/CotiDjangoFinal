@@ -221,18 +221,7 @@ class HomeMarqueeAdmin(admin.ModelAdmin):
         return super().has_add_permission(request)
 
 
-@admin.register(StoreSettings)
-class StoreSettingsAdmin(admin.ModelAdmin):
-    list_display = ("min_order_amount", "mostrar_precios_invitados", "actualizado_en")
-    list_editable = ("mostrar_precios_invitados",)
 
-    def has_add_permission(self, request):
-        if StoreSettings.objects.exists():
-            return False
-        return super().has_add_permission(request)
-
-    def has_delete_permission(self, request, obj=None):
-        return False
 
 
 @admin.register(ProductImage)

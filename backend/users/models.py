@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+from products.models import StoreSettings
 
 
 class CustomUser(AbstractUser):
@@ -105,3 +106,9 @@ class PasswordResetToken(models.Model):
     @property
     def is_active(self):
         return self.used_at is None and self.expires_at > timezone.now()
+
+class GlobalStoreSettings(StoreSettings):
+    class Meta:
+        proxy = True
+        verbose_name = "Configuración de Tienda"
+        verbose_name_plural = "Configuraciones de Tienda"
