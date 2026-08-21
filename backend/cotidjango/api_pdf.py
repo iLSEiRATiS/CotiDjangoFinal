@@ -129,6 +129,20 @@ def build_invoice_pdf(order) -> bytes:
             y -= 12
         return y - 8
 
+    def draw_footer():
+        legend_y = 36
+        canvas_obj.setLineWidth(0.4)
+        canvas_obj.setStrokeColorRGB(0.75, 0.75, 0.75)
+        canvas_obj.line(x_left, legend_y + 14, x_right, legend_y + 14)
+        canvas_obj.setFont(font_regular, 8)
+        canvas_obj.setFillColorRGB(0.45, 0.45, 0.45)
+        canvas_obj.drawCentredString(
+            (x_left + x_right) / 2,
+            legend_y,
+            "Los reclamos deben hacerse dentro de las 24 hs posteriores al recibir el pedido."
+        )
+        canvas_obj.setFillColorRGB(0, 0, 0)
+
     y = height - 40
     y = header(y)
     y = customer(y)
@@ -188,6 +202,7 @@ def build_invoice_pdf(order) -> bytes:
         desc_lines = _wrap_text(desc, x_right - 140 - (x_left + 115), font_regular, 9)
         row_h = max(18, 8 + len(desc_lines) * 10)
         if y < footer_reserved_space + row_h:
+            draw_footer()
             canvas_obj.showPage()
             y = height - 40
         
@@ -241,19 +256,8 @@ def build_invoice_pdf(order) -> bytes:
     canvas_obj.drawRightString(x_right, y, _money(total_final))
 
 
-    # Leyenda al pie de la última página
-    legend_y = 36
-    canvas_obj.setLineWidth(0.4)
-    canvas_obj.setStrokeColorRGB(0.75, 0.75, 0.75)
-    canvas_obj.line(x_left, legend_y + 14, x_right, legend_y + 14)
-    canvas_obj.setFont(font_regular, 8)
-    canvas_obj.setFillColorRGB(0.45, 0.45, 0.45)
-    canvas_obj.drawCentredString(
-        (x_left + x_right) / 2,
-        legend_y,
-        "Los reclamos deben hacerse dentro de las 48 hs posteriores al recibir el pedido."
-    )
-    canvas_obj.setFillColorRGB(0, 0, 0)
+    # Leyenda al pie de cada página (la última se dibuja acá)
+    draw_footer()
 
     canvas_obj.save()
     return buffer.getvalue()
