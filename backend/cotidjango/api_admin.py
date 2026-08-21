@@ -469,3 +469,95 @@ class AdminStoreConfigView(APIView):
             "minOrderAmount": float(settings_row.min_order_amount),
             "showPricesToGuests": settings_row.mostrar_precios_invitados,
         })
+
+from django.db.models.functions import TruncDate
+from datetime import datetime
+
+class AdminSalesCalendarView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
+        year = int(request.query_params.get("year", timezone.now().year))
+        month = int(request.query_params.get("month", timezone.now().month))
+        
+        qs = Order.objects.filter(
+            creado_en__year=year, 
+            creado_en__month=month,
+            status="paid"
+        )
+        
+        data = {}
+        for order in qs:
+            day_str = order.creado_en.astimezone(timezone.get_current_timezone()).strftime("%Y-%m-%d")
+            if day_str not in data:
+                data[day_str] = {"total": Decimal("0.00"), "orders": 0}
+            data[day_str]["total"] += order.total
+            data[day_str]["orders"] += 1
+            
+        for day in data:
+            data[day]["total"] = float(data[day]["total"])
+            
+        return Response(data)
+
+class AdminDailySalesView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, date_str):
+        try:
+            dt = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({"error": "Formato de fecha invalido"}, status=400)
+            
+        qs = Order.objects.filter(
+            creado_en__date=dt,
+            status="paid"
+        ).prefetch_related("items", "user")
+        
+        orders_list = []
+        total_day = Decimal("0.00")
+        for order in qs:
+            order_products = []
+            for item in order.items.all():
+                qty = item.cantidad
+                unit_price = item.precio_unitario or Decimal("0.00")
+                order_products.append({
+                    "name": item.product_name,
+                    "qty": qty,
+                    "total": float(unit_price * qty)
+                })
+            
+            orders_list.append({
+                "id": order.id,
+                "user": order.user.name if order.user else str(order.nombre),
+                "total": float(order.total),
+                "time": order.creado_en.astimezone(timezone.get_current_timezone()).strftime("%H:%M"),
+                "products": order_products
+            })
+            total_day += order.total
+        
+        return Response({
+            "date": date_str,
+            "total": float(total_day),
+            "orders": orders_list
+        })
+
+from .api_pdf import build_daily_sales_pdf
+
+class AdminDailySalesPdfView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, date_str):
+        try:
+            dt = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({"error": "Formato de fecha invalido"}, status=400)
+            
+        qs = Order.objects.filter(
+            creado_en__date=dt,
+            status="paid"
+        ).prefetch_related("items")
+        
+        pdf_bytes = build_daily_sales_pdf(date_str, qs)
+        resp = HttpResponse(pdf_bytes, content_type="application/pdf")
+        resp["Content-Disposition"] = f'attachment; filename="ventas-{date_str}.pdf"'
+        return resp

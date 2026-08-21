@@ -340,3 +340,4 @@ class OrderAdmin(admin.ModelAdmin):
     @admin.action(description="Cancelar pedidos")
     def cancelar(self, request, queryset):
         queryset.update(status="cancelled")
+

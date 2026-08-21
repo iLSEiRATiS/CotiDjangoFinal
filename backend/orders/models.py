@@ -62,6 +62,7 @@ class OrderItem(models.Model):
     class Meta:
         verbose_name = "Item de pedido"
         verbose_name_plural = "Items de pedido"
+        ordering = ["product__categoria__nombre", "product__nombre"]
 
     @property
     def subtotal(self):

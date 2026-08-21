@@ -12,6 +12,9 @@ from .api_admin import (
     AdminUserDetailView,
     AdminUsersView,
     AdminStoreConfigView,
+    AdminSalesCalendarView,
+    AdminDailySalesView,
+    AdminDailySalesPdfView,
 )
 from .api_auth import (
     AccountPasswordView,
@@ -43,6 +46,9 @@ __all__ = [
     "AdminUserDetailView",
     "AdminUsersView",
     "AdminStoreConfigView",
+    "AdminSalesCalendarView",
+    "AdminDailySalesView",
+    "AdminDailySalesPdfView",
     "AuthForgotPasswordView",
     "AuthLoginView",
     "AuthMeView",

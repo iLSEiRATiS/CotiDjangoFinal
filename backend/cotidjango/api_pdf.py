@@ -531,3 +531,104 @@ def build_shipping_label_pdf(order, label_size="thermal", num_bultos=1) -> bytes
     
     c.save()
     return buffer.getvalue()
+
+def build_daily_sales_pdf(date_str, qs) -> bytes:
+    from io import BytesIO
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.utils import ImageReader
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.pdfgen import canvas
+    from decimal import Decimal
+    
+    def _money(value):
+        try: val = Decimal(str(value or 0))
+        except: val = Decimal("0")
+        return "$" + f"{val:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        
+    buffer = BytesIO()
+    width, height = A4
+    c = canvas.Canvas(buffer, pagesize=A4)
+    
+    font_regular = "Helvetica"
+    font_bold = "Helvetica-Bold"
+    try:
+        arial = r"C:\Windows\Fonts\arial.ttf"
+        arial_bold = r"C:\Windows\Fonts\arialbd.ttf"
+        if Path(arial).exists():
+            pdfmetrics.registerFont(TTFont("Arial", arial))
+            font_regular = "Arial"
+            pdfmetrics.registerFont(TTFont("Arial-Bold", arial_bold))
+            font_bold = "Arial-Bold"
+    except: pass
+    
+    margin_l = 36
+    margin_r = 36
+    x_left = margin_l
+    x_right = width - margin_r
+    
+    logo_path = _invoice_logo_path()
+    
+    y = height - 40
+    if logo_path:
+        try:
+            img = ImageReader(str(logo_path))
+            c.drawImage(img, x_right - 120, height - 60, width=120, height=40, mask="auto", preserveAspectRatio=True)
+        except: pass
+        
+    c.setFont(font_bold, 16)
+    c.drawString(x_left, y, "Reporte de Ventas Diario")
+    y -= 20
+    c.setFont(font_regular, 12)
+    c.drawString(x_left, y, f"Fecha: {date_str}")
+    y -= 30
+    
+    total_sales = Decimal("0")
+    for order in qs:
+        total_sales += order.total
+            
+    c.setFont(font_bold, 14)
+    c.drawString(x_left, y, "Resumen General")
+    y -= 20
+    c.setFont(font_regular, 11)
+    c.drawString(x_left, y, f"Total de Pedidos: {qs.count()}")
+    c.drawString(x_left + 200, y, f"Monto Total: {_money(total_sales)}")
+    y -= 30
+    
+    for order in qs:
+        if y < 100:
+            c.showPage()
+            y = height - 50
+        
+        c.setFont(font_bold, 12)
+        cliente = order.user.name if order.user else str(order.nombre)
+        c.drawString(x_left, y, f"Pedido #{order.id} - {cliente}")
+        c.drawRightString(x_right, y, f"Monto: {_money(order.total)}")
+        y -= 20
+        
+        c.setFont(font_bold, 9)
+        c.drawString(x_left + 20, y, "Producto")
+        c.drawRightString(x_right - 80, y, "Cant.")
+        c.drawRightString(x_right, y, "Total")
+        y -= 12
+        c.setLineWidth(0.5)
+        c.line(x_left + 20, y+10, x_right, y+10)
+        
+        c.setFont(font_regular, 9)
+        for item in order.items.all():
+            if y < 50:
+                c.showPage()
+                y = height - 50
+                c.setFont(font_regular, 9)
+            unit_price = item.precio_unitario or Decimal("0")
+            item_total = unit_price * item.cantidad
+            prod_name = item.product_name
+            c.drawString(x_left + 20, y, prod_name[:50] + ("..." if len(prod_name)>50 else ""))
+            c.drawRightString(x_right - 80, y, str(item.cantidad))
+            c.drawRightString(x_right, y, _money(item_total))
+            y -= 15
+        
+        y -= 15
+        
+    c.save()
+    return buffer.getvalue()

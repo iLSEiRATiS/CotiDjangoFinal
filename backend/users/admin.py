@@ -24,9 +24,9 @@ for model in (Token, TokenProxy, Group):
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
     add_form = AdminCustomUserCreationForm
-    list_display = ("name", "email", "approval_status", "is_staff", "is_active", "date_joined")
+    list_display = ("name", "email", "phone", "document_number", "address", "city", "approval_status", "is_staff", "is_active", "date_joined")
     list_filter = ("approval_status", "is_staff", "is_superuser", "is_active")
-    search_fields = ("username", "email", "first_name", "last_name")
+    search_fields = ("name", "first_name", "last_name")
     ordering = ("-date_joined",)
     actions = ("approve_users", "reject_users", "add_staff", "remove_staff", "reset_password_default")
     fieldsets = (
