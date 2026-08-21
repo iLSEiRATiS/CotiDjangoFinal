@@ -139,7 +139,7 @@ def build_invoice_pdf(order) -> bytes:
         canvas_obj.drawCentredString(
             (x_left + x_right) / 2,
             legend_y,
-            "Los reclamos deben hacerse dentro de las 24 hs posteriores al recibir el pedido."
+            "Los reclamos deben hacerse dentro de las 48 hs posteriores al recibir el pedido."
         )
         canvas_obj.setFillColorRGB(0, 0, 0)
 
