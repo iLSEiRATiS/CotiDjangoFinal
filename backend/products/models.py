@@ -67,7 +67,7 @@ class Product(models.Model):
     creado_en = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["nombre"]
+        ordering = ["-creado_en"]
         verbose_name = "Producto"
         verbose_name_plural = "Productos"
 
