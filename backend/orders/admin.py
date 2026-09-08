@@ -203,6 +203,26 @@ class OrderAdmin(admin.ModelAdmin):
         ]
         return custom + urls
 
+    def has_module_permission(self, request):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return True
+        return super().has_module_permission(request)
+
+    def has_view_permission(self, request, obj=None):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return True
+        return super().has_view_permission(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return True
+        return super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return False
+        return super().has_delete_permission(request, obj)
+
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
         extra_context["labels_url"] = self._labels_url(object_id)

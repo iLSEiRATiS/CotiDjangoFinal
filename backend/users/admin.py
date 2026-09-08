@@ -64,6 +64,31 @@ class CustomUserAdmin(UserAdmin):
         urls = [url for url in urls if getattr(url, "name", "") != "users_customuser_password_change"]
         return custom + urls
 
+    def has_module_permission(self, request):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return False
+        return super().has_module_permission(request)
+
+    def has_view_permission(self, request, obj=None):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return False
+        return super().has_view_permission(request, obj)
+
+    def has_change_permission(self, request, obj=None):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return False
+        return super().has_change_permission(request, obj)
+
+    def has_add_permission(self, request):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return False
+        return super().has_add_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return False
+        return super().has_delete_permission(request, obj)
+
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if obj and 'password' in form.base_fields:
@@ -184,6 +209,16 @@ class CustomUserAdmin(UserAdmin):
 class GlobalStoreSettingsAdmin(admin.ModelAdmin):
     list_display = ("min_order_amount", "mostrar_precios_invitados", "actualizado_en")
     list_editable = ("mostrar_precios_invitados",)
+
+    def has_module_permission(self, request):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return False
+        return super().has_module_permission(request)
+
+    def has_view_permission(self, request, obj=None):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return False
+        return super().has_view_permission(request, obj)
 
     def has_add_permission(self, request):
         if GlobalStoreSettings.objects.exists():

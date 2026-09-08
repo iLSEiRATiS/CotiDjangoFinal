@@ -70,19 +70,19 @@ class CustomUser(AbstractUser):
         return missing
 
     def _should_be_admin(self):
-        return self.is_superuser or self.is_staff or self.role == "admin"
+        return self.role == "admin" or (self.is_superuser and self.role != "operator")
 
     def _sync_access_flags(self):
-        if self._should_be_admin():
-            self.role = "admin"
-            self.approval_status = "approved"
-            self.is_active = True
-            return
-        
         if self.role == "operator":
+            self.is_superuser = False
             self.is_staff = True
             self.approval_status = "approved"
-        elif not self.is_superuser:
+        elif self._should_be_admin():
+            self.role = "admin"
+            self.is_staff = True
+            self.approval_status = "approved"
+        elif self.role == "user":
+            self.is_superuser = False
             self.is_staff = False
             
         self.is_active = self.approval_status == "approved"
