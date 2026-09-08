@@ -24,17 +24,17 @@ for model in (Token, TokenProxy, Group):
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
     add_form = AdminCustomUserCreationForm
-    list_display = ("name", "email", "phone", "document_number", "address", "city", "approval_status", "is_staff", "is_active", "date_joined")
-    list_filter = ("approval_status", "is_staff", "is_superuser", "is_active")
+    list_display = ("name", "email", "phone", "role", "approval_status", "is_staff", "is_active", "date_joined")
+    list_filter = ("role", "approval_status", "is_staff", "is_superuser", "is_active")
     search_fields = ("name", "first_name", "last_name")
     ordering = ("-date_joined",)
-    actions = ("approve_users", "reject_users", "add_staff", "remove_staff", "reset_password_default")
+    actions = ("approve_users", "reject_users", "set_role_operator", "set_role_admin", "set_role_user", "add_staff", "remove_staff", "reset_password_default")
     fieldsets = (
         (None, {"fields": ("username",)}),
         ("Datos personales", {"fields": ("first_name", "last_name", "email", "name", "phone", "address", "city", "zip_code", "avatar")}),
         ("Estado de aprobacion", {"fields": ("approval_status",)}),
         ("Presupuesto de envio", {"fields": ("shipping_quote_amount", "shipping_quote_note", "shipping_quote_updated_at")}),
-        ("Permisos", {"fields": ("is_active", "is_staff", "is_superuser")}),
+        ("Permisos", {"fields": ("role", "is_active", "is_staff", "is_superuser")}),
         ("Fechas importantes", {"fields": ("last_login", "date_joined", "welcome_email_sent_at", "last_password_changed_at")}),
     )
     readonly_fields = ("shipping_quote_updated_at", "welcome_email_sent_at", "last_password_changed_at", "last_login", "date_joined")
@@ -135,6 +135,27 @@ class CustomUserAdmin(UserAdmin):
         for user in queryset:
             user.set_approval_status("rejected")
             user.save(update_fields=["approval_status", "is_active", "role"])
+
+    @admin.action(description="Asignar rol: Operador")
+    def set_role_operator(self, request, queryset):
+        for user in queryset:
+            user.role = "operator"
+            user.save()
+        messages.success(request, f"Se asignó el rol Operador a {queryset.count()} usuario(s).")
+
+    @admin.action(description="Asignar rol: Administrador")
+    def set_role_admin(self, request, queryset):
+        for user in queryset:
+            user.role = "admin"
+            user.save()
+        messages.success(request, f"Se asignó el rol Administrador a {queryset.count()} usuario(s).")
+
+    @admin.action(description="Asignar rol: Usuario normal")
+    def set_role_user(self, request, queryset):
+        for user in queryset:
+            user.role = "user"
+            user.save()
+        messages.success(request, f"Se asignó el rol Usuario normal a {queryset.count()} usuario(s).")
 
     @admin.action(description="Añadir staff")
     def add_staff(self, request, queryset):
