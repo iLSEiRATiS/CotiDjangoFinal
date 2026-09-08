@@ -477,6 +477,8 @@ class AdminSalesCalendarView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
     def get(self, request):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return Response({"error": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
         year = int(request.query_params.get("year", timezone.now().year))
         month = int(request.query_params.get("month", timezone.now().month))
         
@@ -503,6 +505,8 @@ class AdminDailySalesView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
     def get(self, request, date_str):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return Response({"error": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
         try:
             dt = datetime.strptime(date_str, "%Y-%m-%d").date()
         except ValueError:
@@ -547,6 +551,9 @@ class AdminDailySalesPdfView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
     def get(self, request, date_str):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            from django.http import HttpResponseForbidden
+            return HttpResponseForbidden("Forbidden")
         try:
             dt = datetime.strptime(date_str, "%Y-%m-%d").date()
         except ValueError:

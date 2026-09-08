@@ -7,6 +7,7 @@ from products.models import StoreSettings
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
         ("user", "Usuario"),
+        ("operator", "Operador"),
         ("admin", "Administrador"),
     )
     APPROVAL_CHOICES = (
@@ -77,6 +78,13 @@ class CustomUser(AbstractUser):
             self.approval_status = "approved"
             self.is_active = True
             return
+        
+        if self.role == "operator":
+            self.is_staff = True
+            self.approval_status = "approved"
+        elif not self.is_superuser:
+            self.is_staff = False
+            
         self.is_active = self.approval_status == "approved"
 
     def set_approval_status(self, status):

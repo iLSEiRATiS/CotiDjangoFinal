@@ -91,6 +91,12 @@ class OrderItemInline(admin.TabularInline):
     verbose_name = "Producto del pedido"
     verbose_name_plural = "Productos del pedido"
 
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return tuple(f for f in fields if f not in ("precio_unitario", "subtotal"))
+        return fields
+
     def attr_name_1(self, obj):
         if not obj or not obj.atributos:
             return "-"
@@ -200,9 +206,32 @@ class OrderAdmin(admin.ModelAdmin):
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
         extra_context["labels_url"] = self._labels_url(object_id)
-        extra_context["download_pdf_url"] = self._download_pdf_url(object_id)
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            extra_context["download_pdf_url"] = ""
+        else:
+            extra_context["download_pdf_url"] = self._download_pdf_url(object_id)
         extra_context["stock_pdf_url"] = self._stock_pdf_url(object_id)
         return super().change_view(request, object_id, form_url=form_url, extra_context=extra_context)
+
+    def get_list_display(self, request):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return ("id", "nombre", "email", "status", "creado_en", "acciones_operator")
+        return super().get_list_display(request)
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            new_fieldsets = []
+            for name, opts in fieldsets:
+                if name == "Pedido":
+                    fields = tuple(f for f in opts.get("fields", []) if f not in ("total", "envio"))
+                    new_opts = dict(opts)
+                    new_opts["fields"] = fields
+                    new_fieldsets.append((name, new_opts))
+                else:
+                    new_fieldsets.append((name, opts))
+            return new_fieldsets
+        return fieldsets
 
     def _labels_url(self, object_id):
         if not object_id:
@@ -238,7 +267,26 @@ class OrderAdmin(admin.ModelAdmin):
             stock_url,
         )
 
+    @admin.display(description="Acciones")
+    def acciones_operator(self, obj):
+        change_url = reverse("admin:orders_order_change", args=[obj.pk])
+        labels_url = reverse("admin:orders_order_labels", args=[obj.pk])
+        stock_url = reverse("admin:orders_order_stock_pdf", args=[obj.pk])
+        return format_html(
+            '<div style="display: flex; gap: 4px; flex-wrap: wrap; min-width: max-content;">'
+            '<a class="button" href="{}">Ver</a>'
+            '<a class="button default" href="{}">Rótulo</a>'
+            '<a class="button default" href="{}">Pedir Stock</a>'
+            '</div>',
+            change_url,
+            labels_url,
+            stock_url,
+        )
+
     def download_pdf_view(self, request, object_id):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            from django.http import HttpResponseForbidden
+            return HttpResponseForbidden("No tienes permiso para descargar presupuestos.")
         order = get_object_or_404(Order, pk=object_id)
         pdf = build_invoice_pdf(order)
         response = HttpResponse(pdf, content_type="application/pdf")

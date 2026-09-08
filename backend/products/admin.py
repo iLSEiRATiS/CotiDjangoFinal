@@ -108,6 +108,24 @@ class ProductAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("user", "categoria")
 
+    def get_list_display(self, request):
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            return tuple(f for f in self.list_display if f != "precio")
+        return super().get_list_display(request)
+
+    def get_changelist_instance(self, request):
+        cl = super().get_changelist_instance(request)
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            cl.list_editable = tuple(f for f in cl.list_editable if f != "precio")
+        return cl
+
+    def get_exclude(self, request, obj=None):
+        excludes = list(super().get_exclude(request, obj) or [])
+        if hasattr(request.user, "role") and request.user.role == "operator":
+            if "precio" not in excludes:
+                excludes.append("precio")
+        return tuple(excludes)
+
     def get_urls(self):
         urls = super().get_urls()
         custom = [
