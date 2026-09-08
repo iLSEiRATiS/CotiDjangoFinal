@@ -28,8 +28,14 @@ sudo systemctl restart gunicorn
 ---
 
 ## 3. Asignar el Rol Operador a un Usuario
-Desde el panel de Django Admin (`/admin/` o tu URL segura `/panel-seguro-2026-Coti-Store/`):
-1. Ve a **Usuarios** (`users` -> `CustomUser`).
-2. Selecciona o crea el usuario correspondiente.
-3. En el campo **Rol**, selecciona **Operador**.
-4. Al guardar, Django le otorgará automáticamente acceso al panel (`is_staff = True`) aplicando todas las restricciones de visualización de precios y totales.
+Tienes 2 formas muy fáciles desde el panel de Django Admin (`users` -> `CustomUser`):
+
+* **Opción A (Rápida desde el listado):**
+  1. En la lista de usuarios, marca la casilla del usuario (o de varios a la vez).
+  2. En el desplegable **Acción: ---------**, selecciona **"Asignar rol: Operador"**.
+  3. Haz clic en el botón **Ejecutar**.
+
+* **Opción B (Desde la ficha del usuario):**
+  1. Haz clic sobre el nombre del usuario para entrar a su edición.
+  2. En la sección **Permisos**, en el campo **Rol**, selecciona **Operador**.
+  3. Haz clic en **Guardar**. Al guardar, Django le asigna automáticamente `is_staff = True` y acceso al panel con las restricciones aplicadas.
