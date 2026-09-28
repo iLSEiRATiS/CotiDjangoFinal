@@ -7,7 +7,7 @@
 }
 
 .inline-group .tabular fieldset.module {
-    min-width: 1200px !important; /* Aumentamos para asegurar que entren todas las columnas */
+    min-width: 1350px !important; /* Asegurar espacio suficiente para todas las columnas */
     overflow-x: auto !important;
 }
 
@@ -15,9 +15,70 @@
     width: 100% !important;
 }
 
-/* Ajustes para las nuevas columnas de atributos */
+/* Ajustes para las columnas de atributos */
 .column-attr_name_1, .column-attr_value_1 {
     white-space: nowrap !important;
     min-width: 150px !important;
     text-align: left !important;
 }
+
+/* Ajustes para la columna Actualizar en tienda */
+.column-actualizar_precio_producto,
+.field-actualizar_precio_producto {
+    text-align: center !important;
+    white-space: nowrap !important;
+    min-width: 160px !important;
+    vertical-align: middle !important;
+}
+
+.column-actualizar_precio_producto {
+    color: #1f7a4d !important;
+    font-weight: 700 !important;
+}
+
+.field-actualizar_precio_producto input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    cursor: pointer !important;
+    accent-color: #1f7a4d !important;
+    margin: 0 auto !important;
+    display: inline-block !important;
+}
+
+/* Fila resaltada cuando se marca actualizar en tienda */
+tr.row-update-catalog-active {
+    background-color: #f0fdf4 !important;
+}
+
+tr.row-update-catalog-active .field-precio_unitario input {
+    border-color: #1f7a4d !important;
+    background-color: #f6fffa !important;
+    box-shadow: 0 0 0 2px rgba(31, 122, 77, 0.2) !important;
+}
+
+/* Pestañas de navegación entre pedidos a procesar y pagados */
+.orders-tab-navigation a.button {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #334155 !important;
+    transition: all 0.2s ease !important;
+}
+
+.orders-tab-navigation a.button:hover {
+    background: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+    transform: translateY(-1px) !important;
+}
+
+.orders-tab-navigation a.button.active-order-tab {
+    background-color: #1f7a4d !important;
+    border-color: #1f7a4d !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(31, 122, 77, 0.25) !important;
+}
+
+.orders-tab-navigation a.button.active-order-tab .order-count-badge {
+    background: rgba(255, 255, 255, 0.28) !important;
+    color: #ffffff !important;
+}
+

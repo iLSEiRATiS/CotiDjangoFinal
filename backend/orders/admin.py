@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
@@ -9,7 +9,7 @@ from django.utils.safestring import mark_safe
 
 from products.models import Product
 
-from .models import Order, OrderItem
+from .models import Order, OrderItem, PaidOrder
 from cotidjango.api_pdf import (
     LABEL_SIZES,
     build_shipping_label_pdf,
@@ -55,6 +55,15 @@ class OrderAdminForm(forms.ModelForm):
 
 
 class OrderItemAdminForm(forms.ModelForm):
+    actualizar_precio_producto = forms.BooleanField(
+        label="¿Actualizar en tienda?",
+        required=False,
+        initial=False,
+        widget=forms.CheckboxInput(attrs={
+            "title": "Tildá esta casilla para que el nuevo precio impacte en el producto de la página web al guardar",
+        }),
+    )
+
     class Meta:
         model = OrderItem
         fields = "__all__"
@@ -70,6 +79,9 @@ class OrderItemAdminForm(forms.ModelForm):
             self.fields["precio_unitario"].label = "Precio unitario"
             self.fields["precio_unitario"].required = False
             self.fields["precio_unitario"].help_text = ""
+        if "actualizar_precio_producto" in self.fields:
+            self.fields["actualizar_precio_producto"].label = "¿Actualizar en tienda?"
+            self.fields["actualizar_precio_producto"].help_text = ""
 
     def clean(self):
         cleaned = super().clean()
@@ -84,7 +96,7 @@ class OrderItemInline(admin.TabularInline):
     model = OrderItem
     form = OrderItemAdminForm
     extra = 0
-    fields = ("product", "cantidad", "precio_unitario", "attr_name_1", "attr_value_1", "subtotal")
+    fields = ("product", "cantidad", "precio_unitario", "actualizar_precio_producto", "attr_name_1", "attr_value_1", "subtotal")
     readonly_fields = ("subtotal", "attr_name_1", "attr_value_1")
     autocomplete_fields = ("product",)
     show_change_link = False
@@ -94,7 +106,7 @@ class OrderItemInline(admin.TabularInline):
     def get_fields(self, request, obj=None):
         fields = super().get_fields(request, obj)
         if hasattr(request.user, "role") and request.user.role == "operator":
-            return tuple(f for f in fields if f not in ("precio_unitario", "subtotal"))
+            return tuple(f for f in fields if f not in ("precio_unitario", "actualizar_precio_producto", "subtotal"))
         return fields
 
     def attr_name_1(self, obj):
@@ -132,6 +144,7 @@ class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ("total",)
     actions = ["aprobar", "marcar_pagado", "cancelar"]
     change_form_template = "admin/orders/order/change_form.html"
+    change_list_template = "admin/orders/order/change_list.html"
     fieldsets = (
         (
             "Cliente",
@@ -172,33 +185,45 @@ class OrderAdmin(admin.ModelAdmin):
         css = {"all": ("admin/orders/order_admin.css",)}
         js = ("admin/orders/order_item_price_v2.js",)
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if self.model == PaidOrder:
+            return qs.filter(status="paid")
+        return qs.exclude(status="paid")
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context["pending_orders_count"] = Order.objects.exclude(status="paid").count()
+        extra_context["paid_orders_count"] = Order.objects.filter(status="paid").count()
+        return super().changelist_view(request, extra_context=extra_context)
+
     def get_urls(self):
         urls = super().get_urls()
         custom = [
             path(
                 "<path:object_id>/rotulos/",
                 self.admin_site.admin_view(self.labels_view),
-                name="orders_order_labels",
+                name=f"{self.opts.app_label}_{self.opts.model_name}_labels",
             ),
             path(
                 "<path:object_id>/descargar-pdf/",
                 self.admin_site.admin_view(self.download_pdf_view),
-                name="orders_order_download_pdf",
+                name=f"{self.opts.app_label}_{self.opts.model_name}_download_pdf",
             ),
             path(
                 "<path:object_id>/descargar-stock-pdf/",
                 self.admin_site.admin_view(self.stock_pdf_view),
-                name="orders_order_stock_pdf",
+                name=f"{self.opts.app_label}_{self.opts.model_name}_stock_pdf",
             ),
             path(
                 "product-price/<int:product_id>/",
                 self.admin_site.admin_view(self.product_price_view),
-                name="orders_order_product_price",
+                name=f"{self.opts.app_label}_{self.opts.model_name}_product_price",
             ),
             path(
                 "user-shipping/<int:user_id>/",
                 self.admin_site.admin_view(self.user_shipping_view),
-                name="orders_order_user_shipping",
+                name=f"{self.opts.app_label}_{self.opts.model_name}_user_shipping",
             ),
         ]
         return custom + urls
@@ -256,24 +281,24 @@ class OrderAdmin(admin.ModelAdmin):
     def _labels_url(self, object_id):
         if not object_id:
             return ""
-        return reverse("admin:orders_order_labels", args=[object_id])
+        return reverse(f"admin:{self.opts.app_label}_{self.opts.model_name}_labels", args=[object_id])
 
     def _download_pdf_url(self, object_id):
         if not object_id:
             return ""
-        return reverse("admin:orders_order_download_pdf", args=[object_id])
+        return reverse(f"admin:{self.opts.app_label}_{self.opts.model_name}_download_pdf", args=[object_id])
 
     def _stock_pdf_url(self, object_id):
         if not object_id:
             return ""
-        return reverse("admin:orders_order_stock_pdf", args=[object_id])
+        return reverse(f"admin:{self.opts.app_label}_{self.opts.model_name}_stock_pdf", args=[object_id])
 
     @admin.display(description="Acciones")
     def acciones(self, obj):
-        change_url = reverse("admin:orders_order_change", args=[obj.pk])
-        labels_url = reverse("admin:orders_order_labels", args=[obj.pk])
-        pdf_url = reverse("admin:orders_order_download_pdf", args=[obj.pk])
-        stock_url = reverse("admin:orders_order_stock_pdf", args=[obj.pk])
+        change_url = reverse(f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change", args=[obj.pk])
+        labels_url = self._labels_url(obj.pk)
+        pdf_url = self._download_pdf_url(obj.pk)
+        stock_url = self._stock_pdf_url(obj.pk)
         return format_html(
             '<div style="display: flex; gap: 4px; flex-wrap: wrap; min-width: max-content;">'
             '<a class="button" href="{}">Ver</a>'
@@ -289,9 +314,9 @@ class OrderAdmin(admin.ModelAdmin):
 
     @admin.display(description="Acciones")
     def acciones_operator(self, obj):
-        change_url = reverse("admin:orders_order_change", args=[obj.pk])
-        labels_url = reverse("admin:orders_order_labels", args=[obj.pk])
-        stock_url = reverse("admin:orders_order_stock_pdf", args=[obj.pk])
+        change_url = reverse(f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change", args=[obj.pk])
+        labels_url = self._labels_url(obj.pk)
+        stock_url = self._stock_pdf_url(obj.pk)
         return format_html(
             '<div style="display: flex; gap: 4px; flex-wrap: wrap; min-width: max-content;">'
             '<a class="button" href="{}">Ver</a>'
@@ -382,6 +407,54 @@ class OrderAdmin(admin.ModelAdmin):
             }
         )
 
+    def save_formset(self, request, form, formset, change):
+        if formset.model == OrderItem:
+            updated_products = {}
+            is_operator = hasattr(request.user, "role") and request.user.role == "operator"
+
+            if not is_operator:
+                for form_item in formset.forms:
+                    if not form_item.is_valid() or form_item.cleaned_data.get("DELETE"):
+                        continue
+
+                    should_update = form_item.cleaned_data.get("actualizar_precio_producto")
+                    product = form_item.cleaned_data.get("product") or getattr(form_item.instance, "product", None)
+                    new_price = form_item.cleaned_data.get("precio_unitario")
+
+                    if should_update and product and new_price is not None:
+                        prod_obj = Product.objects.filter(pk=product.pk).first()
+                        if prod_obj:
+                            prod_obj.precio = new_price
+
+                            attrs = getattr(form_item.instance, "atributos", None) or form_item.cleaned_data.get("atributos")
+                            if prod_obj.atributos_precio and isinstance(prod_obj.atributos_precio, dict) and attrs and isinstance(attrs, dict):
+                                new_attrs_price = dict(prod_obj.atributos_precio)
+                                attrs_updated = False
+                                for attr_name, val in attrs.items():
+                                    for p_attr, p_map in new_attrs_price.items():
+                                        if str(p_attr).strip().lower() == str(attr_name).strip().lower() and isinstance(p_map, dict):
+                                            p_map_copy = dict(p_map)
+                                            for p_val in p_map:
+                                                if str(p_val).strip().lower() == str(val).strip().lower():
+                                                    p_map_copy[p_val] = float(new_price)
+                                                    attrs_updated = True
+                                            new_attrs_price[p_attr] = p_map_copy
+                                if attrs_updated:
+                                    prod_obj.atributos_precio = new_attrs_price
+
+                            prod_obj.save()
+                            updated_products[prod_obj.id] = f"{prod_obj.nombre} (${new_price})"
+
+            super().save_formset(request, form, formset, change)
+
+            if updated_products:
+                messages.success(
+                    request,
+                    f"¡Precios impactados en la página web con éxito! {', '.join(updated_products.values())}"
+                )
+        else:
+            super().save_formset(request, form, formset, change)
+
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
         form.instance.recalc_total()
@@ -401,11 +474,33 @@ class OrderAdmin(admin.ModelAdmin):
     def aprobar(self, request, queryset):
         queryset.update(status="approved")
 
-    @admin.action(description="Marcar como pagado")
+    @admin.action(description="Marcar como pagado (transferir a Pedidos pagados)")
     def marcar_pagado(self, request, queryset):
-        queryset.update(status="paid")
+        count = queryset.update(status="paid")
+        self.message_user(
+            request,
+            f"Se marcaron {count} pedido(s) como pagados y se transfirieron a 'Pedidos pagados'.",
+            messages.SUCCESS,
+        )
 
-    @admin.action(description="Cancelar pedidos")
+    @admin.action(description="Cancelar pedidos seleccionados")
     def cancelar(self, request, queryset):
         queryset.update(status="cancelled")
+
+
+@admin.register(PaidOrder)
+class PaidOrderAdmin(OrderAdmin):
+    list_display = ("id", "nombre", "email", "status", "total", "creado_en", "acciones")
+    list_filter = ("creado_en",)
+    actions = ["desmarcar_pagado", "cancelar"]
+
+    @admin.action(description="Revertir pago (devolver a Pedidos a procesar)")
+    def desmarcar_pagado(self, request, queryset):
+        count = queryset.update(status="approved")
+        self.message_user(
+            request,
+            f"Se revirtieron {count} pedido(s) y volvieron a 'Pedidos a procesar'.",
+            messages.INFO,
+        )
+
 

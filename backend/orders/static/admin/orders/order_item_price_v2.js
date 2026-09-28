@@ -354,6 +354,26 @@
     syncSelect(select);
   }
 
+  function bindUpdateCatalogCheckbox(checkbox) {
+    if (!checkbox || checkbox.dataset.updateCatalogBound === '1') return;
+    checkbox.dataset.updateCatalogBound = '1';
+    checkbox.title = 'Tildá esta casilla para que este nuevo precio impacte en el producto de la página web al guardar el pedido.';
+
+    function updateRowHighlight() {
+      const row = findRowFromInput(checkbox);
+      if (row) {
+        if (checkbox.checked) {
+          row.classList.add('row-update-catalog-active');
+        } else {
+          row.classList.remove('row-update-catalog-active');
+        }
+      }
+    }
+
+    checkbox.addEventListener('change', updateRowHighlight);
+    updateRowHighlight();
+  }
+
   function bindAll() {
     simplifyInlineControls();
     document.querySelectorAll('select[name$="-product"]').forEach(bindSelect);
@@ -369,6 +389,7 @@
       }
     });
     document.querySelectorAll('input[name$="-precio_unitario"]').forEach(bindPriceInput);
+    document.querySelectorAll('input[name$="-actualizar_precio_producto"]').forEach(bindUpdateCatalogCheckbox);
     document.querySelectorAll('input[name$="-cantidad"], input[name$="-DELETE"]').forEach((input) => {
       if (input.dataset.liveTotalBound === '1') return;
       input.dataset.liveTotalBound = '1';

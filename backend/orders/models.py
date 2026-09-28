@@ -51,6 +51,13 @@ class Order(models.Model):
         self.save(update_fields=["total"])
 
 
+class PaidOrder(Order):
+    class Meta:
+        proxy = True
+        verbose_name = "Pedido pagado"
+        verbose_name_plural = "Pedidos pagados"
+
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="order_items")
