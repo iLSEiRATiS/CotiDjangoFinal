@@ -60,7 +60,13 @@ class PaidOrder(Order):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="order_items")
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.PROTECT,
+        related_name="order_items",
+        null=True,
+        blank=True,
+    )
     product_name = models.CharField(max_length=255, blank=True, default="")
     cantidad = models.PositiveIntegerField(default=1)
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
@@ -78,4 +84,4 @@ class OrderItem(models.Model):
         return self.precio_unitario * (self.cantidad or 0)
 
     def __str__(self):
-        return f"{self.product} x{self.cantidad}"
+        return f"{self.product_name or self.product or 'Producto manual'} x{self.cantidad}"

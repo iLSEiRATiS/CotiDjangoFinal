@@ -153,7 +153,8 @@
       link.classList.add('order-remove-item');
     });
     document.querySelectorAll('.inline-group .add-row a.addlink').forEach((link) => {
-      link.textContent = '+ Agregar producto';
+      link.textContent = '+ Agregar producto o ítem manual';
+      link.title = 'Seleccioná un producto del catálogo o completá Nombre manual para cargar uno que todavía no está en la web.';
     });
   }
 
@@ -374,6 +375,12 @@
     updateRowHighlight();
   }
 
+  function bindManualProductName(input) {
+    if (!input || input.dataset.manualProductNameBound === '1') return;
+    input.dataset.manualProductNameBound = '1';
+    input.title = 'Usá este campo para productos que todavía no existen en el catálogo web.';
+  }
+
   function bindAll() {
     simplifyInlineControls();
     document.querySelectorAll('select[name$="-product"]').forEach(bindSelect);
@@ -390,6 +397,7 @@
     });
     document.querySelectorAll('input[name$="-precio_unitario"]').forEach(bindPriceInput);
     document.querySelectorAll('input[name$="-actualizar_precio_producto"]').forEach(bindUpdateCatalogCheckbox);
+    document.querySelectorAll('input[name$="-product_name"]').forEach(bindManualProductName);
     document.querySelectorAll('input[name$="-cantidad"], input[name$="-DELETE"]').forEach((input) => {
       if (input.dataset.liveTotalBound === '1') return;
       input.dataset.liveTotalBound = '1';

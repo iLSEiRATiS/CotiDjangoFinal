@@ -7,7 +7,7 @@
 }
 
 .inline-group .tabular fieldset.module {
-    min-width: 1350px !important; /* Asegurar espacio suficiente para todas las columnas */
+    min-width: 1540px !important; /* Asegurar espacio suficiente para catálogo y carga manual */
     overflow-x: auto !important;
 }
 
@@ -20,6 +20,21 @@
     white-space: nowrap !important;
     min-width: 150px !important;
     text-align: left !important;
+}
+
+/* El campo manual queda junto al catálogo para hacer evidente que son alternativas. */
+.column-product_name,
+.field-product_name {
+    min-width: 235px !important;
+}
+
+.field-product_name input {
+    min-width: 215px !important;
+}
+
+.field-product_name input::placeholder {
+    color: #64748b !important;
+    opacity: 1 !important;
 }
 
 /* Ajustes para la columna Actualizar en tienda */

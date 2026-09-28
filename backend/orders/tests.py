@@ -194,6 +194,42 @@ class OrderItemPriceUpdateTests(TestCase):
         # La otra variante no debe modificarse
         self.assertEqual(prod_with_attrs.atributos_precio["Color"]["Plateado"], 900.0)
 
+    def test_manual_order_item_is_saved_without_catalog_product(self):
+        OrderItemFormSet = inlineformset_factory(
+            Order,
+            OrderItem,
+            form=OrderItemAdminForm,
+            fields=("product", "product_name", "cantidad", "precio_unitario", "actualizar_precio_producto"),
+            extra=0,
+        )
+        data = {
+            "items-TOTAL_FORMS": "1",
+            "items-INITIAL_FORMS": "0",
+            "items-MIN_NUM_FORMS": "0",
+            "items-MAX_NUM_FORMS": "1000",
+            "items-0-product": "",
+            "items-0-product_name": "Globo metalizado especial x10",
+            "items-0-cantidad": "3",
+            "items-0-precio_unitario": "425.50",
+        }
+        formset = OrderItemFormSet(data, instance=self.order, prefix="items")
+        self.assertTrue(formset.is_valid(), formset.errors)
+
+        manual_item = formset.save()[0]
+        self.assertIsNone(manual_item.product)
+        self.assertEqual(manual_item.product_name, "Globo metalizado especial x10")
+        self.assertEqual(manual_item.subtotal, Decimal("1276.50"))
+
+    def test_item_requires_catalog_product_or_manual_name(self):
+        form = OrderItemAdminForm(data={
+            "cantidad": "1",
+            "precio_unitario": "100.00",
+            "product_name": "",
+        })
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("product_name", form.errors)
+
 
 class PaidOrderAdminTests(TestCase):
     def setUp(self):

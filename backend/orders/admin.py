@@ -71,8 +71,17 @@ class OrderItemAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if "product" in self.fields:
-            self.fields["product"].label = "Producto"
+            self.fields["product"].label = "Producto del catálogo"
+            self.fields["product"].required = False
             self.fields["product"].help_text = ""
+        if "product_name" in self.fields:
+            self.fields["product_name"].label = "Nombre manual"
+            self.fields["product_name"].required = False
+            self.fields["product_name"].help_text = ""
+            self.fields["product_name"].widget.attrs.update({
+                "placeholder": "Solo si no está en la web",
+                "title": "Dejá vacío Producto del catálogo y escribí acá si el producto todavía no existe en la web.",
+            })
         if "cantidad" in self.fields:
             self.fields["cantidad"].label = "Cantidad"
         if "precio_unitario" in self.fields:
@@ -87,8 +96,20 @@ class OrderItemAdminForm(forms.ModelForm):
         cleaned = super().clean()
         product = cleaned.get("product")
         price = cleaned.get("precio_unitario")
+        product_name = (cleaned.get("product_name") or "").strip()
+
+        if not product and not product_name:
+            self.add_error(
+                "product_name",
+                "Seleccioná un producto del catálogo o escribí el nombre del producto manual.",
+            )
+        elif product and not product_name:
+            cleaned["product_name"] = product.nombre
+
         if product and price in (None, ""):
             cleaned["precio_unitario"] = product.precio
+        if not product:
+            cleaned["actualizar_precio_producto"] = False
         return cleaned
 
 
@@ -96,7 +117,16 @@ class OrderItemInline(admin.TabularInline):
     model = OrderItem
     form = OrderItemAdminForm
     extra = 0
-    fields = ("product", "cantidad", "precio_unitario", "actualizar_precio_producto", "attr_name_1", "attr_value_1", "subtotal")
+    fields = (
+        "product",
+        "product_name",
+        "cantidad",
+        "precio_unitario",
+        "actualizar_precio_producto",
+        "attr_name_1",
+        "attr_value_1",
+        "subtotal",
+    )
     readonly_fields = ("subtotal", "attr_name_1", "attr_value_1")
     autocomplete_fields = ("product",)
     show_change_link = False
