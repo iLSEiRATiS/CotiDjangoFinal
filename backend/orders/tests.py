@@ -4,8 +4,14 @@ from django.contrib.auth import get_user_model
 from django.forms.models import inlineformset_factory
 from django.test import RequestFactory, TestCase
 
-from orders.admin import OrderAdmin, OrderItemAdminForm, OrderItemInline, PaidOrderAdmin
-from orders.models import Order, OrderItem, PaidOrder
+from orders.admin import (
+    OrderAdmin,
+    OrderItemAdminForm,
+    OrderItemInline,
+    PaidOrderAdmin,
+    PendingDeliveryOrderAdmin,
+)
+from orders.models import Order, OrderItem, PaidOrder, PendingDeliveryOrder
 from products.models import Product
 
 User = get_user_model()
@@ -236,6 +242,7 @@ class PaidOrderAdminTests(TestCase):
         self.site = AdminSite()
         self.order_admin = OrderAdmin(Order, self.site)
         self.paid_order_admin = PaidOrderAdmin(PaidOrder, self.site)
+        self.pending_delivery_admin = PendingDeliveryOrderAdmin(PendingDeliveryOrder, self.site)
         self.rf = RequestFactory()
         self.user = User.objects.create_superuser(
             username="superadmin",
@@ -269,6 +276,15 @@ class PaidOrderAdminTests(TestCase):
             status="paid",
             total=Decimal("300.00"),
         )
+        self.order_pending_delivery = Order.objects.create(
+            user=self.user,
+            nombre="Cliente Pendiente de Entrega",
+            email="entrega@test.com",
+            direccion="Calle 4",
+            ciudad="CABA",
+            status="shipped",
+            total=Decimal("400.00"),
+        )
 
     def test_order_admin_excludes_paid_orders(self):
         req = self.rf.get("/admin/orders/order/")
@@ -278,6 +294,7 @@ class PaidOrderAdminTests(TestCase):
         self.assertIn(self.order_pending, qs)
         self.assertIn(self.order_approved, qs)
         self.assertNotIn(self.order_paid, qs)
+        self.assertNotIn(self.order_pending_delivery, qs)
 
     def test_paid_order_admin_includes_only_paid_orders(self):
         req = self.rf.get("/admin/orders/paidorder/")
@@ -287,6 +304,16 @@ class PaidOrderAdminTests(TestCase):
         self.assertIn(self.order_paid, qs)
         self.assertNotIn(self.order_pending, qs)
         self.assertNotIn(self.order_approved, qs)
+        self.assertNotIn(self.order_pending_delivery, qs)
+
+    def test_pending_delivery_admin_includes_only_pending_delivery_orders(self):
+        req = self.rf.get("/admin/orders/pendingdeliveryorder/")
+        req.user = self.user
+        qs = self.pending_delivery_admin.get_queryset(req)
+
+        self.assertIn(self.order_pending_delivery, qs)
+        self.assertNotIn(self.order_pending, qs)
+        self.assertNotIn(self.order_paid, qs)
 
     def test_marcar_pagado_action_transfers_order_to_paid_tab(self):
         req = self.rf.post("/admin/orders/order/")
@@ -320,6 +347,38 @@ class PaidOrderAdminTests(TestCase):
         self.assertIn(self.order_paid, qs_pending)
         self.assertNotIn(self.order_paid, qs_paid)
 
+    def test_paid_order_can_move_to_pending_delivery_tab(self):
+        req = self.rf.post("/admin/orders/paidorder/")
+        req.user = self.user
+        from django.contrib.messages.storage.fallback import FallbackStorage
+        setattr(req, "session", {})
+        setattr(req, "_messages", FallbackStorage(req))
+
+        self.paid_order_admin.marcar_pendiente_entrega(
+            req,
+            PaidOrder.objects.filter(pk=self.order_paid.pk),
+        )
+        self.order_paid.refresh_from_db()
+        self.assertEqual(self.order_paid.status, "shipped")
+        self.assertIn(self.order_paid, self.pending_delivery_admin.get_queryset(req))
+        self.assertNotIn(self.order_paid, self.paid_order_admin.get_queryset(req))
+
+    def test_pending_delivery_order_can_return_to_paid_tab(self):
+        req = self.rf.post("/admin/orders/pendingdeliveryorder/")
+        req.user = self.user
+        from django.contrib.messages.storage.fallback import FallbackStorage
+        setattr(req, "session", {})
+        setattr(req, "_messages", FallbackStorage(req))
+
+        self.pending_delivery_admin.devolver_a_pagados(
+            req,
+            PendingDeliveryOrder.objects.filter(pk=self.order_pending_delivery.pk),
+        )
+        self.order_pending_delivery.refresh_from_db()
+        self.assertEqual(self.order_pending_delivery.status, "paid")
+        self.assertIn(self.order_pending_delivery, self.paid_order_admin.get_queryset(req))
+        self.assertNotIn(self.order_pending_delivery, self.pending_delivery_admin.get_queryset(req))
+
     def test_changelist_view_has_accurate_counts(self):
         req = self.rf.get("/admin/orders/order/")
         req.user = self.user
@@ -330,4 +389,5 @@ class PaidOrderAdminTests(TestCase):
         resp = self.order_admin.changelist_view(req)
         self.assertEqual(resp.context_data["pending_orders_count"], 2)
         self.assertEqual(resp.context_data["paid_orders_count"], 1)
+        self.assertEqual(resp.context_data["pending_delivery_orders_count"], 1)
 

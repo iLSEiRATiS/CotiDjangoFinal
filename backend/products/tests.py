@@ -8,10 +8,12 @@ from django.core.management import call_command
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
-from rest_framework.test import APIRequestFactory
+from rest_framework.test import APIRequestFactory, force_authenticate
 
-from products.models import Category, Offer, Product, ProductImage
+from products.models import Category, Offer, Product, ProductImage, StoreSettings
 from products.product_importer import ProductXlsxImporter
+from cotidjango.api_auth import AuthLoginView, AuthMeView
+from cotidjango.api_contact import StoreConfigView
 from cotidjango.api_products import CategoriesListView, ProductListView
 from users.models import CustomUser
 
@@ -788,3 +790,56 @@ class OffersVirtualCategoryApiTests(TestCase):
         self.assertEqual(response.data["items"][0]["name"], "Producto con Oferta")
         self.assertEqual(response.data["items"][0]["priceOriginal"], 100.0)
         self.assertEqual(response.data["items"][0]["price"], 80.0)
+
+
+class MaintenanceModeApiTests(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.settings = StoreSettings.get_solo()
+        self.settings.maintenance_mode = True
+        self.settings.save()
+        self.customer = CustomUser.objects.create_user(
+            username="maintenance-customer",
+            email="customer@example.com",
+            password="secret123",
+            approval_status="approved",
+        )
+        self.staff = CustomUser.objects.create_user(
+            username="maintenance-staff",
+            email="staff@example.com",
+            password="secret123",
+            role="admin",
+            approval_status="approved",
+        )
+
+    def test_public_store_config_exposes_maintenance_state_without_cache(self):
+        request = self.factory.get("/api/store-config")
+        response = StoreConfigView.as_view()(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data["maintenanceMode"])
+        self.assertEqual(response.data["maintenanceTitle"], "Estamos en mantenimiento")
+        self.assertEqual(response["Cache-Control"], "no-store, max-age=0")
+
+    def test_maintenance_blocks_customer_login_without_invalidating_existing_session(self):
+        login_request = self.factory.post(
+            "/api/auth/login", {"email": self.customer.email, "password": "secret123"}, format="json"
+        )
+        login_response = AuthLoginView.as_view()(login_request)
+
+        self.assertEqual(login_response.status_code, 503)
+        self.assertTrue(login_response.data["maintenance"])
+
+        current_session_request = self.factory.get("/api/auth/me")
+        force_authenticate(current_session_request, user=self.customer)
+        session_response = AuthMeView.as_view()(current_session_request)
+        self.assertEqual(session_response.status_code, 200)
+
+    def test_maintenance_allows_internal_staff_login(self):
+        request = self.factory.post(
+            "/api/auth/login", {"email": self.staff.email, "password": "secret123"}, format="json"
+        )
+        response = AuthLoginView.as_view()(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("token", response.data)

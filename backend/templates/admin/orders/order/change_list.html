@@ -6,7 +6,6 @@
   <a href="{% url 'admin:orders_order_changelist' %}" 
      class="button {% if opts.model_name == 'order' %}default active-order-tab{% endif %}"
      style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; padding: 8px 16px; border-radius: 6px; text-decoration: none;">
-    <span style="font-size: 16px;">📋</span>
     <strong>Pedidos a procesar</strong>
     <span class="order-count-badge" style="background: rgba(0,0,0,0.12); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">
       {{ pending_orders_count|default:"0" }}
@@ -16,10 +15,18 @@
   <a href="{% url 'admin:orders_paidorder_changelist' %}" 
      class="button {% if opts.model_name == 'paidorder' %}default active-order-tab{% endif %}"
      style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; padding: 8px 16px; border-radius: 6px; text-decoration: none;">
-    <span style="font-size: 16px;">💰</span>
     <strong>Pedidos pagados</strong>
     <span class="order-count-badge" style="background: rgba(0,0,0,0.12); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">
       {{ paid_orders_count|default:"0" }}
+    </span>
+  </a>
+
+  <a href="{% url 'admin:orders_pendingdeliveryorder_changelist' %}"
+     class="button {% if opts.model_name == 'pendingdeliveryorder' %}default active-order-tab{% endif %}"
+     style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; padding: 8px 16px; border-radius: 6px; text-decoration: none;">
+    <strong>Pendientes a entregar</strong>
+    <span class="order-count-badge" style="background: rgba(0,0,0,0.12); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">
+      {{ pending_delivery_orders_count|default:"0" }}
     </span>
   </a>
 </div>

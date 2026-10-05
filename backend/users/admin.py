@@ -207,8 +207,19 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(GlobalStoreSettings)
 class GlobalStoreSettingsAdmin(admin.ModelAdmin):
-    list_display = ("min_order_amount", "mostrar_precios_invitados", "actualizado_en")
-    list_editable = ("mostrar_precios_invitados",)
+    list_display = ("min_order_amount", "maintenance_mode", "mostrar_precios_invitados", "actualizado_en")
+    list_editable = ("maintenance_mode", "mostrar_precios_invitados",)
+    list_display_links = ("min_order_amount",)
+    fieldsets = (
+        (
+            "Modo mantenimiento",
+            {
+                "fields": ("maintenance_mode", "maintenance_title", "maintenance_message"),
+                "description": "Al activarlo, los clientes ven una pantalla de mantenimiento. Las sesiones existentes no se cierran y el equipo interno puede continuar ingresando.",
+            },
+        ),
+        ("Compra", {"fields": ("min_order_amount", "mostrar_precios_invitados")}),
+    )
 
     def has_module_permission(self, request):
         if hasattr(request.user, "role") and request.user.role == "operator":

@@ -13,7 +13,7 @@ class Order(models.Model):
         ("pending_payment", "Falta pago"),
         ("draft", "Borrador"),
         ("paid", "Pagado"),
-        ("shipped", "Enviado"),
+        ("shipped", "Pendiente a entregar"),
         ("delivered", "Entregado"),
         ("cancelled", "Cancelado"),
     ]
@@ -56,6 +56,13 @@ class PaidOrder(Order):
         proxy = True
         verbose_name = "Pedido pagado"
         verbose_name_plural = "Pedidos pagados"
+
+
+class PendingDeliveryOrder(Order):
+    class Meta:
+        proxy = True
+        verbose_name = "Pedido pendiente a entregar"
+        verbose_name_plural = "Pendientes a entregar"
 
 
 class OrderItem(models.Model):

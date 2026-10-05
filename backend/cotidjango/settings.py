@@ -240,7 +240,7 @@ ADMIN_PATH_PREFIX = os.getenv("ADMIN_PATH_PREFIX", "admin").strip().strip("/") o
 
 CORS_ALLOWED_ORIGINS = _env_csv(
     "CORS_ALLOWED_ORIGINS",
-    default="http://localhost:3000,http://localhost:5173,http://localhost:4173,http://localhost:8000,http://127.0.0.1:4173,http://127.0.0.1:8000,https://djangofront-vsn2.onrender.com",
+    default="http://localhost:3000,http://localhost:5173,http://localhost:4173,http://localhost:8000,http://127.0.0.1:4173,http://127.0.0.1:5173,http://127.0.0.1:8000,https://djangofront-vsn2.onrender.com",
 )
 
 CORS_ALLOW_ALL_ORIGINS = _env_bool("CORS_ALLOW_ALL_ORIGINS", default=False)

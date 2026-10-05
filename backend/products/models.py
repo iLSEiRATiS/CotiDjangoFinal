@@ -195,6 +195,22 @@ class StoreSettings(models.Model):
         default=True,
         help_text="Si está activo, los usuarios sin iniciar sesión podrán ver los precios de los productos."
     )
+    maintenance_mode = models.BooleanField(
+        "Modo mantenimiento activo",
+        default=False,
+        help_text="Bloquea la tienda para clientes e invitados sin cerrar sus sesiones. El equipo interno conserva el acceso.",
+    )
+    maintenance_title = models.CharField(
+        "Titulo de mantenimiento",
+        max_length=120,
+        default="Estamos en mantenimiento",
+        blank=True,
+    )
+    maintenance_message = models.TextField(
+        "Mensaje de mantenimiento",
+        default="Disculpa las molestias. Estamos realizando mejoras y volveremos pronto.",
+        blank=True,
+    )
     actualizado_en = models.DateTimeField(auto_now=True)
 
     class Meta:

@@ -9,7 +9,7 @@ from django.utils.safestring import mark_safe
 
 from products.models import Product
 
-from .models import Order, OrderItem, PaidOrder
+from .models import Order, OrderItem, PaidOrder, PendingDeliveryOrder
 from cotidjango.api_pdf import (
     LABEL_SIZES,
     build_shipping_label_pdf,
@@ -219,12 +219,15 @@ class OrderAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         if self.model == PaidOrder:
             return qs.filter(status="paid")
-        return qs.exclude(status="paid")
+        if self.model == PendingDeliveryOrder:
+            return qs.filter(status="shipped")
+        return qs.exclude(status__in=("paid", "shipped"))
 
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
-        extra_context["pending_orders_count"] = Order.objects.exclude(status="paid").count()
+        extra_context["pending_orders_count"] = Order.objects.exclude(status__in=("paid", "shipped")).count()
         extra_context["paid_orders_count"] = Order.objects.filter(status="paid").count()
+        extra_context["pending_delivery_orders_count"] = Order.objects.filter(status="shipped").count()
         return super().changelist_view(request, extra_context=extra_context)
 
     def get_urls(self):
@@ -522,7 +525,16 @@ class OrderAdmin(admin.ModelAdmin):
 class PaidOrderAdmin(OrderAdmin):
     list_display = ("id", "nombre", "email", "status", "total", "creado_en", "acciones")
     list_filter = ("creado_en",)
-    actions = ["desmarcar_pagado", "cancelar"]
+    actions = ["marcar_pendiente_entrega", "desmarcar_pagado", "cancelar"]
+
+    @admin.action(description="Mover a Pendientes a entregar")
+    def marcar_pendiente_entrega(self, request, queryset):
+        count = queryset.update(status="shipped")
+        self.message_user(
+            request,
+            f"Se movieron {count} pedido(s) a 'Pendientes a entregar'.",
+            messages.SUCCESS,
+        )
 
     @admin.action(description="Revertir pago (devolver a Pedidos a procesar)")
     def desmarcar_pagado(self, request, queryset):
@@ -530,6 +542,22 @@ class PaidOrderAdmin(OrderAdmin):
         self.message_user(
             request,
             f"Se revirtieron {count} pedido(s) y volvieron a 'Pedidos a procesar'.",
+            messages.INFO,
+        )
+
+
+@admin.register(PendingDeliveryOrder)
+class PendingDeliveryOrderAdmin(OrderAdmin):
+    list_display = ("id", "nombre", "email", "status", "total", "creado_en", "acciones")
+    list_filter = ("creado_en",)
+    actions = ["devolver_a_pagados", "cancelar"]
+
+    @admin.action(description="Devolver a Pedidos pagados")
+    def devolver_a_pagados(self, request, queryset):
+        count = queryset.update(status="paid")
+        self.message_user(
+            request,
+            f"Se devolvieron {count} pedido(s) a 'Pedidos pagados'.",
             messages.INFO,
         )
 

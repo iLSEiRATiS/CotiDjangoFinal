@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
+from products.models import StoreSettings
 from users.models import PasswordResetToken
 from .api_common import User, _reset_token_hash, build_token, serialize_user
 from .api_mail import send_password_changed_email, send_password_reset_email, send_welcome_email
@@ -48,6 +49,15 @@ def _find_auth_candidate(identifier):
         if candidate:
             return candidate
     return User.objects.filter(username__iexact=identifier).first()
+
+
+def _can_access_during_maintenance(user):
+    """El modo pausa no expulsa sesiones existentes; solo restringe nuevos accesos de clientes."""
+    return bool(
+        getattr(user, "is_superuser", False)
+        or getattr(user, "is_staff", False)
+        or getattr(user, "role", "") in {"admin", "operator"}
+    )
 
 
 class AuthRegisterView(APIView):
@@ -115,6 +125,15 @@ class AuthLoginView(APIView):
                 return Response({"error": "Tu registro fue rechazado. Contacta al administrador para mas informacion."}, status=status.HTTP_403_FORBIDDEN)
         if not user:
             return Response({"error": "Credenciales invalidas"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if StoreSettings.get_solo().maintenance_mode and not _can_access_during_maintenance(user):
+            return Response(
+                {
+                    "error": "La tienda esta temporalmente en mantenimiento. Disculpa las molestias.",
+                    "maintenance": True,
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
 
         token = build_token(user)
         return Response({"token": token, "user": serialize_user(user, request)})

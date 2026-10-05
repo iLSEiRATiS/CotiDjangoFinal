@@ -468,6 +468,9 @@ class AdminStoreConfigView(APIView):
         return Response({
             "minOrderAmount": float(settings_row.min_order_amount),
             "showPricesToGuests": settings_row.mostrar_precios_invitados,
+            "maintenanceMode": settings_row.maintenance_mode,
+            "maintenanceTitle": settings_row.maintenance_title,
+            "maintenanceMessage": settings_row.maintenance_message,
         })
 
 from django.db.models.functions import TruncDate

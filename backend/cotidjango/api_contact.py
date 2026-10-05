@@ -33,10 +33,15 @@ class StoreConfigView(APIView):
 
     def get(self, request):
         settings_row = StoreSettings.get_solo()
-        return Response({
+        response = Response({
             "minOrderAmount": float(settings_row.min_order_amount),
             "showPricesToGuests": settings_row.mostrar_precios_invitados,
+            "maintenanceMode": settings_row.maintenance_mode,
+            "maintenanceTitle": settings_row.maintenance_title,
+            "maintenanceMessage": settings_row.maintenance_message,
         })
+        response["Cache-Control"] = "no-store, max-age=0"
+        return response
 
 
 class SupplierContactCreateView(APIView):
