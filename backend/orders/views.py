@@ -20,6 +20,13 @@ class OrderViewSet(viewsets.ModelViewSet):
             qs = qs.filter(user=self.request.user)
         return qs
 
+    def get_permissions(self):
+        # Los clientes pueden crear y consultar sus pedidos, pero solo el
+        # personal de la tienda puede editar o eliminar un pedido existente.
+        if self.action in ("update", "partial_update", "destroy"):
+            return [permissions.IsAdminUser()]
+        return [permission() for permission in self.permission_classes]
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 

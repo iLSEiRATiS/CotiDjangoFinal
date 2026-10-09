@@ -3,6 +3,7 @@
   const lastSeenProductBySelect = new WeakMap();
   const lastSeenUserBySelect = new WeakMap();
   const userEditedPriceInputs = new WeakSet();
+  let initialProductSelectionsCaptured = false;
   let shippingAutofilledValue = '';
   let shippingManuallyEdited = false;
 
@@ -383,6 +384,15 @@
 
   function bindAll() {
     simplifyInlineControls();
+    // Los renglones que ya existen tienen un precio histórico guardado. Registrar
+    // su producto al cargar evita que syncSelect lo reemplace con el precio actual
+    // del catálogo. Los renglones nuevos siguen autocompletando al elegir producto.
+    if (!initialProductSelectionsCaptured) {
+      document.querySelectorAll('select[name$="-product"]').forEach((select) => {
+        if (select.value) lastSeenProductBySelect.set(select, String(select.value));
+      });
+      initialProductSelectionsCaptured = true;
+    }
     document.querySelectorAll('select[name$="-product"]').forEach(bindSelect);
     bindShippingInput();
     document.querySelectorAll('select[name="user"]').forEach((select) => {
